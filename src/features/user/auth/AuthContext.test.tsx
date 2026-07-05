@@ -1,5 +1,12 @@
-import { render, act } from "@testing-library/react";
+import { render, act, waitFor } from "@testing-library/react";
 import { AuthProvider, useAuth, type AuthContextValue, type AuthResult } from "./AuthContext";
+import { ApiError } from "@/lib/api/client";
+import { setToken, getToken } from "@/lib/api/token";
+import { demoAdmin, demoCustomer } from "@/test-utils/authTestUtils";
+
+jest.mock("./authApi");
+import * as authApi from "./authApi";
+const mockedAuthApi = jest.mocked(authApi);
 
 /** Render the provider and expose its live context value to the test. */
 function setup() {
@@ -17,82 +24,86 @@ function setup() {
 }
 
 describe("AuthContext", () => {
-  beforeEach(() => window.localStorage.clear());
-
-  it("resolves to unauthenticated on a fresh store", () => {
-    const get = setup();
-    expect(get().status).toBe("unauthenticated");
-    expect(get().user).toBeNull();
+  beforeEach(() => {
+    window.localStorage.clear();
+    jest.clearAllMocks();
   });
 
-  it("logs in the seeded admin and exposes the admin role", () => {
+  it("is unauthenticated without a stored token", async () => {
     const get = setup();
-    let result: AuthResult | undefined;
-    act(() => {
-      result = get().login("admin@gannet.com", "admin123");
-    });
-    expect(result).toEqual({ ok: true, user: expect.objectContaining({ role: "admin" }) });
-    expect(get().status).toBe("authenticated");
+    await waitFor(() => expect(get().status).toBe("unauthenticated"));
+    expect(get().user).toBeNull();
+    expect(mockedAuthApi.me).not.toHaveBeenCalled();
+  });
+
+  it("restores the session from a stored token via /auth/me", async () => {
+    setToken("jwt");
+    mockedAuthApi.me.mockResolvedValue(demoAdmin);
+    const get = setup();
+    await waitFor(() => expect(get().status).toBe("authenticated"));
     expect(get().user?.role).toBe("admin");
   });
 
-  it("matches the email case-insensitively", () => {
+  it("clears a stale token when /auth/me fails", async () => {
+    setToken("stale");
+    mockedAuthApi.me.mockRejectedValue(new ApiError("User for this token no longer exists", 401));
     const get = setup();
-    let result: AuthResult | undefined;
-    act(() => {
-      result = get().login("ADMIN@Gannet.com", "admin123");
-    });
-    expect(result?.ok).toBe(true);
+    await waitFor(() => expect(get().status).toBe("unauthenticated"));
+    expect(getToken()).toBeNull();
   });
 
-  it("rejects a wrong password without signing in", () => {
+  it("logs in, stores the token and exposes the user", async () => {
+    mockedAuthApi.login.mockResolvedValue({ user: demoCustomer, token: "jwt-abc" });
     const get = setup();
+    await waitFor(() => expect(get().status).toBe("unauthenticated"));
     let result: AuthResult | undefined;
-    act(() => {
-      result = get().login("admin@gannet.com", "nope");
+    await act(async () => {
+      result = await get().login("arjun.m@gmail.com", "secret123");
     });
-    expect(result).toEqual({ ok: false, error: "Invalid email or password." });
+    expect(result).toEqual({ ok: true, user: demoCustomer });
+    expect(getToken()).toBe("jwt-abc");
+    expect(get().user?.email).toBe("arjun.m@gmail.com");
+  });
+
+  it("returns the API error message on a failed login", async () => {
+    mockedAuthApi.login.mockRejectedValue(new ApiError("Invalid email or password", 401));
+    const get = setup();
+    await waitFor(() => expect(get().status).toBe("unauthenticated"));
+    let result: AuthResult | undefined;
+    await act(async () => {
+      result = await get().login("x@y.com", "nope123");
+    });
+    expect(result).toEqual({ ok: false, error: "Invalid email or password" });
     expect(get().status).toBe("unauthenticated");
   });
 
-  it("registers a new customer and persists the session", () => {
+  it("registers and authenticates the new user", async () => {
+    mockedAuthApi.register.mockResolvedValue({ user: demoCustomer, token: "jwt-reg" });
     const get = setup();
-    act(() => {
-      get().register({
-        username: "New User",
-        email: "new@user.com",
-        password: "secret1",
-        phone: "1234509876",
+    await waitFor(() => expect(get().status).toBe("unauthenticated"));
+    await act(async () => {
+      await get().register({
+        username: "Arjun Mehta",
+        email: "arjun.m@gmail.com",
+        password: "secret123",
+        phone: "9876543210",
       });
     });
-    expect(get().user).toEqual(expect.objectContaining({ username: "New User", role: "customer" }));
-    expect(window.localStorage.getItem("gannet.auth.session")).toContain("new@user.com");
+    expect(get().status).toBe("authenticated");
+    expect(getToken()).toBe("jwt-reg");
   });
 
-  it("prevents registering with an existing email", () => {
+  it("logs out and clears the token", async () => {
+    mockedAuthApi.login.mockResolvedValue({ user: demoCustomer, token: "jwt" });
     const get = setup();
-    let result: AuthResult | undefined;
-    act(() => {
-      result = get().register({
-        username: "Dupe",
-        email: "admin@gannet.com",
-        password: "secret1",
-        phone: "1234509876",
-      });
-    });
-    expect(result).toEqual({ ok: false, error: "An account with this email already exists." });
-  });
-
-  it("logs out and clears the session", () => {
-    const get = setup();
-    act(() => {
-      get().login("admin@gannet.com", "admin123");
+    await act(async () => {
+      await get().login("a@b.com", "secret123");
     });
     act(() => {
       get().logout();
     });
     expect(get().status).toBe("unauthenticated");
     expect(get().user).toBeNull();
-    expect(window.localStorage.getItem("gannet.auth.session")).toBeNull();
+    expect(getToken()).toBeNull();
   });
 });

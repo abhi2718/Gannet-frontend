@@ -1,12 +1,6 @@
 import type { AuthUser } from "@/features/user/auth/AuthContext";
 
-const SESSION_KEY = "gannet.auth.session";
-
-/** Seed an authenticated session so `AuthProvider` resolves to this user. */
-export function seedSession(user: AuthUser): void {
-  window.localStorage.setItem(SESSION_KEY, JSON.stringify(user));
-}
-
+/** Sample authenticated users for tests that mock the auth layer. */
 export const demoCustomer: AuthUser = {
   id: "seed-customer",
   username: "Arjun Mehta",

@@ -31,7 +31,7 @@ export function RegisterPage() {
   }, [status, user, router]);
 
   const validate = (): string | null => {
-    if (name.trim().length < 2) return "Enter your full name.";
+    if (name.trim().length < 3) return "Enter your name (at least 3 characters).";
     if (!/^\d{10}$/.test(phone)) return "Enter a valid 10-digit phone number.";
     if (!EMAIL_RE.test(email.trim())) return "Enter a valid email address.";
     if (password.length < 6) return "Password must be at least 6 characters.";
@@ -39,7 +39,7 @@ export function RegisterPage() {
     return null;
   };
 
-  const submit = () => {
+  const submit = async () => {
     const validationError = validate();
     if (validationError) {
       setError(validationError);
@@ -47,16 +47,18 @@ export function RegisterPage() {
     }
     setError("");
     setLoading(true);
-    // Simulate a network round-trip for the mock sign-up.
-    window.setTimeout(() => {
-      const result = register({ username: name, email, password, phone });
-      if (!result.ok) {
-        setError(result.error);
-        setLoading(false);
-        return;
-      }
-      router.replace("/dashboard");
-    }, 500);
+    const result = await register({
+      username: name.trim(),
+      email: email.trim(),
+      password,
+      phone,
+    });
+    if (!result.ok) {
+      setError(result.error);
+      setLoading(false);
+      return;
+    }
+    router.replace("/dashboard");
   };
 
   const goBack = () => router.push("/");
@@ -93,7 +95,7 @@ export function RegisterPage() {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                submit();
+                void submit();
               }}
             >
               <AuthField

@@ -27,7 +27,7 @@ export function LoginPage() {
     }
   }, [status, user, router]);
 
-  const submit = () => {
+  const submit = async () => {
     if (!EMAIL_RE.test(email.trim())) {
       setError("Enter a valid email address.");
       return;
@@ -38,16 +38,13 @@ export function LoginPage() {
     }
     setError("");
     setLoading(true);
-    // Simulate a network round-trip for the mock sign-in.
-    window.setTimeout(() => {
-      const result = login(email, password);
-      if (!result.ok) {
-        setError(result.error);
-        setLoading(false);
-        return;
-      }
-      router.replace(result.user.role === "admin" ? "/admin" : "/dashboard");
-    }, 500);
+    const result = await login(email.trim(), password);
+    if (!result.ok) {
+      setError(result.error);
+      setLoading(false);
+      return;
+    }
+    router.replace(result.user.role === "admin" ? "/admin" : "/dashboard");
   };
 
   const goBack = () => router.push("/");
@@ -84,7 +81,7 @@ export function LoginPage() {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                submit();
+                void submit();
               }}
             >
               <AuthField
@@ -142,15 +139,6 @@ export function LoginPage() {
                 Sign up
               </Link>
             </p>
-
-            <div
-              className="mt-6 p-3 rounded-xl text-xs text-center text-gray-500"
-              style={{ background: "#EFF6FF" }}
-            >
-              <span className="font-bold text-[#0D6EFD]">Demo:</span> customer{" "}
-              <span className="font-semibold">arjun.m@gmail.com / customer123</span> · admin{" "}
-              <span className="font-semibold">admin@gannet.com / admin123</span>
-            </div>
           </motion.div>
 
           <p className="text-center text-xs text-gray-300 mt-8">
