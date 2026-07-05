@@ -1,0 +1,14 @@
+{
+  "extends": ["next/core-web-vitals", "next/typescript", "prettier"],
+  "rules": {
+    "max-lines": ["error", { "max": 200, "skipBlankLines": true, "skipComments": true }],
+    "@next/next/no-img-element": "off",
+    "react/no-unescaped-entities": "off"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.ts", "**/*.test.tsx", "**/*.config.{js,ts,mjs}", "src/data/**"],
+      "rules": { "max-lines": "off" }
+    }
+  ]
+}
