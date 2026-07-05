@@ -4,49 +4,58 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { ChevronLeft, Droplets, Mail, Lock, ArrowRight } from "lucide-react";
+import { ChevronLeft, Droplets, User, Phone, Mail, Lock, ArrowRight } from "lucide-react";
 import { useAuth } from "./AuthContext";
 import { AuthField } from "./AuthField";
 import { LoginBrandingPanel } from "./LoginBrandingPanel";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/** Email + password sign-in. Routes to the customer or admin dashboard by role. */
-export function LoginPage() {
+/** Create a customer account: name, phone, email, password + confirm password. */
+export function RegisterPage() {
   const router = useRouter();
-  const { login, status, user } = useAuth();
+  const { register, status, user } = useAuth();
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Already signed in? Skip the form and go straight to the right dashboard.
+  // Already signed in? There's nothing to register — go to the dashboard.
   useEffect(() => {
     if (status === "authenticated" && user) {
       router.replace(user.role === "admin" ? "/admin" : "/dashboard");
     }
   }, [status, user, router]);
 
+  const validate = (): string | null => {
+    if (name.trim().length < 2) return "Enter your full name.";
+    if (!/^\d{10}$/.test(phone)) return "Enter a valid 10-digit phone number.";
+    if (!EMAIL_RE.test(email.trim())) return "Enter a valid email address.";
+    if (password.length < 6) return "Password must be at least 6 characters.";
+    if (password !== confirm) return "Passwords do not match.";
+    return null;
+  };
+
   const submit = () => {
-    if (!EMAIL_RE.test(email.trim())) {
-      setError("Enter a valid email address.");
-      return;
-    }
-    if (!password) {
-      setError("Enter your password.");
+    const validationError = validate();
+    if (validationError) {
+      setError(validationError);
       return;
     }
     setError("");
     setLoading(true);
-    // Simulate a network round-trip for the mock sign-in.
+    // Simulate a network round-trip for the mock sign-up.
     window.setTimeout(() => {
-      const result = login(email, password);
+      const result = register({ username: name, email, password, phone });
       if (!result.ok) {
         setError(result.error);
         setLoading(false);
         return;
       }
-      router.replace(result.user.role === "admin" ? "/admin" : "/dashboard");
+      router.replace("/dashboard");
     }, 500);
   };
 
@@ -76,9 +85,9 @@ export function LoginPage() {
           </div>
 
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-            <h2 className="text-2xl font-extrabold text-gray-900 mb-1">Welcome back</h2>
+            <h2 className="text-2xl font-extrabold text-gray-900 mb-1">Create your account</h2>
             <p className="text-gray-400 text-sm mb-6">
-              Sign in with your email and password to continue.
+              Join GANNET to book water and track your orders.
             </p>
 
             <form
@@ -88,12 +97,40 @@ export function LoginPage() {
               }}
             >
               <AuthField
+                id="name"
+                label="Full Name"
+                icon={User}
+                autoComplete="name"
+                placeholder="Your name"
+                value={name}
+                onChange={(v) => {
+                  setName(v);
+                  setError("");
+                }}
+              />
+              <AuthField
+                id="phone"
+                label="Phone Number"
+                icon={Phone}
+                type="tel"
+                inputMode="numeric"
+                autoComplete="tel"
+                prefix="+91"
+                maxLength={10}
+                placeholder="XXXXX XXXXX"
+                value={phone}
+                onChange={(v) => {
+                  setPhone(v.replace(/\D/g, "").slice(0, 10));
+                  setError("");
+                }}
+              />
+              <AuthField
                 id="email"
                 label="Email"
                 icon={Mail}
                 type="email"
-                autoComplete="email"
                 inputMode="email"
+                autoComplete="email"
                 placeholder="you@example.com"
                 value={email}
                 onChange={(v) => {
@@ -106,11 +143,24 @@ export function LoginPage() {
                 label="Password"
                 icon={Lock}
                 type="password"
-                autoComplete="current-password"
-                placeholder="••••••••"
+                autoComplete="new-password"
+                placeholder="At least 6 characters"
                 value={password}
                 onChange={(v) => {
                   setPassword(v);
+                  setError("");
+                }}
+              />
+              <AuthField
+                id="confirm"
+                label="Confirm Password"
+                icon={Lock}
+                type="password"
+                autoComplete="new-password"
+                placeholder="Re-enter your password"
+                value={confirm}
+                onChange={(v) => {
+                  setConfirm(v);
                   setError("");
                 }}
               />
@@ -130,27 +180,18 @@ export function LoginPage() {
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
                   <>
-                    Sign In <ArrowRight size={16} />
+                    Create Account <ArrowRight size={16} />
                   </>
                 )}
               </button>
             </form>
 
             <p className="text-center text-sm text-gray-500 mt-6">
-              Don&apos;t have an account?{" "}
-              <Link href="/register" className="font-bold text-[#0D6EFD] hover:underline">
-                Sign up
+              Already have an account?{" "}
+              <Link href="/login" className="font-bold text-[#0D6EFD] hover:underline">
+                Sign in
               </Link>
             </p>
-
-            <div
-              className="mt-6 p-3 rounded-xl text-xs text-center text-gray-500"
-              style={{ background: "#EFF6FF" }}
-            >
-              <span className="font-bold text-[#0D6EFD]">Demo:</span> customer{" "}
-              <span className="font-semibold">arjun.m@gmail.com / customer123</span> · admin{" "}
-              <span className="font-semibold">admin@gannet.com / admin123</span>
-            </div>
           </motion.div>
 
           <p className="text-center text-xs text-gray-300 mt-8">

@@ -7,6 +7,7 @@ import { Droplets, ChevronDown, Users, ShoppingCart, LogOut } from "lucide-react
 import type { LucideIcon } from "lucide-react";
 import { GannetBirdIcon } from "@/components/shared/GannetBirdIcon";
 import { useCart } from "@/features/user/commerce/CartContext";
+import { useAuth } from "@/features/user/auth/AuthContext";
 import type { UserDashView } from "@/types";
 import { UserDashboardHome } from "./UserDashboardHome";
 import { ProfileView } from "./ProfileView";
@@ -22,13 +23,25 @@ const MENU_ITEMS: { icon: LucideIcon; label: string; key: UserDashView; desc: st
   { icon: ShoppingCart, label: "Order History", key: "order-history", desc: "All your bookings" },
 ];
 
+/** Up-to-two-letter avatar initials derived from the user's name. */
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return name.trim().slice(0, 2).toUpperCase();
+}
+
 /** Customer dashboard shell: top nav, avatar menu, and view switching. */
 export function UserDashboard() {
   const router = useRouter();
   const { openCart } = useCart();
+  const { user, logout } = useAuth();
   const [dashView, setDashView] = useState<UserDashView>("home");
   const [dropOpen, setDropOpen] = useState(false);
   const dropRef = useRef<HTMLDivElement>(null);
+
+  const displayName = user?.username ?? "Account";
+  const displayEmail = user?.email ?? "";
+  const avatar = user ? initials(user.username) : "";
 
   useEffect(() => {
     const h = (e: MouseEvent) => {
@@ -42,7 +55,10 @@ export function UserDashboard() {
     setDashView(v);
     setDropOpen(false);
   };
-  const logout = () => router.push("/");
+  const handleLogout = () => {
+    logout();
+    router.replace("/login");
+  };
 
   return (
     <div className="min-h-screen" style={{ background: "#F0F9FF" }}>
@@ -104,11 +120,11 @@ export function UserDashboard() {
                   className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-extrabold"
                   style={{ background: "linear-gradient(135deg,#0D6EFD,#00B4D8)" }}
                 >
-                  AM
+                  {avatar}
                 </div>
                 <div className="hidden sm:block text-left">
-                  <div className="text-xs font-bold text-gray-900 leading-tight">Arjun Mehta</div>
-                  <div className="text-xs text-gray-400 leading-tight">arjun.m@gmail.com</div>
+                  <div className="text-xs font-bold text-gray-900 leading-tight">{displayName}</div>
+                  <div className="text-xs text-gray-400 leading-tight">{displayEmail}</div>
                 </div>
                 <motion.span
                   animate={{ rotate: dropOpen ? 180 : 0 }}
@@ -136,8 +152,8 @@ export function UserDashboard() {
                       className="px-4 py-3 border-b"
                       style={{ borderColor: "rgba(13,110,253,0.06)", background: "#F8FAFC" }}
                     >
-                      <div className="font-bold text-gray-900 text-sm">Arjun Mehta</div>
-                      <div className="text-xs text-gray-400">arjun.m@gmail.com</div>
+                      <div className="font-bold text-gray-900 text-sm">{displayName}</div>
+                      <div className="text-xs text-gray-400">{displayEmail}</div>
                     </div>
                     {MENU_ITEMS.map((item) => (
                       <button
@@ -162,7 +178,7 @@ export function UserDashboard() {
                     ))}
                     <div className="border-t" style={{ borderColor: "rgba(13,110,253,0.06)" }}>
                       <button
-                        onClick={logout}
+                        onClick={handleLogout}
                         className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors text-left group"
                       >
                         <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-red-50 group-hover:bg-red-100 transition-colors">

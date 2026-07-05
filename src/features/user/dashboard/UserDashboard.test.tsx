@@ -1,25 +1,34 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { CartProvider } from "@/features/user/commerce/CartContext";
+import { AuthProvider } from "@/features/user/auth/AuthContext";
+import { seedSession, demoCustomer } from "@/test-utils/authTestUtils";
 import { UserDashboard } from "./UserDashboard";
 
 jest.mock("next/navigation", () => ({
-  useRouter: () => ({ push: jest.fn() }),
+  useRouter: () => ({ push: jest.fn(), replace: jest.fn() }),
 }));
 
 function renderDashboard() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={client}>
-      <CartProvider>
-        <UserDashboard />
-      </CartProvider>
+      <AuthProvider>
+        <CartProvider>
+          <UserDashboard />
+        </CartProvider>
+      </AuthProvider>
     </QueryClientProvider>,
   );
 }
 
 describe("UserDashboard", () => {
-  it("renders the customer identity in the header", () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+    seedSession(demoCustomer);
+  });
+
+  it("renders the signed-in customer's identity in the header", () => {
     renderDashboard();
     expect(screen.getAllByText("Arjun Mehta").length).toBeGreaterThan(0);
   });

@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { DashTab } from "@/types";
+import { useAuth } from "@/features/user/auth/AuthContext";
 import { DashboardOverview } from "./DashboardOverview";
 import { QueriesView } from "./QueriesView";
 import { OrdersView } from "./OrdersView";
@@ -27,12 +28,28 @@ const SIDE_ITEMS: { key: DashTab; icon: LucideIcon; label: string }[] = [
   { key: "users", icon: Users, label: "Users" },
 ];
 
+/** Up-to-two-letter avatar initials derived from the user's name. */
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return name.trim().slice(0, 2).toUpperCase();
+}
+
 /** Admin dashboard shell: collapsible sidebar, top bar, and tab switching. */
 export function Dashboard() {
   const router = useRouter();
+  const { user, logout } = useAuth();
   const [tab, setTab] = useState<DashTab>("overview");
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const logout = () => router.push("/");
+
+  const displayName = user?.username ?? "Admin";
+  const displayEmail = user?.email ?? "";
+  const avatar = user ? initials(user.username) : "AD";
+
+  const handleLogout = () => {
+    logout();
+    router.replace("/login");
+  };
 
   return (
     <div className="min-h-screen flex" style={{ background: "#F8FAFC" }}>
@@ -89,7 +106,7 @@ export function Dashboard() {
 
         <div className="p-3 border-t" style={{ borderColor: "rgba(13,110,253,0.08)" }}>
           <button
-            onClick={logout}
+            onClick={handleLogout}
             className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-red-400 hover:bg-red-50 transition-colors"
           >
             <LogOut size={20} className="shrink-0" />
@@ -126,11 +143,11 @@ export function Dashboard() {
               style={{ background: "#F0F9FF" }}
             >
               <div className="w-8 h-8 rounded-full bg-[#0D6EFD] flex items-center justify-center">
-                <span className="text-white text-xs font-bold">AD</span>
+                <span className="text-white text-xs font-bold">{avatar}</span>
               </div>
               <div className="hidden sm:block">
-                <div className="text-xs font-bold text-gray-900">Admin</div>
-                <div className="text-xs text-gray-400">admin@gannet.com</div>
+                <div className="text-xs font-bold text-gray-900">{displayName}</div>
+                <div className="text-xs text-gray-400">{displayEmail}</div>
               </div>
             </div>
           </div>

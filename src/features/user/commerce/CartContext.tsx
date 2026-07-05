@@ -1,10 +1,11 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AnimatePresence } from "motion/react";
 import { CartDrawer } from "./CartDrawer";
-import { PhoneOTPModal } from "./PhoneOTPModal";
 import { CheckoutModal } from "./CheckoutModal";
+import { useAuth } from "@/features/user/auth/AuthContext";
 import type { CartItem } from "@/types";
 
 type CartContextValue = {
@@ -27,14 +28,15 @@ export function useCart() {
 }
 
 /**
- * Holds the shopping-cart state and orchestrates the cart drawer, phone OTP,
- * and checkout overlays for the whole end-user surface.
+ * Holds the shopping-cart state and orchestrates the cart drawer and checkout
+ * overlay. Checkout uses the signed-in customer's account (and their stored
+ * phone number) — guests are redirected to log in first.
  */
 export function CartProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const { user } = useAuth();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
-  const [showOTP, setShowOTP] = useState(false);
-  const [userPhone, setUserPhone] = useState("");
   const [showCheckout, setShowCheckout] = useState(false);
   const [checkoutItems, setCheckoutItems] = useState<CartItem[]>([]);
 
@@ -59,22 +61,24 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const removeFromCart = (size: string) =>
     setCartItems((prev) => prev.filter((x) => x.size !== size));
 
+  /** Require a signed-in customer before any checkout can start. */
+  const requireLogin = (): boolean => {
+    if (user) return true;
+    setCartOpen(false);
+    router.push("/login");
+    return false;
+  };
+
   const handleCheckout = () => {
+    if (!requireLogin()) return;
     setCheckoutItems([...cartItems]);
     setCartOpen(false);
-    if (!userPhone) setShowOTP(true);
-    else setShowCheckout(true);
+    setShowCheckout(true);
   };
 
   const bookNow = (item: CartItem) => {
+    if (!requireLogin()) return;
     setCheckoutItems([item]);
-    if (!userPhone) setShowOTP(true);
-    else setShowCheckout(true);
-  };
-
-  const handleOTPSuccess = (phone: string) => {
-    setUserPhone(phone);
-    setShowOTP(false);
     setShowCheckout(true);
   };
 
@@ -112,15 +116,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         )}
       </AnimatePresence>
       <AnimatePresence>
-        {showOTP && (
-          <PhoneOTPModal onClose={() => setShowOTP(false)} onSuccess={handleOTPSuccess} />
-        )}
-      </AnimatePresence>
-      <AnimatePresence>
         {showCheckout && checkoutItems.length > 0 && (
           <CheckoutModal
             cartItems={checkoutItems}
-            userPhone={userPhone}
+            userPhone={user?.phone ?? ""}
             onClose={() => setShowCheckout(false)}
             onDone={handleOrderDone}
           />

@@ -26,10 +26,26 @@ App Router **route groups** keep the two interfaces cleanly separated:
 
 - **`(user)`** — the end-user surface
   - `/` landing / e-commerce
-  - `/login` role-aware phone + OTP login
-  - `/dashboard` customer dashboard (profile, orders, tracking)
+  - `/login` email + password sign-in (routes to the right dashboard by role)
+  - `/register` create a customer account (name, phone, email, password + confirm)
+  - `/dashboard` customer dashboard (profile, orders, tracking) — **requires a signed-in customer**
 - **`(admin)`** — the admin surface
-  - `/admin` management dashboard (overview, queries, orders, users)
+  - `/admin` management dashboard (overview, queries, orders, users) — **requires a signed-in admin**
+
+## Authentication
+
+Auth is a **client-side mock** (`src/features/user/auth`). Accounts and the active
+session are persisted in `localStorage`; `RequireAuth` guards the dashboard and
+admin routes and redirects by role. This is a front-end stand-in — passwords are
+stored in plain text, so replace it with a real backend (server session) before
+production. Checkout reuses the signed-in customer's stored phone (no OTP step).
+
+Demo accounts (seeded on first load):
+
+| Role     | Email               | Password      |
+| -------- | ------------------- | ------------- |
+| Customer | `arjun.m@gmail.com` | `customer123` |
+| Admin    | `admin@gannet.com`  | `admin123`    |
 
 ## Structure
 
@@ -69,6 +85,6 @@ currently resolve the mock data in `src/data`. When the real API is ready:
 
 ## Notes
 
-- The demo OTP is `123456`.
+- Sign in with a demo account above (see **Authentication**).
 - The legacy Vite app remains in the repository root for reference and can be
   removed once this project is verified.
