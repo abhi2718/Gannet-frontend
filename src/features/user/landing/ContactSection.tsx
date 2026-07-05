@@ -1,45 +1,50 @@
 "use client";
 
 import { useState } from "react";
-import {
-  MapPin,
-  Phone,
-  Mail,
-  Clock,
-  Instagram,
-  Facebook,
-  Twitter,
-  Send,
-  CheckCircle,
-} from "lucide-react";
+import { Send, CheckCircle } from "lucide-react";
 import { FadeIn } from "@/components/shared/FadeIn";
+import { useSubmitQuery } from "@/lib/query/hooks/useQueryMutations";
+import { ContactInfoPanel } from "./ContactInfoPanel";
 
-const CONTACT_INFO = [
-  { icon: MapPin, label: "Address", value: "24 Spring Lane, Shimla, Himachal Pradesh 171001" },
-  { icon: Phone, label: "Phone", value: "+91 98765 43210" },
-  { icon: Mail, label: "Email", value: "hello@gannetwater.com" },
-  { icon: Clock, label: "Office Hours", value: "10:00 AM – 6:00 PM · 7 Days a Week" },
-];
-
-const SOCIALS = [
-  { icon: Instagram, label: "Instagram" },
-  { icon: Facebook, label: "Facebook" },
-  { icon: Twitter, label: "Twitter" },
-];
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const inputStyle = { background: "#F0F9FF", border: "1.5px solid transparent" };
 const inputClass =
   "w-full px-4 py-3.5 text-sm rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0D6EFD]";
 const labelClass = "block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider";
 
+const EMPTY_FORM = { name: "", phone: "", email: "", city: "", requirement: "", message: "" };
+
 export function ContactSection() {
-  const [form, setForm] = useState({ name: "", phone: "", email: "", message: "" });
+  const [form, setForm] = useState(EMPTY_FORM);
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
+  const submit = useSubmitQuery();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSent(true);
-    setTimeout(() => setSent(false), 3500);
-    setForm({ name: "", phone: "", email: "", message: "" });
+    const { name, phone, email, city, requirement, message } = form;
+    if (!name || !phone || !email || !city || !requirement || !message) {
+      setError("Please fill in all fields.");
+      return;
+    }
+    if (!EMAIL_RE.test(email)) {
+      setError("Enter a valid email address.");
+      return;
+    }
+    setError("");
+    submit.mutate(
+      { fullName: name, mobileNumber: phone, email, city, requirement, message },
+      {
+        onSuccess: () => {
+          setSent(true);
+          setTimeout(() => setSent(false), 3500);
+          setForm(EMPTY_FORM);
+        },
+        onError: (err) =>
+          setError((err as Error)?.message ?? "Something went wrong. Please try again."),
+      },
+    );
   };
 
   return (
@@ -59,47 +64,7 @@ export function ContactSection() {
         </FadeIn>
 
         <div className="grid lg:grid-cols-5 gap-10">
-          <FadeIn className="lg:col-span-2 flex flex-col gap-5">
-            {CONTACT_INFO.map((item) => (
-              <div
-                key={item.label}
-                className="flex items-start gap-4 p-5 rounded-2xl"
-                style={{ background: "#F0F9FF" }}
-              >
-                <div className="w-11 h-11 rounded-xl bg-[#0D6EFD] flex items-center justify-center shrink-0">
-                  <item.icon size={18} className="text-white" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5">
-                    {item.label}
-                  </div>
-                  <div className="text-gray-800 font-semibold text-sm">{item.value}</div>
-                </div>
-              </div>
-            ))}
-
-            <div
-              className="rounded-2xl overflow-hidden h-40 relative"
-              style={{ background: "linear-gradient(135deg, #EAF6FF, #DBEAFE)" }}
-            >
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-[#0D6EFD]">
-                <MapPin size={28} className="mb-2 opacity-60" />
-                <span className="text-xs font-semibold opacity-60">Shimla, Himachal Pradesh</span>
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              {SOCIALS.map(({ icon: Icon, label }) => (
-                <button
-                  key={label}
-                  aria-label={label}
-                  className="w-11 h-11 rounded-xl bg-[#0D6EFD] flex items-center justify-center text-white hover:bg-blue-600 hover:scale-110 transition-all"
-                >
-                  <Icon size={18} />
-                </button>
-              ))}
-            </div>
-          </FadeIn>
+          <ContactInfoPanel />
 
           <FadeIn className="lg:col-span-3" delay={0.15}>
             <form
@@ -135,13 +100,37 @@ export function ContactSection() {
                   />
                 </div>
               </div>
+              <div className="grid sm:grid-cols-2 gap-5 mb-5">
+                <div>
+                  <label className={labelClass}>Email Address</label>
+                  <input
+                    type="email"
+                    placeholder="you@example.com"
+                    value={form.email}
+                    onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
+                    className={inputClass}
+                    style={inputStyle}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>City</label>
+                  <input
+                    type="text"
+                    placeholder="Your city"
+                    value={form.city}
+                    onChange={(e) => setForm((p) => ({ ...p, city: e.target.value }))}
+                    className={inputClass}
+                    style={inputStyle}
+                  />
+                </div>
+              </div>
               <div className="mb-5">
-                <label className={labelClass}>Email Address</label>
+                <label className={labelClass}>Requirement</label>
                 <input
-                  type="email"
-                  placeholder="you@example.com"
-                  value={form.email}
-                  onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
+                  type="text"
+                  placeholder="e.g. 50 bottles/month, dealership, bulk order"
+                  value={form.requirement}
+                  onChange={(e) => setForm((p) => ({ ...p, requirement: e.target.value }))}
                   className={inputClass}
                   style={inputStyle}
                 />
@@ -157,15 +146,19 @@ export function ContactSection() {
                   style={inputStyle}
                 />
               </div>
+              {error && <p className="text-xs text-red-500 mb-3">{error}</p>}
               <button
                 type="submit"
-                className="w-full py-4 rounded-2xl font-bold text-white text-sm flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
+                disabled={submit.isPending}
+                className="w-full py-4 rounded-2xl font-bold text-white text-sm flex items-center justify-center gap-2 transition-all hover:scale-[1.02] disabled:opacity-70"
                 style={{
                   background: "linear-gradient(135deg, #0D6EFD 0%, #00B4D8 100%)",
                   boxShadow: "0 8px 32px rgba(13,110,253,0.3)",
                 }}
               >
-                {sent ? (
+                {submit.isPending ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : sent ? (
                   <>
                     <CheckCircle size={17} /> Message Sent!
                   </>

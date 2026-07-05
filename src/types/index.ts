@@ -21,11 +21,25 @@ export type Slide = {
 
 export type SlideTheme = "deep" | "ocean" | "sky";
 
-/** A purchasable bottle size shown on the landing page. */
+/** A purchasable bottle size shown on the landing page (static fallback data). */
 export type Product = {
   size: string;
   label: string;
   desc: string;
+};
+
+/**
+ * A product for the "Choose Your Perfect Size" grid, normalised from the API
+ * (`GET /api/products`) or from the static fallback lineup.
+ */
+export type CatalogProduct = {
+  id: string;
+  name: string;
+  price: number;
+  description: string;
+  image: string;
+  /** Optional badge (e.g. the static lineup's "Classic"); absent for API rows. */
+  tag?: string;
 };
 
 /** Marketing feature / "why us" tile. */
@@ -62,6 +76,8 @@ export type Query = {
   requirement: string;
   status: string;
   date: string;
+  /** Full enquiry message (from the API; not shown in the summary table). */
+  message?: string;
 };
 
 /** Order record shown in the admin dashboard. */

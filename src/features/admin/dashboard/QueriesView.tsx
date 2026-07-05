@@ -1,17 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Eye, Edit2, Trash2 } from "lucide-react";
-import { StatusBadge } from "@/components/shared/StatusBadge";
+import { Search, Trash2 } from "lucide-react";
 import { useAdminQueries } from "@/lib/query/hooks/useAdminQueries";
+import { useUpdateQueryStatus, useDeleteQuery } from "@/lib/query/hooks/useQueryMutations";
 
 const COLUMNS = ["ID", "Name", "Mobile", "Email", "City", "Queries", "Date", "Status", "Actions"];
 const STATUS_OPTIONS = ["all", "new", "contacted", "converted"];
+const ROW_STATUSES = ["new", "contacted", "converted"];
 
 export function QueriesView() {
   const { data: queries = [] } = useAdminQueries();
+  const updateStatus = useUpdateQueryStatus();
+  const deleteQuery = useDeleteQuery();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [confirmId, setConfirmId] = useState<string | null>(null);
+
+  const handleDelete = (id: string) => {
+    if (confirmId === id) {
+      deleteQuery.mutate(id);
+      setConfirmId(null);
+    } else {
+      setConfirmId(id);
+    }
+  };
 
   const filtered = queries.filter(
     (q) =>
@@ -89,29 +102,29 @@ export function QueriesView() {
                   <td className="px-5 py-4 text-gray-500">{q.requirement}</td>
                   <td className="px-5 py-4 text-gray-400 whitespace-nowrap">{q.date}</td>
                   <td className="px-5 py-4">
-                    <StatusBadge status={q.status} />
+                    <select
+                      value={q.status}
+                      aria-label={`Status for ${q.name}`}
+                      onChange={(e) => updateStatus.mutate({ id: q.id, status: e.target.value })}
+                      className="px-3 py-1.5 text-xs font-bold rounded-full border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#0D6EFD] cursor-pointer capitalize"
+                    >
+                      {ROW_STATUSES.map((s) => (
+                        <option key={s} value={s}>
+                          {s.charAt(0).toUpperCase() + s.slice(1)}
+                        </option>
+                      ))}
+                    </select>
                   </td>
                   <td className="px-5 py-4">
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        aria-label="View"
-                        className="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 flex items-center justify-center transition-colors"
-                      >
-                        <Eye size={14} className="text-[#0D6EFD]" />
-                      </button>
-                      <button
-                        aria-label="Edit"
-                        className="w-8 h-8 rounded-lg bg-amber-50 hover:bg-amber-100 flex items-center justify-center transition-colors"
-                      >
-                        <Edit2 size={14} className="text-amber-500" />
-                      </button>
-                      <button
-                        aria-label="Delete"
-                        className="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center transition-colors"
-                      >
-                        <Trash2 size={14} className="text-red-400" />
-                      </button>
-                    </div>
+                    <button
+                      aria-label={`Delete ${q.name}`}
+                      onClick={() => handleDelete(q.id)}
+                      onBlur={() => setConfirmId((c) => (c === q.id ? null : c))}
+                      className="h-8 px-3 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center gap-1.5 transition-colors text-red-500"
+                    >
+                      <Trash2 size={14} />
+                      {confirmId === q.id && <span className="text-xs font-bold">Confirm?</span>}
+                    </button>
                   </td>
                 </tr>
               ))}

@@ -1,8 +1,15 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { ProductModal } from "./ProductModal";
-import { PRODUCTS } from "@/data/products";
+import type { CatalogProduct } from "@/types";
 
-const product = PRODUCTS[1];
+const product: CatalogProduct = {
+  id: "p1",
+  name: "500 ml",
+  price: 18,
+  description: "Our best-selling size.",
+  image: "/bottle.png",
+  tag: "Classic",
+};
 
 const baseProps = {
   product,
@@ -12,18 +19,19 @@ const baseProps = {
 };
 
 describe("ProductModal", () => {
-  it("defaults the selected size to the opened product", () => {
+  it("shows the opened product", () => {
     render(<ProductModal {...baseProps} />);
-    expect(screen.getByAltText(`GANNET ${product.size}`)).toBeInTheDocument();
+    expect(screen.getByAltText(`GANNET ${product.name}`)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: product.name })).toBeInTheDocument();
   });
 
-  it("adds the selected size and quantity to the cart", () => {
+  it("adds the chosen quantity to the cart", () => {
     const onAddToCart = jest.fn();
     render(<ProductModal {...baseProps} onAddToCart={onAddToCart} />);
     fireEvent.click(screen.getByLabelText("Increase quantity"));
     fireEvent.click(screen.getByText(/Add to Cart/));
     expect(onAddToCart).toHaveBeenCalledWith(
-      expect.objectContaining({ size: product.size, qty: 2 }),
+      expect.objectContaining({ size: product.name, price: product.price, qty: 2 }),
     );
   });
 
@@ -33,6 +41,6 @@ describe("ProductModal", () => {
     render(<ProductModal {...baseProps} onBookNow={onBookNow} onClose={onClose} />);
     fireEvent.click(screen.getByText(/Book Now/));
     expect(onClose).toHaveBeenCalled();
-    expect(onBookNow).toHaveBeenCalledWith(expect.objectContaining({ size: product.size }));
+    expect(onBookNow).toHaveBeenCalledWith(expect.objectContaining({ size: product.name }));
   });
 });

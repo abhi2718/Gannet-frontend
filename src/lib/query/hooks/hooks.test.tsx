@@ -1,11 +1,10 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useProducts } from "./useProducts";
+import { useProducts, FALLBACK_CATALOG } from "./useProducts";
 import { useAdminOrders } from "./useAdminOrders";
 import { useAdminQueries } from "./useAdminQueries";
 import { useAdminUsers } from "./useAdminUsers";
 import { useAdminChart } from "./useAdminChart";
-import { PRODUCTS } from "@/data/products";
 import { MOCK_ORDERS, MOCK_QUERIES, MOCK_USERS, CHART_DATA } from "@/data/mock/admin";
 
 function wrapper({ children }: { children: React.ReactNode }) {
@@ -14,10 +13,10 @@ function wrapper({ children }: { children: React.ReactNode }) {
 }
 
 describe("query hooks resolve their mock data", () => {
-  it("useProducts", async () => {
+  it("useProducts falls back to the static catalogue when the API is unavailable", async () => {
     const { result } = renderHook(() => useProducts(), { wrapper });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data).toEqual(PRODUCTS);
+    expect(result.current.data).toEqual(FALLBACK_CATALOG);
   });
 
   it("useAdminOrders", async () => {

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import { X, CheckCircle, Droplets, Send } from "lucide-react";
+import { useSubmitQuery } from "@/lib/query/hooks/useQueryMutations";
 
 const FIELDS = [
   { label: "Full Name", key: "name", type: "text", placeholder: "Your name", col: 2 },
@@ -12,12 +13,41 @@ const FIELDS = [
   { label: "Requirement", key: "req", type: "text", placeholder: "e.g. 50 bottles/month", col: 1 },
 ];
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export function InquiryPopup({ onClose }: { onClose: () => void }) {
   const [form, setForm] = useState({ name: "", mobile: "", email: "", city: "", req: "", msg: "" });
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
+  const submit = useSubmitQuery();
+
   const handle = (e: React.FormEvent) => {
     e.preventDefault();
-    setSent(true);
+    const { name, mobile, email, city, req, msg } = form;
+    if (!name || !mobile || !email || !city || !req) {
+      setError("Please fill in all fields.");
+      return;
+    }
+    if (!EMAIL_RE.test(email)) {
+      setError("Enter a valid email address.");
+      return;
+    }
+    setError("");
+    submit.mutate(
+      {
+        fullName: name,
+        mobileNumber: mobile,
+        email,
+        city,
+        requirement: req,
+        message: msg.trim() || req,
+      },
+      {
+        onSuccess: () => setSent(true),
+        onError: (err) =>
+          setError((err as Error)?.message ?? "Something went wrong. Please try again."),
+      },
+    );
   };
 
   return (
@@ -100,11 +130,19 @@ export function InquiryPopup({ onClose }: { onClose: () => void }) {
                   />
                 </div>
               </div>
+              {error && <p className="text-xs text-red-500 mb-2">{error}</p>}
               <button
                 type="submit"
-                className="w-full py-3 rounded-2xl bg-[#0D6EFD] text-white font-bold text-sm hover:bg-blue-600 transition-colors mb-2 flex items-center justify-center gap-2"
+                disabled={submit.isPending}
+                className="w-full py-3 rounded-2xl bg-[#0D6EFD] text-white font-bold text-sm hover:bg-blue-600 transition-colors mb-2 flex items-center justify-center gap-2 disabled:opacity-70"
               >
-                <Send size={15} /> Submit Inquiry
+                {submit.isPending ? (
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <Send size={15} /> Submit Inquiry
+                  </>
+                )}
               </button>
             </form>
             <button

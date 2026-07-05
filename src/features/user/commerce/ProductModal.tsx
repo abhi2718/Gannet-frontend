@@ -3,25 +3,26 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import { X, ShoppingCart, CheckCircle, Droplets } from "lucide-react";
-import { PRODUCTS, BOTTLE_PRICES } from "@/data/products";
-import type { CartItem, Product } from "@/types";
+import type { CartItem, CatalogProduct } from "@/types";
 
 type ProductModalProps = {
-  product: Product;
+  product: CatalogProduct;
   onClose: () => void;
   onAddToCart: (item: CartItem) => void;
   onBookNow: (item: CartItem) => void;
 };
 
 export function ProductModal({ product, onClose, onAddToCart, onBookNow }: ProductModalProps) {
-  const [selectedSize, setSelectedSize] = useState(product.size);
   const [qty, setQty] = useState(1);
   const [cartAdded, setCartAdded] = useState(false);
 
-  const selected = PRODUCTS.find((p) => p.size === selectedSize) || product;
-  const price = BOTTLE_PRICES[selectedSize];
-  const total = price * qty;
-  const cartItem: CartItem = { size: selectedSize, label: selected.label, price, qty };
+  const total = product.price * qty;
+  const cartItem: CartItem = {
+    size: product.name,
+    label: product.tag ?? product.name,
+    price: product.price,
+    qty,
+  };
 
   const handleAddToCart = () => {
     onAddToCart(cartItem);
@@ -65,8 +66,11 @@ export function ProductModal({ product, onClose, onAddToCart, onBookNow }: Produ
             style={{ height: 200 }}
           >
             <img
-              src="/bottle.png"
-              alt={`GANNET ${selectedSize}`}
+              src={product.image}
+              alt={`GANNET ${product.name}`}
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = "/bottle.png";
+              }}
               style={{
                 height: "100%",
                 width: "auto",
@@ -85,35 +89,15 @@ export function ProductModal({ product, onClose, onAddToCart, onBookNow }: Produ
 
         <div className="px-7 py-6">
           <div className="mb-5">
-            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">
-              Select Size
-            </label>
-            <div className="grid grid-cols-4 gap-2">
-              {PRODUCTS.map((p) => (
-                <button
-                  key={p.size}
-                  onClick={() => setSelectedSize(p.size)}
-                  className="py-3 rounded-2xl text-center transition-all border-2"
-                  style={{
-                    borderColor: selectedSize === p.size ? "#0D6EFD" : "rgba(13,110,253,0.1)",
-                    background: selectedSize === p.size ? "#EFF6FF" : "white",
-                  }}
-                >
-                  <div
-                    className="text-xs font-extrabold"
-                    style={{ color: selectedSize === p.size ? "#0D6EFD" : "#374151" }}
-                  >
-                    {p.size}
-                  </div>
-                  <div
-                    className="text-xs mt-0.5"
-                    style={{ color: selectedSize === p.size ? "#0D6EFD" : "#9CA3AF" }}
-                  >
-                    ₹{BOTTLE_PRICES[p.size]}
-                  </div>
-                </button>
-              ))}
+            <div className="flex items-baseline justify-between gap-3 mb-1">
+              <h2 className="text-2xl font-extrabold text-gray-900">{product.name}</h2>
+              {product.tag && (
+                <span className="text-xs font-bold text-[#0D6EFD] bg-blue-50 px-2.5 py-1 rounded-full">
+                  {product.tag}
+                </span>
+              )}
             </div>
+            <p className="text-sm text-gray-500 leading-relaxed">{product.description}</p>
           </div>
 
           <div className="mb-6">
@@ -143,7 +127,7 @@ export function ProductModal({ product, onClose, onAddToCart, onBookNow }: Produ
               </div>
               <div className="flex-1 p-3 rounded-2xl text-right" style={{ background: "#F0F9FF" }}>
                 <div className="text-xs text-gray-400 mb-0.5">
-                  {qty} × ₹{price}
+                  {qty} × ₹{product.price}
                 </div>
                 <div className="text-2xl font-extrabold text-[#0D6EFD]">₹{total}</div>
               </div>
