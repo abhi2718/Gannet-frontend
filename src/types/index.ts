@@ -111,6 +111,20 @@ export type ChartPoint = {
   queries: number;
 };
 
+/** Platform totals for the admin overview stat tiles (`GET /api/analytics/summary`). */
+export type AdminSummary = {
+  totalOrders: number;
+  pendingOrders: number;
+  deliveredOrders: number;
+  totalUsers: number;
+};
+
+/**
+ * Order counts keyed by status (`GET /api/analytics/order-status`); every
+ * status is present, missing ones reported as `0`.
+ */
+export type OrderStatusCounts = Record<string, number>;
+
 /** An order shown in the customer's own dashboard. */
 export type UserOrder = {
   id: string;

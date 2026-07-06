@@ -6,4 +6,6 @@ export const queryKeys = {
   adminOrders: ["admin", "orders"] as const,
   adminUsers: ["admin", "users"] as const,
   adminChart: ["admin", "chart"] as const,
+  adminSummary: ["admin", "summary"] as const,
+  adminOrderStatus: ["admin", "order-status"] as const,
 };

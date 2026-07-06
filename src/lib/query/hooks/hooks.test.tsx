@@ -5,7 +5,15 @@ import { useAdminOrders } from "./useAdminOrders";
 import { useAdminQueries } from "./useAdminQueries";
 import { useAdminUsers } from "./useAdminUsers";
 import { useAdminChart } from "./useAdminChart";
-import { MOCK_ORDERS, MOCK_QUERIES, MOCK_USERS, CHART_DATA } from "@/data/mock/admin";
+import { useAdminSummary, useAdminOrderStatus } from "./useAdminAnalytics";
+import {
+  MOCK_ORDERS,
+  MOCK_QUERIES,
+  MOCK_USERS,
+  CHART_DATA,
+  ADMIN_SUMMARY,
+  ORDER_STATUS_COUNTS,
+} from "@/data/mock/admin";
 
 function wrapper({ children }: { children: React.ReactNode }) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -41,5 +49,17 @@ describe("query hooks resolve their mock data", () => {
     const { result } = renderHook(() => useAdminChart(), { wrapper });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data).toEqual(CHART_DATA);
+  });
+
+  it("useAdminSummary", async () => {
+    const { result } = renderHook(() => useAdminSummary(), { wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toEqual(ADMIN_SUMMARY);
+  });
+
+  it("useAdminOrderStatus", async () => {
+    const { result } = renderHook(() => useAdminOrderStatus(), { wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toEqual(ORDER_STATUS_COUNTS);
   });
 });

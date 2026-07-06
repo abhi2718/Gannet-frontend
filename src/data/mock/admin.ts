@@ -1,4 +1,4 @@
-import type { AdminOrder, ChartPoint, Query, User } from "@/types";
+import type { AdminOrder, AdminSummary, ChartPoint, OrderStatusCounts, Query, User } from "@/types";
 
 export const MOCK_QUERIES: Query[] = [
   {
@@ -308,3 +308,20 @@ export const CHART_DATA: ChartPoint[] = [
   { month: "Dec", orders: 103, queries: 55 },
   { month: "Jan", orders: 127, queries: 67 },
 ];
+
+/** Fallback platform totals for the overview stat tiles when the API is down. */
+export const ADMIN_SUMMARY: AdminSummary = {
+  totalOrders: 1284,
+  pendingOrders: 47,
+  deliveredOrders: 1190,
+  totalUsers: 380,
+};
+
+/** Fallback order-status breakdown for the overview chart when the API is down. */
+export const ORDER_STATUS_COUNTS: OrderStatusCounts = {
+  pending: 175,
+  confirmed: 43,
+  "out for delivery": 128,
+  delivered: 856,
+  cancelled: 32,
+};

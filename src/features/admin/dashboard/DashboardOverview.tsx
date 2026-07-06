@@ -5,13 +5,24 @@ import { motion } from "motion/react";
 import { ShoppingCart, Clock, CheckCircle, UserCheck } from "lucide-react";
 import { useAdminQueries } from "@/lib/query/hooks/useAdminQueries";
 import { useAdminChart } from "@/lib/query/hooks/useAdminChart";
+import { useAdminSummary, useAdminOrderStatus } from "@/lib/query/hooks/useAdminAnalytics";
+import { ADMIN_SUMMARY } from "@/data/mock/admin";
+import type { AdminSummary } from "@/types";
 import { OverviewCharts } from "./OverviewCharts";
 import { OverviewRecentQueries } from "./OverviewRecentQueries";
 
-const STATS = [
+/** Stat tiles, each reading its value from a field of the analytics summary. */
+const STATS: {
+  label: string;
+  field: keyof AdminSummary;
+  delta: string;
+  icon: typeof ShoppingCart;
+  color: string;
+  bg: string;
+}[] = [
   {
     label: "Total Bookings",
-    value: "1,284",
+    field: "totalOrders",
     delta: "+12.4%",
     icon: ShoppingCart,
     color: "#0D6EFD",
@@ -19,7 +30,7 @@ const STATS = [
   },
   {
     label: "Pending Orders",
-    value: "47",
+    field: "pendingOrders",
     delta: "-3.2%",
     icon: Clock,
     color: "#D97706",
@@ -27,7 +38,7 @@ const STATS = [
   },
   {
     label: "Completed Orders",
-    value: "1,190",
+    field: "deliveredOrders",
     delta: "+8.7%",
     icon: CheckCircle,
     color: "#16A34A",
@@ -35,7 +46,7 @@ const STATS = [
   },
   {
     label: "Total Customers",
-    value: "380",
+    field: "totalUsers",
     delta: "+21.5%",
     icon: UserCheck,
     color: "#7C3AED",
@@ -49,6 +60,8 @@ export function DashboardOverview() {
   const qryId = `qryGrad-${uid}`;
   const { data: queries = [] } = useAdminQueries();
   const { data: chartData = [] } = useAdminChart();
+  const { data: summary = ADMIN_SUMMARY } = useAdminSummary();
+  const { data: statusCounts = {} } = useAdminOrderStatus();
   const newCount = queries.filter((q) => q.status === "new").length;
 
   return (
@@ -90,13 +103,20 @@ export function DashboardOverview() {
                 {s.delta}
               </span>
             </div>
-            <div className="text-3xl font-extrabold text-gray-900 mb-1">{s.value}</div>
+            <div className="text-3xl font-extrabold text-gray-900 mb-1">
+              {summary[s.field].toLocaleString()}
+            </div>
             <div className="text-sm text-gray-500">{s.label}</div>
           </motion.div>
         ))}
       </div>
 
-      <OverviewCharts chartData={chartData} ordId={ordId} qryId={qryId} />
+      <OverviewCharts
+        chartData={chartData}
+        statusCounts={statusCounts}
+        ordId={ordId}
+        qryId={qryId}
+      />
       <OverviewRecentQueries queries={queries} newCount={newCount} />
     </div>
   );

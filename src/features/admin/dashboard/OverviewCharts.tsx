@@ -10,13 +10,15 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import type { ChartPoint } from "@/types";
+import type { ChartPoint, OrderStatusCounts } from "@/types";
 
-const ORDER_STATUS = [
-  { label: "Delivered", count: 856, pct: 72, color: "#16A34A" },
-  { label: "Out for Delivery", count: 128, pct: 11, color: "#7C3AED" },
-  { label: "Pending", count: 175, pct: 14, color: "#D97706" },
-  { label: "Cancelled", count: 32, pct: 3, color: "#E11D48" },
+/** Display order, labels and colours for each order status the API reports. */
+const STATUS_DISPLAY: { key: string; label: string; color: string }[] = [
+  { key: "delivered", label: "Delivered", color: "#16A34A" },
+  { key: "out for delivery", label: "Out for Delivery", color: "#7C3AED" },
+  { key: "confirmed", label: "Confirmed", color: "#2563EB" },
+  { key: "pending", label: "Pending", color: "#D97706" },
+  { key: "cancelled", label: "Cancelled", color: "#E11D48" },
 ];
 
 const cardStyle = {
@@ -24,14 +26,25 @@ const cardStyle = {
   boxShadow: "0 2px 16px rgba(13,110,253,0.06)",
 };
 
+/** Turns the API's status→count map into rows with a percentage-of-total width. */
+function statusRows(counts: OrderStatusCounts) {
+  const total = Object.values(counts).reduce((sum, n) => sum + n, 0);
+  return STATUS_DISPLAY.map((s) => {
+    const count = counts[s.key] ?? 0;
+    return { ...s, count, pct: total > 0 ? Math.round((count / total) * 100) : 0 };
+  });
+}
+
 type OverviewChartsProps = {
   chartData: ChartPoint[];
+  statusCounts: OrderStatusCounts;
   ordId: string;
   qryId: string;
 };
 
 /** The bookings-vs-queries area chart and the order-status breakdown. */
-export function OverviewCharts({ chartData, ordId, qryId }: OverviewChartsProps) {
+export function OverviewCharts({ chartData, statusCounts, ordId, qryId }: OverviewChartsProps) {
+  const orderStatus = statusRows(statusCounts);
   return (
     <div className="grid lg:grid-cols-3 gap-6">
       <div className="lg:col-span-2 bg-white rounded-2xl p-6 border" style={cardStyle}>
@@ -86,7 +99,7 @@ export function OverviewCharts({ chartData, ordId, qryId }: OverviewChartsProps)
       <div className="bg-white rounded-2xl p-6 border" style={cardStyle}>
         <h3 className="font-extrabold text-gray-900 mb-6">Order Status</h3>
         <div className="space-y-4">
-          {ORDER_STATUS.map((item) => (
+          {orderStatus.map((item) => (
             <div key={item.label}>
               <div className="flex justify-between text-sm mb-1.5">
                 <span className="font-semibold text-gray-700">{item.label}</span>
