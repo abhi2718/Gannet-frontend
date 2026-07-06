@@ -56,6 +56,21 @@ describe("UserDashboard", () => {
     expect(mockPush).toHaveBeenCalledWith("/");
   });
 
+  it("navigates to the landing home page from the logo", () => {
+    renderDashboard();
+    fireEvent.click(screen.getByRole("button", { name: "Go to home page" }));
+    expect(mockPush).toHaveBeenCalledWith("/");
+  });
+
+  it("returns to the dashboard overview from the Dashboard nav item", () => {
+    renderDashboard();
+    fireEvent.click(screen.getByText("My Orders"));
+    expect(screen.getByText("Order History")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Dashboard" }));
+    // The overview welcome ("Welcome back,") is only rendered on the home view.
+    expect(screen.getByText("Welcome back,")).toBeInTheDocument();
+  });
+
   it("sends the customer to the storefront bottle picker from the header Book Water button", () => {
     renderDashboard();
     fireEvent.click(screen.getByRole("button", { name: "Book Water" }));

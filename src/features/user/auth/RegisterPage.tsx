@@ -4,12 +4,13 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { ChevronLeft, Droplets, User, Phone, Mail, Lock, ArrowRight } from "lucide-react";
+import { ChevronLeft, Droplets, ArrowRight } from "lucide-react";
 import { useAuth } from "./AuthContext";
-import { AuthField } from "./AuthField";
 import { LoginBrandingPanel } from "./LoginBrandingPanel";
+import { RegisterFields, type RegisterValues } from "./RegisterFields";
+import { nameError, phoneError, emailError, passwordError } from "./validation";
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+type RegisterErrors = Partial<Record<keyof RegisterValues, string>> & { form?: string };
 
 /** Create a customer account: name, phone, email, password + confirm password. */
 export function RegisterPage() {
@@ -21,7 +22,7 @@ export function RegisterPage() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<RegisterErrors>({});
 
   // Already signed in? There's nothing to register — go to the dashboard.
   useEffect(() => {
@@ -30,22 +31,27 @@ export function RegisterPage() {
     }
   }, [status, user, router]);
 
-  const validate = (): string | null => {
-    if (name.trim().length < 3) return "Enter your name (at least 3 characters).";
-    if (!/^\d{10}$/.test(phone)) return "Enter a valid 10-digit phone number.";
-    if (!EMAIL_RE.test(email.trim())) return "Enter a valid email address.";
-    if (password.length < 6) return "Password must be at least 6 characters.";
-    if (password !== confirm) return "Passwords do not match.";
-    return null;
+  const validate = (): RegisterErrors => {
+    const next: RegisterErrors = {};
+    const nErr = nameError(name);
+    if (nErr) next.name = nErr;
+    const phErr = phoneError(phone);
+    if (phErr) next.phone = phErr;
+    const eErr = emailError(email);
+    if (eErr) next.email = eErr;
+    const pErr = passwordError(password);
+    if (pErr) next.password = pErr;
+    else if (password !== confirm) next.confirm = "Passwords do not match.";
+    return next;
   };
 
   const submit = async () => {
-    const validationError = validate();
-    if (validationError) {
-      setError(validationError);
+    const next = validate();
+    if (Object.keys(next).length > 0) {
+      setErrors(next);
       return;
     }
-    setError("");
+    setErrors({});
     setLoading(true);
     const result = await register({
       username: name.trim(),
@@ -54,11 +60,24 @@ export function RegisterPage() {
       phone,
     });
     if (!result.ok) {
-      setError(result.error);
+      setErrors({ form: result.error });
       setLoading(false);
       return;
     }
     router.replace("/dashboard");
+  };
+
+  // Update a field, normalising the phone to digits, and clear its error.
+  const setField = (field: keyof RegisterValues, value: string) => {
+    const setters: Record<keyof RegisterValues, (v: string) => void> = {
+      name: setName,
+      phone: (v) => setPhone(v.replace(/\D/g, "").slice(0, 10)),
+      email: setEmail,
+      password: setPassword,
+      confirm: setConfirm,
+    };
+    setters[field](value);
+    setErrors((p) => ({ ...p, [field]: undefined, form: undefined }));
   };
 
   const goBack = () => router.push("/");
@@ -98,76 +117,13 @@ export function RegisterPage() {
                 void submit();
               }}
             >
-              <AuthField
-                id="name"
-                label="Full Name"
-                icon={User}
-                autoComplete="name"
-                placeholder="Your name"
-                value={name}
-                onChange={(v) => {
-                  setName(v);
-                  setError("");
-                }}
-              />
-              <AuthField
-                id="phone"
-                label="Phone Number"
-                icon={Phone}
-                type="tel"
-                inputMode="numeric"
-                autoComplete="tel"
-                prefix="+91"
-                maxLength={10}
-                placeholder="XXXXX XXXXX"
-                value={phone}
-                onChange={(v) => {
-                  setPhone(v.replace(/\D/g, "").slice(0, 10));
-                  setError("");
-                }}
-              />
-              <AuthField
-                id="email"
-                label="Email"
-                icon={Mail}
-                type="email"
-                inputMode="email"
-                autoComplete="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(v) => {
-                  setEmail(v);
-                  setError("");
-                }}
-              />
-              <AuthField
-                id="password"
-                label="Password"
-                icon={Lock}
-                type="password"
-                autoComplete="new-password"
-                placeholder="At least 6 characters"
-                value={password}
-                onChange={(v) => {
-                  setPassword(v);
-                  setError("");
-                }}
-              />
-              <AuthField
-                id="confirm"
-                label="Confirm Password"
-                icon={Lock}
-                type="password"
-                autoComplete="new-password"
-                placeholder="Re-enter your password"
-                value={confirm}
-                onChange={(v) => {
-                  setConfirm(v);
-                  setError("");
-                }}
+              <RegisterFields
+                values={{ name, phone, email, password, confirm }}
+                errors={errors}
+                onChange={setField}
               />
 
-              {error && <p className="text-xs text-red-500 mb-3">{error}</p>}
+              {errors.form && <p className="text-xs text-red-500 mb-3">{errors.form}</p>}
 
               <button
                 type="submit"

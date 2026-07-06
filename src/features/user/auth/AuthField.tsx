@@ -18,6 +18,8 @@ type AuthFieldProps = {
   /** Fixed content rendered before the input, e.g. a "+91" dial code. */
   prefix?: string;
   onEnter?: () => void;
+  /** Validation message shown under this field (red). */
+  error?: string;
 };
 
 /**
@@ -37,6 +39,7 @@ export function AuthField({
   maxLength,
   prefix,
   onEnter,
+  error,
 }: AuthFieldProps) {
   const [show, setShow] = useState(false);
   const isPassword = type === "password";
@@ -52,13 +55,15 @@ export function AuthField({
       </label>
       <div
         className="flex items-center gap-2 px-4 rounded-2xl focus-within:ring-2 focus-within:ring-[#0D6EFD] transition-shadow"
-        style={{ background: "#F0F9FF", border: "1.5px solid transparent" }}
+        style={{ background: "#F0F9FF", border: `1.5px solid ${error ? "#EF4444" : "transparent"}` }}
       >
         <Icon size={18} className="text-gray-400 shrink-0" />
         {prefix && <span className="text-sm font-semibold text-gray-500 shrink-0">{prefix}</span>}
         <input
           id={id}
           aria-label={label}
+          aria-invalid={!!error}
+          aria-describedby={error ? `${id}-error` : undefined}
           type={inputType}
           value={value}
           placeholder={placeholder}
@@ -80,6 +85,11 @@ export function AuthField({
           </button>
         )}
       </div>
+      {error && (
+        <p id={`${id}-error`} className="text-xs text-red-500 mt-1.5">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

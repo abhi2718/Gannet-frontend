@@ -37,12 +37,27 @@ describe("LoginPage", () => {
     expect(screen.getByLabelText("Password")).toBeInTheDocument();
   });
 
-  it("validates the email format before calling the API", () => {
+  it("shows the email error under the email field before calling the API", () => {
     renderLogin();
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "not-an-email" } });
-    fireEvent.change(screen.getByLabelText("Password"), { target: { value: "whatever" } });
+    fireEvent.change(screen.getByLabelText("Password"), { target: { value: "secret1" } });
     submitForm();
-    expect(screen.getByText("Enter a valid email address.")).toBeInTheDocument();
+    const emailInput = screen.getByLabelText("Email");
+    expect(emailInput).toHaveAttribute("aria-invalid", "true");
+    expect(emailInput).toHaveAccessibleDescription("Enter a valid email address.");
+    // The password was valid, so it carries no error.
+    expect(screen.getByLabelText("Password")).toHaveAttribute("aria-invalid", "false");
+    expect(mockedAuthApi.login).not.toHaveBeenCalled();
+  });
+
+  it("shows the password error under the password field", () => {
+    renderLogin();
+    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "user@test.com" } });
+    fireEvent.change(screen.getByLabelText("Password"), { target: { value: "x" } });
+    submitForm();
+    const pwd = screen.getByLabelText("Password");
+    expect(pwd).toHaveAttribute("aria-invalid", "true");
+    expect(pwd).toHaveAccessibleDescription(/Password must be at least 6 characters/);
     expect(mockedAuthApi.login).not.toHaveBeenCalled();
   });
 

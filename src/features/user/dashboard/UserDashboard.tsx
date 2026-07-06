@@ -13,6 +13,7 @@ import { OrderHistoryView } from "./OrderHistoryView";
 import { DashboardUserMenu } from "./DashboardUserMenu";
 
 const NAV_LINKS: { key: UserDashView; label: string }[] = [
+  { key: "home", label: "Dashboard" },
   { key: "order-history", label: "My Orders" },
   { key: "profile", label: "Profile" },
 ];
@@ -52,7 +53,11 @@ export function UserDashboard() {
           className="max-w-5xl mx-auto px-6 flex items-center justify-between"
           style={{ height: 68 }}
         >
-          <button onClick={() => nav("home")} className="flex items-center gap-2.5">
+          <button
+            onClick={() => router.push("/")}
+            aria-label="Go to home page"
+            className="flex items-center gap-2.5"
+          >
             <div className="w-9 h-9 rounded-xl bg-[#0D6EFD] flex items-center justify-center">
               <GannetBirdIcon />
             </div>

@@ -49,21 +49,36 @@ describe("RegisterPage", () => {
     }
   });
 
-  it("rejects a short phone number before calling the API", () => {
+  it("rejects an invalid phone number, showing the error under the phone field", () => {
     renderRegister();
     fillValidForm();
     fill("Phone Number", "12345");
     submitForm();
-    expect(screen.getByText("Enter a valid 10-digit phone number.")).toBeInTheDocument();
+    const phone = screen.getByLabelText("Phone Number");
+    expect(phone).toHaveAttribute("aria-invalid", "true");
+    expect(phone).toHaveAccessibleDescription("Enter a valid 10-digit Indian mobile number.");
     expect(mockedAuthApi.register).not.toHaveBeenCalled();
   });
 
-  it("flags mismatched passwords before calling the API", () => {
+  it("rejects a weak password (letters only), showing the error under the password field", () => {
+    renderRegister();
+    fillValidForm();
+    fill("Password", "password");
+    fill("Confirm Password", "password");
+    submitForm();
+    const pwd = screen.getByLabelText("Password");
+    expect(pwd).toHaveAttribute("aria-invalid", "true");
+    expect(pwd).toHaveAccessibleDescription(/Password must be at least 6 characters/);
+    expect(mockedAuthApi.register).not.toHaveBeenCalled();
+  });
+
+  it("flags mismatched passwords under the confirm field", () => {
     renderRegister();
     fillValidForm();
     fill("Confirm Password", "secret2");
     submitForm();
-    expect(screen.getByText("Passwords do not match.")).toBeInTheDocument();
+    const confirm = screen.getByLabelText("Confirm Password");
+    expect(confirm).toHaveAccessibleDescription("Passwords do not match.");
     expect(mockedAuthApi.register).not.toHaveBeenCalled();
   });
 

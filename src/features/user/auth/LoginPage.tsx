@@ -8,8 +8,9 @@ import { ChevronLeft, Droplets, Mail, Lock, ArrowRight } from "lucide-react";
 import { useAuth } from "./AuthContext";
 import { AuthField } from "./AuthField";
 import { LoginBrandingPanel } from "./LoginBrandingPanel";
+import { emailError, passwordError } from "./validation";
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+type LoginErrors = { email?: string; password?: string; form?: string };
 
 /** Email + password sign-in. Routes to the customer or admin dashboard by role. */
 export function LoginPage() {
@@ -18,7 +19,7 @@ export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<LoginErrors>({});
 
   // Already signed in? Skip the form and go straight to the right dashboard.
   useEffect(() => {
@@ -28,19 +29,20 @@ export function LoginPage() {
   }, [status, user, router]);
 
   const submit = async () => {
-    if (!EMAIL_RE.test(email.trim())) {
-      setError("Enter a valid email address.");
+    const next: LoginErrors = {};
+    const eErr = emailError(email);
+    if (eErr) next.email = eErr;
+    const pErr = passwordError(password);
+    if (pErr) next.password = pErr;
+    if (next.email || next.password) {
+      setErrors(next);
       return;
     }
-    if (!password) {
-      setError("Enter your password.");
-      return;
-    }
-    setError("");
+    setErrors({});
     setLoading(true);
     const result = await login(email.trim(), password);
     if (!result.ok) {
-      setError(result.error);
+      setErrors({ form: result.error });
       setLoading(false);
       return;
     }
@@ -93,9 +95,10 @@ export function LoginPage() {
                 inputMode="email"
                 placeholder="you@example.com"
                 value={email}
+                error={errors.email}
                 onChange={(v) => {
                   setEmail(v);
-                  setError("");
+                  setErrors((p) => ({ ...p, email: undefined, form: undefined }));
                 }}
               />
               <AuthField
@@ -106,13 +109,14 @@ export function LoginPage() {
                 autoComplete="current-password"
                 placeholder="••••••••"
                 value={password}
+                error={errors.password}
                 onChange={(v) => {
                   setPassword(v);
-                  setError("");
+                  setErrors((p) => ({ ...p, password: undefined, form: undefined }));
                 }}
               />
 
-              {error && <p className="text-xs text-red-500 mb-3">{error}</p>}
+              {errors.form && <p className="text-xs text-red-500 mb-3">{errors.form}</p>}
 
               <button
                 type="submit"
