@@ -1,9 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Eye, Edit2, Trash2 } from "lucide-react";
+import { AnimatePresence } from "motion/react";
+import { Search, Edit2, Trash2 } from "lucide-react";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { TablePagination } from "@/components/shared/TablePagination";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useAdminOrders } from "@/lib/query/hooks/useAdminOrders";
+import { useDeleteOrder } from "@/lib/query/hooks/useOrderMutations";
+import { usePagination } from "@/lib/hooks/usePagination";
+import type { AdminOrder } from "@/types";
+import { OrderEditModal } from "./OrderEditModal";
 
 const COLUMNS = [
   "Order ID",
@@ -34,8 +41,11 @@ const optionLabel = (opt: string) =>
 
 export function OrdersView() {
   const { data: orders = [] } = useAdminOrders();
+  const deleteOrder = useDeleteOrder();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [editOrder, setEditOrder] = useState<AdminOrder | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<AdminOrder | null>(null);
 
   const filtered = orders.filter(
     (o) =>
@@ -43,6 +53,13 @@ export function OrdersView() {
       (o.customer.toLowerCase().includes(search.toLowerCase()) ||
         o.id.toLowerCase().includes(search.toLowerCase())),
   );
+  const { page, setPage, totalPages, pageItems } = usePagination(filtered);
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    await deleteOrder.mutateAsync(deleteTarget.id);
+    setDeleteTarget(null);
+  };
 
   return (
     <div className="p-8 space-y-6">
@@ -97,7 +114,7 @@ export function OrdersView() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((o) => (
+              {pageItems.map((o) => (
                 <tr
                   key={o.id}
                   className="border-t hover:bg-blue-50/30 transition-colors"
@@ -127,19 +144,15 @@ export function OrdersView() {
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-1.5">
                       <button
-                        aria-label="View"
-                        className="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 flex items-center justify-center transition-colors"
-                      >
-                        <Eye size={14} className="text-[#0D6EFD]" />
-                      </button>
-                      <button
-                        aria-label="Edit"
+                        onClick={() => setEditOrder(o)}
+                        aria-label={`Edit ${o.id}`}
                         className="w-8 h-8 rounded-lg bg-amber-50 hover:bg-amber-100 flex items-center justify-center transition-colors"
                       >
                         <Edit2 size={14} className="text-amber-500" />
                       </button>
                       <button
-                        aria-label="Delete"
+                        onClick={() => setDeleteTarget(o)}
+                        aria-label={`Delete ${o.id}`}
                         className="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center transition-colors"
                       >
                         <Trash2 size={14} className="text-red-400" />
@@ -151,12 +164,35 @@ export function OrdersView() {
             </tbody>
           </table>
         </div>
-        {filtered.length === 0 && (
+        {filtered.length === 0 ? (
           <div className="py-16 text-center text-gray-400 text-sm">
             No orders match your search.
           </div>
+        ) : (
+          <TablePagination
+            page={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            label={`${filtered.length} orders · Page ${page} of ${totalPages}`}
+          />
         )}
       </div>
+
+      <AnimatePresence>
+        {editOrder && <OrderEditModal order={editOrder} onClose={() => setEditOrder(null)} />}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {deleteTarget && (
+          <ConfirmDialog
+            title="Delete order"
+            message={`Delete order ${deleteTarget.id} for ${deleteTarget.customer}? This can't be undone.`}
+            loading={deleteOrder.isPending}
+            onConfirm={confirmDelete}
+            onCancel={() => setDeleteTarget(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

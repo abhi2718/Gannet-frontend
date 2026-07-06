@@ -1,4 +1,4 @@
-import { screen, fireEvent, waitFor } from "@testing-library/react";
+import { screen, fireEvent, waitFor, within } from "@testing-library/react";
 import { renderWithClient } from "@/test-utils/renderWithClient";
 import { ProfileView } from "./ProfileView";
 import { ProfileAddresses } from "./ProfileAddresses";
@@ -93,9 +93,11 @@ describe("ProfileAddresses", () => {
     );
   });
 
-  it("deletes an address via the API", async () => {
+  it("deletes an address via the API after confirming", async () => {
     renderWithClient(<ProfileAddresses />);
     fireEvent.click(await screen.findByLabelText("Delete address"));
+    const dialog = screen.getByRole("alertdialog");
+    fireEvent.click(within(dialog).getByText("Delete"));
     await waitFor(() => expect(checkoutApi.deleteAddress).toHaveBeenCalledWith("a1"));
   });
 });

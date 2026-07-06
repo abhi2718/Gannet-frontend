@@ -1,4 +1,4 @@
-import { screen, fireEvent, waitFor } from "@testing-library/react";
+import { screen, fireEvent, waitFor, within } from "@testing-library/react";
 import { renderWithClient } from "@/test-utils/renderWithClient";
 import { QueriesView } from "./QueriesView";
 
@@ -43,12 +43,13 @@ describe("QueriesView", () => {
     );
   });
 
-  it("deletes a query after a confirm click", async () => {
+  it("deletes a query only after confirming in the dialog", async () => {
     renderWithClient(<QueriesView />);
     await screen.findByText("Rahul Verma");
-    const del = screen.getByLabelText("Delete Rahul Verma");
-    fireEvent.click(del); // first click arms the confirm
-    fireEvent.click(del); // second click deletes
+    fireEvent.click(screen.getByLabelText("Delete Rahul Verma"));
+    expect(mockApiDelete).not.toHaveBeenCalled();
+    const dialog = screen.getByRole("alertdialog");
+    fireEvent.click(within(dialog).getByText("Delete"));
     await waitFor(() =>
       expect(mockApiDelete).toHaveBeenCalledWith(expect.stringContaining("QRY-001")),
     );

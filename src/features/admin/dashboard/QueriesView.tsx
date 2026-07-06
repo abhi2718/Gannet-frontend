@@ -1,9 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence } from "motion/react";
 import { Search, Trash2 } from "lucide-react";
 import { useAdminQueries } from "@/lib/query/hooks/useAdminQueries";
 import { useUpdateQueryStatus, useDeleteQuery } from "@/lib/query/hooks/useQueryMutations";
+import { TablePagination } from "@/components/shared/TablePagination";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { usePagination } from "@/lib/hooks/usePagination";
+import type { Query } from "@/types";
 
 const COLUMNS = ["ID", "Name", "Mobile", "Email", "City", "Queries", "Date", "Status", "Actions"];
 const STATUS_OPTIONS = ["all", "new", "contacted", "converted"];
@@ -15,15 +20,12 @@ export function QueriesView() {
   const deleteQuery = useDeleteQuery();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
-  const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Query | null>(null);
 
-  const handleDelete = (id: string) => {
-    if (confirmId === id) {
-      deleteQuery.mutate(id);
-      setConfirmId(null);
-    } else {
-      setConfirmId(id);
-    }
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    await deleteQuery.mutateAsync(deleteTarget.id);
+    setDeleteTarget(null);
   };
 
   const filtered = queries.filter(
@@ -32,6 +34,7 @@ export function QueriesView() {
       (q.name.toLowerCase().includes(search.toLowerCase()) ||
         q.city.toLowerCase().includes(search.toLowerCase())),
   );
+  const { page, setPage, totalPages, pageItems } = usePagination(filtered);
 
   return (
     <div className="p-8 space-y-6">
@@ -86,7 +89,7 @@ export function QueriesView() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((q) => (
+              {pageItems.map((q) => (
                 <tr
                   key={q.id}
                   className="border-t hover:bg-blue-50/30 transition-colors"
@@ -118,12 +121,10 @@ export function QueriesView() {
                   <td className="px-5 py-4">
                     <button
                       aria-label={`Delete ${q.name}`}
-                      onClick={() => handleDelete(q.id)}
-                      onBlur={() => setConfirmId((c) => (c === q.id ? null : c))}
-                      className="h-8 px-3 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center gap-1.5 transition-colors text-red-500"
+                      onClick={() => setDeleteTarget(q)}
+                      className="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center transition-colors text-red-500"
                     >
                       <Trash2 size={14} />
-                      {confirmId === q.id && <span className="text-xs font-bold">Confirm?</span>}
                     </button>
                   </td>
                 </tr>
@@ -131,12 +132,31 @@ export function QueriesView() {
             </tbody>
           </table>
         </div>
-        {filtered.length === 0 && (
+        {filtered.length === 0 ? (
           <div className="py-16 text-center text-gray-400 text-sm">
             No queries match your search.
           </div>
+        ) : (
+          <TablePagination
+            page={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            label={`${filtered.length} queries · Page ${page} of ${totalPages}`}
+          />
         )}
       </div>
+
+      <AnimatePresence>
+        {deleteTarget && (
+          <ConfirmDialog
+            title="Delete query"
+            message={`Delete the enquiry from ${deleteTarget.name}? This can't be undone.`}
+            loading={deleteQuery.isPending}
+            onConfirm={confirmDelete}
+            onCancel={() => setDeleteTarget(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

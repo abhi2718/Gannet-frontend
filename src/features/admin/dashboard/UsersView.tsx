@@ -1,9 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Eye, Edit2, Trash2 } from "lucide-react";
+import { AnimatePresence } from "motion/react";
+import { Search, Edit2, Trash2 } from "lucide-react";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { TablePagination } from "@/components/shared/TablePagination";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useAdminUsers } from "@/lib/query/hooks/useAdminUsers";
+import { useDeleteUser } from "@/lib/query/hooks/useUserMutations";
+import { usePagination } from "@/lib/hooks/usePagination";
+import type { User } from "@/types";
+import { UserEditModal } from "./UserEditModal";
 
 const COLUMNS = ["ID", "Name", "Email", "Phone", "City", "Joined", "Orders", "Status", "Actions"];
 const STATUS_OPTIONS = [
@@ -20,8 +27,11 @@ const initials = (name: string) =>
 
 export function UsersView() {
   const { data: users = [] } = useAdminUsers();
+  const deleteUser = useDeleteUser();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [editUser, setEditUser] = useState<User | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
 
   const filtered = users.filter(
     (u) =>
@@ -31,6 +41,13 @@ export function UsersView() {
         u.email.toLowerCase().includes(search.toLowerCase())),
   );
   const activeCount = users.filter((u) => u.status === "active").length;
+  const { page, setPage, totalPages, pageItems } = usePagination(filtered);
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    await deleteUser.mutateAsync(deleteTarget.id);
+    setDeleteTarget(null);
+  };
 
   return (
     <div className="p-8 space-y-6">
@@ -85,7 +102,7 @@ export function UsersView() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((u) => (
+              {pageItems.map((u) => (
                 <tr
                   key={u.id}
                   className="border-t hover:bg-blue-50/30 transition-colors"
@@ -118,19 +135,15 @@ export function UsersView() {
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-1.5">
                       <button
-                        aria-label="View"
-                        className="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 flex items-center justify-center transition-colors"
-                      >
-                        <Eye size={14} className="text-[#0D6EFD]" />
-                      </button>
-                      <button
-                        aria-label="Edit"
+                        onClick={() => setEditUser(u)}
+                        aria-label={`Edit ${u.name}`}
                         className="w-8 h-8 rounded-lg bg-amber-50 hover:bg-amber-100 flex items-center justify-center transition-colors"
                       >
                         <Edit2 size={14} className="text-amber-500" />
                       </button>
                       <button
-                        aria-label="Delete"
+                        onClick={() => setDeleteTarget(u)}
+                        aria-label={`Delete ${u.name}`}
                         className="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center transition-colors"
                       >
                         <Trash2 size={14} className="text-red-400" />
@@ -142,10 +155,33 @@ export function UsersView() {
             </tbody>
           </table>
         </div>
-        {filtered.length === 0 && (
+        {filtered.length === 0 ? (
           <div className="py-16 text-center text-gray-400 text-sm">No users match your search.</div>
+        ) : (
+          <TablePagination
+            page={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            label={`${filtered.length} users · Page ${page} of ${totalPages}`}
+          />
         )}
       </div>
+
+      <AnimatePresence>
+        {editUser && <UserEditModal user={editUser} onClose={() => setEditUser(null)} />}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {deleteTarget && (
+          <ConfirmDialog
+            title="Delete user"
+            message={`Delete ${deleteTarget.name} (${deleteTarget.email})? This can't be undone.`}
+            loading={deleteUser.isPending}
+            onConfirm={confirmDelete}
+            onCancel={() => setDeleteTarget(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
