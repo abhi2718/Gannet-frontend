@@ -3,8 +3,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { CartProvider } from "@/features/user/commerce/CartContext";
 import { UserDashboard } from "./UserDashboard";
 
+const mockPush = jest.fn();
 jest.mock("next/navigation", () => ({
-  useRouter: () => ({ push: jest.fn(), replace: jest.fn() }),
+  useRouter: () => ({ push: mockPush, replace: jest.fn() }),
 }));
 
 jest.mock("@/features/user/auth/AuthContext", () => ({
@@ -36,6 +37,8 @@ function renderDashboard() {
 }
 
 describe("UserDashboard", () => {
+  beforeEach(() => mockPush.mockClear());
+
   it("renders the signed-in customer's identity in the header", () => {
     renderDashboard();
     expect(screen.getAllByText("Arjun Mehta").length).toBeGreaterThan(0);
@@ -45,5 +48,17 @@ describe("UserDashboard", () => {
     renderDashboard();
     fireEvent.click(screen.getByText("My Orders"));
     expect(screen.getByText("Order History")).toBeInTheDocument();
+  });
+
+  it("sends the customer to the storefront bottle picker from the header Book Water button", () => {
+    renderDashboard();
+    fireEvent.click(screen.getByRole("button", { name: "Book Water" }));
+    expect(mockPush).toHaveBeenCalledWith("/#products");
+  });
+
+  it("sends the customer to the storefront from the welcome 'Book Water Now' CTA", () => {
+    renderDashboard();
+    fireEvent.click(screen.getByText(/Book Water Now/));
+    expect(mockPush).toHaveBeenCalledWith("/#products");
   });
 });

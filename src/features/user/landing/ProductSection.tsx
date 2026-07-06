@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Droplets, CheckCircle, ShoppingCart } from "lucide-react";
+import { CheckCircle, ShoppingCart } from "lucide-react";
 import { FadeIn } from "@/components/shared/FadeIn";
 import { useProducts } from "@/lib/query/hooks/useProducts";
 import { ProductModal } from "@/features/user/commerce/ProductModal";
@@ -129,7 +129,7 @@ export function ProductSection({ onAddToCart, onBookNow }: ProductSectionProps) 
                         {p.description}
                       </p>
                       <div className="flex gap-2">
-                        <button
+                        {/* <button
                           onClick={() => setModalProduct(p)}
                           className="flex-1 py-3 rounded-2xl font-bold text-sm transition-all flex items-center justify-center gap-1.5 hover:scale-[1.02]"
                           style={{
@@ -138,8 +138,8 @@ export function ProductSection({ onAddToCart, onBookNow }: ProductSectionProps) 
                             boxShadow: "0 4px 16px rgba(13,110,253,0.3)",
                           }}
                         >
-                          <Droplets size={14} /> Book Now
-                        </button>
+                          <Droplets size={14} /> 
+                        </button> */}
                         <button
                           onClick={(e) => handleAdd(p, e)}
                           className="flex-1 py-3 rounded-2xl font-bold text-sm transition-all flex items-center justify-center gap-1.5 border-2 hover:scale-[1.02]"

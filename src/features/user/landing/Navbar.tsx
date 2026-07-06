@@ -28,6 +28,10 @@ export function Navbar({ scrolled, onBook, onLogin, cartCount, onCartOpen }: Nav
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     setOpen(false);
   };
+  const book = () => {
+    setOpen(false);
+    onBook();
+  };
   const goToView = (view: string) => {
     setOpen(false);
     router.push(`/dashboard?view=${view}`);
@@ -120,7 +124,7 @@ export function Navbar({ scrolled, onBook, onLogin, cartCount, onCartOpen }: Nav
             )}
           </button>
           <button
-            onClick={onBook}
+            onClick={book}
             className="hidden md:flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm text-white transition-all hover:scale-105"
             style={{ background: "#0D6EFD", boxShadow: "0 4px 20px rgba(13,110,253,0.35)" }}
           >
@@ -142,7 +146,7 @@ export function Navbar({ scrolled, onBook, onLogin, cartCount, onCartOpen }: Nav
         signedIn={!!user}
         go={go}
         onLogin={onLogin}
-        onBook={onBook}
+        onBook={book}
         goToView={goToView}
         mobileLogout={mobileLogout}
       />

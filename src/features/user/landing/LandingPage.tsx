@@ -34,6 +34,19 @@ export function LandingPage() {
 
   const goLogin = () => router.push("/login");
 
+  // "Book water" CTAs send the visitor to the bottle picker ("Choose Your
+  // Perfect Size") so they can select a size, add to cart and check out.
+  const goToProducts = () =>
+    document.getElementById("products")?.scrollIntoView({ behavior: "smooth" });
+
+  // Arriving from the dashboard's "Book Water" button (`/#products`): scroll the
+  // picker into view once the section has mounted.
+  useEffect(() => {
+    if (window.location.hash !== "#products") return;
+    const t = setTimeout(goToProducts, 100);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
       <AnimatePresence>
@@ -41,15 +54,15 @@ export function LandingPage() {
       </AnimatePresence>
       <Navbar
         scrolled={scrolled}
-        onBook={openCart}
+        onBook={goToProducts}
         onLogin={goLogin}
         cartCount={cartCount}
         onCartOpen={openCart}
       />
-      <HeroSection onBook={openCart} />
+      <HeroSection onBook={goToProducts} />
       <ProductSection onAddToCart={addToCart} onBookNow={bookNow} />
       <FeaturesSection />
-      <BookingSection onBook={openCart} />
+      <BookingSection onBook={goToProducts} />
       <TestimonialsSection />
       <ContactSection />
       <Footer onLogin={goLogin} />

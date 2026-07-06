@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "motion/react";
 import { Droplets, ChevronDown, Users, ShoppingCart, LogOut } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { GannetBirdIcon } from "@/components/shared/GannetBirdIcon";
-import { useCart } from "@/features/user/commerce/CartContext";
 import { useAuth } from "@/features/user/auth/AuthContext";
 import { initials } from "@/lib/format/initials";
 import type { UserDashView } from "@/types";
@@ -27,7 +26,6 @@ const MENU_ITEMS: { icon: LucideIcon; label: string; key: UserDashView; desc: st
 /** Customer dashboard shell: top nav, avatar menu, and view switching. */
 export function UserDashboard() {
   const router = useRouter();
-  const { openCart } = useCart();
   const { user, logout } = useAuth();
   const [dashView, setDashView] = useState<UserDashView>("home");
   const [dropOpen, setDropOpen] = useState(false);
@@ -56,6 +54,9 @@ export function UserDashboard() {
     setDashView(v);
     setDropOpen(false);
   };
+  // Booking happens on the storefront: send the customer to the bottle picker
+  // ("Choose Your Perfect Size") on the landing page.
+  const goToBook = () => router.push("/#products");
   const handleLogout = () => {
     logout();
     router.replace("/login");
@@ -102,7 +103,7 @@ export function UserDashboard() {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={openCart}
+              onClick={goToBook}
               className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold text-white transition-all hover:scale-105"
               style={{ background: "#0D6EFD", boxShadow: "0 4px 16px rgba(13,110,253,0.3)" }}
             >
@@ -206,7 +207,7 @@ export function UserDashboard() {
           ) : dashView === "order-history" ? (
             <OrderHistoryView key="order-history" />
           ) : (
-            <UserDashboardHome key="home" onBook={openCart} onNavigate={nav} />
+            <UserDashboardHome key="home" onBook={goToBook} onNavigate={nav} />
           )}
         </AnimatePresence>
       </div>

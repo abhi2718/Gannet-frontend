@@ -26,11 +26,4 @@ describe("ProductSection", () => {
       }),
     );
   });
-
-  it("opens the product modal from Book Now", async () => {
-    renderWithClient(<ProductSection onAddToCart={jest.fn()} onBookNow={jest.fn()} />);
-    const bookButtons = await screen.findAllByText("Book Now");
-    fireEvent.click(bookButtons[0]);
-    expect(screen.getByText("Quantity")).toBeInTheDocument();
-  });
 });
