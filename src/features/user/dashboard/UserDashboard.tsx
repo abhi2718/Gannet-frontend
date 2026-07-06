@@ -86,6 +86,12 @@ export function UserDashboard() {
           </button>
 
           <nav className="hidden md:flex items-center gap-1">
+            <button
+              onClick={() => router.push("/")}
+              className="px-4 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-blue-50 transition-all"
+            >
+              Home
+            </button>
             {NAV_LINKS.map((item) => (
               <button
                 key={item.key}

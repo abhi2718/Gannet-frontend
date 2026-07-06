@@ -1,17 +1,18 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Package } from "lucide-react";
+import { Package, Droplets } from "lucide-react";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import type { UserOrder } from "@/types";
 
 type UserDashboardRecentProps = {
   orders: UserOrder[];
   onViewAll: () => void;
+  onBook: () => void;
 };
 
 /** The "Recent Bookings" card on the customer dashboard home. */
-export function UserDashboardRecent({ orders, onViewAll }: UserDashboardRecentProps) {
+export function UserDashboardRecent({ orders, onViewAll, onBook }: UserDashboardRecentProps) {
   return (
     <div
       className="sm:col-span-2 bg-white rounded-3xl border overflow-hidden"
@@ -29,8 +30,30 @@ export function UserDashboardRecent({ orders, onViewAll }: UserDashboardRecentPr
           View all →
         </button>
       </div>
-      <div className="divide-y" style={{ borderColor: "rgba(13,110,253,0.05)" }}>
-        {orders.slice(0, 4).map((o, idx) => (
+      {orders.length === 0 ? (
+        <div className="px-6 py-12 flex flex-col items-center text-center">
+          <div
+            className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
+            style={{ background: "#EFF6FF" }}
+          >
+            <Package size={24} className="text-[#0D6EFD]" />
+          </div>
+          <p className="font-bold text-gray-900 text-sm mb-1">No bookings yet</p>
+          <p className="text-xs text-gray-400 max-w-[220px] mb-5">
+            You haven&apos;t placed any orders. Book your first bottle of GANNET™ water to get
+            started.
+          </p>
+          <button
+            onClick={onBook}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold text-white transition-all hover:scale-105"
+            style={{ background: "#0D6EFD", boxShadow: "0 4px 16px rgba(13,110,253,0.3)" }}
+          >
+            <Droplets size={14} /> Book Your First Water
+          </button>
+        </div>
+      ) : (
+        <div className="divide-y" style={{ borderColor: "rgba(13,110,253,0.05)" }}>
+          {orders.slice(0, 4).map((o, idx) => (
           <motion.div
             key={o.id}
             initial={{ opacity: 0, x: -10 }}
