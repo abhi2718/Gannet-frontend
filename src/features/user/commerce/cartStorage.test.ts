@@ -1,4 +1,9 @@
-import { loadCart, saveCart } from "./cartStorage";
+import {
+  loadCart,
+  saveCart,
+  loadPendingCheckout,
+  savePendingCheckout,
+} from "./cartStorage";
 import type { CartItem } from "@/types";
 
 const item: CartItem = { size: "500 ml", label: "Classic", price: 18, qty: 2 };
@@ -28,5 +33,34 @@ describe("cartStorage", () => {
   it("returns an empty cart when the stored value is not an array", () => {
     window.localStorage.setItem("gannet.cart", JSON.stringify({ size: "500 ml" }));
     expect(loadCart()).toEqual([]);
+  });
+});
+
+describe("pending checkout storage", () => {
+  beforeEach(() => window.localStorage.clear());
+
+  it("returns null when no checkout is pending", () => {
+    expect(loadPendingCheckout()).toBeNull();
+  });
+
+  it("round-trips a pending checkout", () => {
+    savePendingCheckout([item]);
+    expect(loadPendingCheckout()).toEqual([item]);
+  });
+
+  it("clears the pending checkout when saved with null or an empty list", () => {
+    savePendingCheckout([item]);
+    savePendingCheckout(null);
+    expect(loadPendingCheckout()).toBeNull();
+    savePendingCheckout([item]);
+    savePendingCheckout([]);
+    expect(loadPendingCheckout()).toBeNull();
+  });
+
+  it("ignores a corrupt or non-array pending value", () => {
+    window.localStorage.setItem("gannet.pendingCheckout", "{bad");
+    expect(loadPendingCheckout()).toBeNull();
+    window.localStorage.setItem("gannet.pendingCheckout", JSON.stringify([{ size: "x" }]));
+    expect(loadPendingCheckout()).toBeNull();
   });
 });

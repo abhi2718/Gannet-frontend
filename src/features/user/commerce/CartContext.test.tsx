@@ -124,6 +124,22 @@ describe("CartContext", () => {
     expect(screen.queryByText("Delivery Details")).not.toBeInTheDocument();
   });
 
+  it("remembers the intended checkout when a guest is sent to log in", () => {
+    setup(); // guest by default
+    fireEvent.click(screen.getByText("book"));
+    expect(window.localStorage.getItem("gannet.pendingCheckout")).not.toBeNull();
+  });
+
+  it("resumes the pending checkout once the guest has logged in", async () => {
+    window.localStorage.setItem("gannet.pendingCheckout", JSON.stringify([item]));
+    signedIn();
+    setup();
+    // The delivery/address popup opens automatically so the order can be finished.
+    expect(await screen.findByText("Delivery Details")).toBeInTheDocument();
+    // The pending marker is consumed so it doesn't re-open on the next login.
+    expect(window.localStorage.getItem("gannet.pendingCheckout")).toBeNull();
+  });
+
   it("checks out a signed-in customer with their account phone and no OTP", () => {
     signedIn();
     setup();

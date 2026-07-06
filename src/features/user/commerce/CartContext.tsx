@@ -6,7 +6,7 @@ import { AnimatePresence } from "motion/react";
 import { CartDrawer } from "./CartDrawer";
 import { CheckoutModal } from "./CheckoutModal";
 import { useAuth } from "@/features/user/auth/AuthContext";
-import { loadCart, saveCart } from "./cartStorage";
+import { loadCart, saveCart, loadPendingCheckout, savePendingCheckout } from "./cartStorage";
 import type { CartItem } from "@/types";
 
 type CartContextValue = {
@@ -55,6 +55,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (hydrated) saveCart(cartItems);
   }, [cartItems, hydrated]);
 
+  // Resume a checkout a guest started before logging in: once they are signed
+  // in, reopen the delivery/address popup so they can finish placing the order
+  // (instead of being stranded on the dashboard with the intent lost).
+  useEffect(() => {
+    if (!user) return;
+    const pending = loadPendingCheckout();
+    if (!pending) return;
+    savePendingCheckout(null);
+    setCheckoutItems(pending);
+    setCartOpen(false);
+    setShowCheckout(true);
+  }, [user]);
+
   const addToCart = (item: CartItem) => {
     setCartItems((prev) => {
       const existing = prev.find((x) => x.size === item.size);
@@ -74,23 +87,28 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const removeFromCart = (size: string) =>
     setCartItems((prev) => prev.filter((x) => x.size !== size));
 
-  /** Require a signed-in customer before any checkout can start. */
-  const requireLogin = (): boolean => {
+  /**
+   * Require a signed-in customer before a checkout can start. For a guest, the
+   * intended items are remembered and the guest is sent to log in; the checkout
+   * then resumes automatically once they are authenticated (see the effect above).
+   */
+  const requireLogin = (items: CartItem[]): boolean => {
     if (user) return true;
+    savePendingCheckout(items);
     setCartOpen(false);
     router.push("/login");
     return false;
   };
 
   const handleCheckout = () => {
-    if (!requireLogin()) return;
+    if (!requireLogin(cartItems)) return;
     setCheckoutItems([...cartItems]);
     setCartOpen(false);
     setShowCheckout(true);
   };
 
   const bookNow = (item: CartItem) => {
-    if (!requireLogin()) return;
+    if (!requireLogin([item])) return;
     setCheckoutItems([item]);
     setShowCheckout(true);
   };
