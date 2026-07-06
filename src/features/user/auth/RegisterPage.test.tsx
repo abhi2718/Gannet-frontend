@@ -56,7 +56,7 @@ describe("RegisterPage", () => {
     submitForm();
     const phone = screen.getByLabelText("Phone Number");
     expect(phone).toHaveAttribute("aria-invalid", "true");
-    expect(phone).toHaveAccessibleDescription("Enter a valid 10-digit Indian mobile number.");
+    expect(phone).toHaveAccessibleDescription("Please enter a valid 10-digit phone number.");
     expect(mockedAuthApi.register).not.toHaveBeenCalled();
   });
 

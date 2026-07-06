@@ -4,50 +4,66 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { X, CheckCircle, Droplets, Send } from "lucide-react";
 import { useSubmitQuery } from "@/lib/query/hooks/useQueryMutations";
+import { FieldError } from "@/components/shared/FieldError";
+import { emailError, phoneError, nameError, requiredError } from "@/lib/validation";
 
-const FIELDS = [
-  { label: "Full Name", key: "name", type: "text", placeholder: "Your name", col: 2 },
-  { label: "Mobile Number", key: "mobile", type: "tel", placeholder: "+91 XXXXX XXXXX", col: 1 },
-  { label: "Email", key: "email", type: "email", placeholder: "you@example.com", col: 1 },
-  { label: "City", key: "city", type: "text", placeholder: "Your city", col: 1 },
-  { label: "Requirement", key: "req", type: "text", placeholder: "e.g. 50 bottles/month", col: 1 },
+type FieldKey = "name" | "mobile" | "email" | "city" | "req";
+
+const FIELDS: {
+  label: string;
+  key: FieldKey;
+  type: string;
+  placeholder: string;
+  col: number;
+  validate: (v: string) => string | null;
+}[] = [
+  { label: "Full Name", key: "name", type: "text", placeholder: "Your name", col: 2, validate: nameError }, // prettier-ignore
+  { label: "Mobile Number", key: "mobile", type: "tel", placeholder: "+91 XXXXX XXXXX", col: 1, validate: phoneError }, // prettier-ignore
+  { label: "Email", key: "email", type: "email", placeholder: "you@example.com", col: 1, validate: emailError }, // prettier-ignore
+  { label: "City", key: "city", type: "text", placeholder: "Your city", col: 1, validate: (v) => requiredError(v, "City") }, // prettier-ignore
+  { label: "Requirement", key: "req", type: "text", placeholder: "e.g. 50 bottles/month", col: 1, validate: (v) => requiredError(v, "Requirement") }, // prettier-ignore
 ];
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+type Errors = Partial<Record<FieldKey, string>> & { form?: string };
 
 export function InquiryPopup({ onClose }: { onClose: () => void }) {
   const [form, setForm] = useState({ name: "", mobile: "", email: "", city: "", req: "", msg: "" });
   const [sent, setSent] = useState(false);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<Errors>({});
   const submit = useSubmitQuery();
 
   const handle = (e: React.FormEvent) => {
     e.preventDefault();
-    const { name, mobile, email, city, req, msg } = form;
-    if (!name || !mobile || !email || !city || !req) {
-      setError("Please fill in all fields.");
+    const next: Errors = {};
+    for (const f of FIELDS) {
+      const msg = f.validate(form[f.key]);
+      if (msg) next[f.key] = msg;
+    }
+    if (Object.keys(next).length > 0) {
+      setErrors(next);
       return;
     }
-    if (!EMAIL_RE.test(email)) {
-      setError("Enter a valid email address.");
-      return;
-    }
-    setError("");
+    setErrors({});
     submit.mutate(
       {
-        fullName: name,
-        mobileNumber: mobile,
-        email,
-        city,
-        requirement: req,
-        message: msg.trim() || req,
+        fullName: form.name,
+        mobileNumber: form.mobile,
+        email: form.email,
+        city: form.city,
+        requirement: form.req,
+        message: form.msg.trim() || form.req,
       },
       {
         onSuccess: () => setSent(true),
         onError: (err) =>
-          setError((err as Error)?.message ?? "Something went wrong. Please try again."),
+          setErrors({ form: (err as Error)?.message ?? "Something went wrong. Please try again." }),
       },
     );
+  };
+
+  const change = (key: FieldKey | "msg", value: string) => {
+    setForm((p) => ({ ...p, [key]: value }));
+    setErrors((p) => ({ ...p, [key]: undefined, form: undefined }));
   };
 
   return (
@@ -107,16 +123,21 @@ export function InquiryPopup({ onClose }: { onClose: () => void }) {
               <div className="grid grid-cols-2 gap-3 mb-3">
                 {FIELDS.map((f) => (
                   <div key={f.key} className={f.col === 2 ? "col-span-2" : ""}>
-                    <label className="block text-xs font-semibold text-gray-600 mb-1">
+                    <label htmlFor={`inq-${f.key}`} className="block text-xs font-semibold text-gray-600 mb-1">
                       {f.label}
                     </label>
                     <input
+                      id={`inq-${f.key}`}
                       type={f.type}
+                      aria-label={f.label}
+                      aria-invalid={!!errors[f.key]}
                       placeholder={f.placeholder}
                       value={(form as Record<string, string>)[f.key]}
-                      onChange={(e) => setForm((p) => ({ ...p, [f.key]: e.target.value }))}
-                      className="w-full px-3 py-2.5 text-sm rounded-xl bg-blue-50 border border-transparent focus:border-[#0D6EFD] focus:outline-none transition-colors"
+                      onChange={(e) => change(f.key, e.target.value)}
+                      className="w-full px-3 py-2.5 text-sm rounded-xl bg-blue-50 border focus:border-[#0D6EFD] focus:outline-none transition-colors"
+                      style={{ borderColor: errors[f.key] ? "#EF4444" : "transparent" }}
                     />
+                    <FieldError message={errors[f.key]} />
                   </div>
                 ))}
                 <div className="col-span-2">
@@ -125,12 +146,12 @@ export function InquiryPopup({ onClose }: { onClose: () => void }) {
                     placeholder="Anything else?"
                     rows={2}
                     value={form.msg}
-                    onChange={(e) => setForm((p) => ({ ...p, msg: e.target.value }))}
+                    onChange={(e) => change("msg", e.target.value)}
                     className="w-full px-3 py-2.5 text-sm rounded-xl bg-blue-50 border border-transparent focus:border-[#0D6EFD] focus:outline-none transition-colors resize-none"
                   />
                 </div>
               </div>
-              {error && <p className="text-xs text-red-500 mb-2">{error}</p>}
+              {errors.form && <p className="text-xs text-red-500 mb-2">{errors.form}</p>}
               <button
                 type="submit"
                 disabled={submit.isPending}

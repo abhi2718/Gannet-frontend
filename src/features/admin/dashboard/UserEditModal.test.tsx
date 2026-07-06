@@ -50,9 +50,9 @@ describe("UserEditModal", () => {
 
   it("blocks saving when a required field is cleared", async () => {
     renderWithClient(<UserEditModal user={USER} onClose={() => {}} />);
-    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "" } });
+    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "bad-email" } });
     fireEvent.click(screen.getByText("Save Changes"));
-    expect(await screen.findByText("Name, email and phone are required.")).toBeInTheDocument();
+    expect(await screen.findByText("Please enter a valid email address.")).toBeInTheDocument();
     expect(mockApiPatch).not.toHaveBeenCalled();
   });
 });

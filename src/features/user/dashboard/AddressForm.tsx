@@ -2,21 +2,8 @@
 
 import { motion } from "motion/react";
 import { Loader2 } from "lucide-react";
-
-const FIELDS = [
-  { key: "label", label: "Label", placeholder: "Home / Office", col: 1, required: true },
-  { key: "pinCode", label: "Pin Code", placeholder: "400001", col: 1, required: true },
-  {
-    key: "street",
-    label: "Street Address",
-    placeholder: "Building, street, area",
-    col: 2,
-    required: true,
-  },
-  { key: "city", label: "City", placeholder: "City", col: 1, required: true },
-  { key: "state", label: "State", placeholder: "State", col: 1, required: true },
-  { key: "landmark", label: "Landmark (optional)", placeholder: "Near…", col: 2, required: false },
-] as const;
+import { FieldError } from "@/components/shared/FieldError";
+import { pinCodeError, requiredError } from "@/lib/validation";
 
 export type AddressFormValues = {
   label: string;
@@ -27,20 +14,49 @@ export type AddressFormValues = {
   landmark: string;
 };
 
+export type AddressErrors = Partial<Record<keyof AddressFormValues, string>>;
+
+const FIELDS: {
+  key: keyof AddressFormValues;
+  label: string;
+  placeholder: string;
+  col: number;
+  validate?: (v: string) => string | null;
+}[] = [
+  { key: "label", label: "Label", placeholder: "Home / Office", col: 1, validate: (v) => requiredError(v, "Label") }, // prettier-ignore
+  { key: "pinCode", label: "Pin Code", placeholder: "400001", col: 1, validate: pinCodeError },
+  { key: "street", label: "Street Address", placeholder: "Building, street, area", col: 2, validate: (v) => requiredError(v, "Street address") }, // prettier-ignore
+  { key: "city", label: "City", placeholder: "City", col: 1, validate: (v) => requiredError(v, "City") }, // prettier-ignore
+  { key: "state", label: "State", placeholder: "State", col: 1, validate: (v) => requiredError(v, "State") }, // prettier-ignore
+  { key: "landmark", label: "Landmark (optional)", placeholder: "Near…", col: 2 },
+];
+
+/** Validates the address form, returning only the fields that failed. */
+export function validateAddress(values: AddressFormValues): AddressErrors {
+  const errors: AddressErrors = {};
+  for (const f of FIELDS) {
+    const msg = f.validate?.(values[f.key]);
+    if (msg) errors[f.key] = msg;
+  }
+  return errors;
+}
+
 /** The add/edit address form body — presentational; ProfileAddresses owns state. */
 export function AddressForm({
   editing,
   values,
+  errors,
+  formError,
   onChange,
-  error,
   saving,
   onSave,
   onCancel,
 }: {
   editing: boolean;
   values: AddressFormValues;
+  errors: AddressErrors;
+  formError?: string;
   onChange: (key: keyof AddressFormValues, value: string) => void;
-  error: string;
   saving: boolean;
   onSave: () => void;
   onCancel: () => void;
@@ -65,17 +81,19 @@ export function AddressForm({
               <label className="block text-xs font-semibold text-gray-500 mb-1">{f.label}</label>
               <input
                 type="text"
-                required={f.required}
+                aria-label={f.label}
+                aria-invalid={!!errors[f.key]}
                 placeholder={f.placeholder}
                 value={values[f.key]}
                 onChange={(e) => onChange(f.key, e.target.value)}
                 className="w-full px-3 py-2.5 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0D6EFD]"
-                style={{ background: "white", border: "1.5px solid rgba(13,110,253,0.12)" }}
+                style={{ background: "white", border: `1.5px solid ${errors[f.key] ? "#EF4444" : "rgba(13,110,253,0.12)"}` }}
               />
+              <FieldError message={errors[f.key]} />
             </div>
           ))}
         </div>
-        {error && <p className="text-xs text-red-500 mt-2">{error}</p>}
+        {formError && <p className="text-xs text-red-500 mt-2">{formError}</p>}
         <div className="flex gap-2 mt-4">
           <button
             onClick={onSave}

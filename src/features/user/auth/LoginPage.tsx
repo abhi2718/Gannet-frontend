@@ -8,7 +8,7 @@ import { ChevronLeft, Droplets, Mail, Lock, ArrowRight } from "lucide-react";
 import { useAuth } from "./AuthContext";
 import { AuthField } from "./AuthField";
 import { LoginBrandingPanel } from "./LoginBrandingPanel";
-import { emailError, passwordError } from "./validation";
+import { emailError, passwordError } from "@/lib/validation";
 
 type LoginErrors = { email?: string; password?: string; form?: string };
 

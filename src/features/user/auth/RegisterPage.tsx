@@ -8,7 +8,7 @@ import { ChevronLeft, Droplets, ArrowRight } from "lucide-react";
 import { useAuth } from "./AuthContext";
 import { LoginBrandingPanel } from "./LoginBrandingPanel";
 import { RegisterFields, type RegisterValues } from "./RegisterFields";
-import { nameError, phoneError, emailError, passwordError } from "./validation";
+import { nameError, phoneError, emailError, passwordError } from "@/lib/validation";
 
 type RegisterErrors = Partial<Record<keyof RegisterValues, string>> & { form?: string };
 

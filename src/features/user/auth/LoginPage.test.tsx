@@ -44,7 +44,7 @@ describe("LoginPage", () => {
     submitForm();
     const emailInput = screen.getByLabelText("Email");
     expect(emailInput).toHaveAttribute("aria-invalid", "true");
-    expect(emailInput).toHaveAccessibleDescription("Enter a valid email address.");
+    expect(emailInput).toHaveAccessibleDescription("Please enter a valid email address.");
     // The password was valid, so it carries no error.
     expect(screen.getByLabelText("Password")).toHaveAttribute("aria-invalid", "false");
     expect(mockedAuthApi.login).not.toHaveBeenCalled();

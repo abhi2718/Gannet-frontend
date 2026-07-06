@@ -35,13 +35,15 @@ describe("ContactSection", () => {
     expect(screen.getByRole("heading", { name: "Inquiry for Dealership" })).toBeInTheDocument();
   });
 
-  it("requires the mandatory fields before submitting", () => {
+  it("shows per-field errors and does not submit when fields are missing/invalid", () => {
     renderWithClient(<ContactSection />);
     fireEvent.change(screen.getByPlaceholderText("Your full name"), {
       target: { value: "Test User" },
     });
     fireEvent.click(screen.getByText(/Send Message/));
-    expect(screen.getByText("Please fill in all fields.")).toBeInTheDocument();
+    // The empty phone shows its own error under the phone field.
+    expect(screen.getByText("Please enter a valid 10-digit phone number.")).toBeInTheDocument();
+    expect(screen.getByText("City is required.")).toBeInTheDocument();
     expect(mockApiPost).not.toHaveBeenCalled();
   });
 

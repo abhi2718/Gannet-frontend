@@ -3,8 +3,12 @@
 import { useEffect, useState } from "react";
 import { MapPin, Plus, Check, Loader2 } from "lucide-react";
 import { useAddresses, useCreateAddress } from "@/lib/query/hooks/useAddresses";
+import { FieldError } from "@/components/shared/FieldError";
+import { collectErrors, pinCodeError, requiredError } from "@/lib/validation";
 import { formatAddress } from "./checkoutApi";
 import type { Address } from "@/types";
+
+type AddrErrors = Record<string, string | undefined>;
 
 type AddressStepProps = {
   selectedId: string | null;
@@ -34,7 +38,8 @@ export function AddressStep({ selectedId, onSelect }: AddressStepProps) {
   const createAddress = useCreateAddress();
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState(EMPTY);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<AddrErrors>({});
+  const [formError, setFormError] = useState("");
 
   // Pre-select the first saved address once they load and nothing is chosen yet.
   useEffect(() => {
@@ -42,14 +47,26 @@ export function AddressStep({ selectedId, onSelect }: AddressStepProps) {
   }, [addresses, selectedId, onSelect]);
 
   const saveNew = async () => {
-    setError("");
+    setFormError("");
+    const next = collectErrors(form as Record<string, string>, {
+      label: (v) => requiredError(v, "Label"),
+      pinCode: pinCodeError,
+      street: (v) => requiredError(v, "Street address"),
+      city: (v) => requiredError(v, "City"),
+      state: (v) => requiredError(v, "State"),
+    });
+    if (Object.keys(next).length > 0) {
+      setErrors(next);
+      return;
+    }
+    setErrors({});
     try {
       const created = await createAddress.mutateAsync(form);
       onSelect(created);
       setForm(EMPTY);
       setAdding(false);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not save address");
+      setFormError(e instanceof Error ? e.message : "Could not save address");
     }
   };
 
@@ -124,18 +141,23 @@ export function AddressStep({ selectedId, onSelect }: AddressStepProps) {
               <div key={f.key} className={f.col === 2 ? "col-span-2" : ""}>
                 <input
                   type="text"
-                  required={f.required}
                   aria-label={f.label}
+                  aria-invalid={!!errors[f.key]}
                   placeholder={f.placeholder}
                   value={(form as Record<string, string>)[f.key]}
-                  onChange={(e) => setForm((p) => ({ ...p, [f.key]: e.target.value }))}
+                  onChange={(e) => {
+                    setForm((p) => ({ ...p, [f.key]: e.target.value }));
+                    setErrors((p) => ({ ...p, [f.key]: undefined }));
+                    setFormError("");
+                  }}
                   className="w-full px-3 py-2.5 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0D6EFD]"
-                  style={{ background: "white", border: "1.5px solid rgba(13,110,253,0.12)" }}
+                  style={{ background: "white", border: `1.5px solid ${errors[f.key] ? "#EF4444" : "rgba(13,110,253,0.12)"}` }}
                 />
+                <FieldError message={errors[f.key]} />
               </div>
             ))}
           </div>
-          {error && <p className="text-xs text-red-500 mt-2">{error}</p>}
+          {formError && <p className="text-xs text-red-500 mt-2">{formError}</p>}
           <div className="flex gap-2 mt-3">
             <button
               type="button"
@@ -150,7 +172,8 @@ export function AddressStep({ selectedId, onSelect }: AddressStepProps) {
               type="button"
               onClick={() => {
                 setAdding(false);
-                setError("");
+                setErrors({});
+                setFormError("");
               }}
               className="px-5 py-2.5 rounded-xl text-sm font-semibold text-gray-500 hover:bg-gray-100 transition-colors"
             >

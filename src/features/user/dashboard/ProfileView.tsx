@@ -6,6 +6,8 @@ import { CheckCircle, Send, Loader2, Lock } from "lucide-react";
 import { useAuth } from "@/features/user/auth/AuthContext";
 import { useUpdateProfile } from "@/lib/query/hooks/useProfile";
 import { initials } from "@/lib/format/initials";
+import { FieldError } from "@/components/shared/FieldError";
+import { nameError, phoneError } from "@/lib/validation";
 import { ProfileAddresses } from "./ProfileAddresses";
 
 export function ProfileView() {
@@ -14,6 +16,7 @@ export function ProfileView() {
   const [name, setName] = useState(user?.username ?? "");
   const [phone, setPhone] = useState(user?.phone ?? "");
   const [saved, setSaved] = useState(false);
+  const [errors, setErrors] = useState<{ name?: string; phone?: string }>({});
   const [error, setError] = useState("");
 
   const email = user?.email ?? "";
@@ -21,6 +24,15 @@ export function ProfileView() {
   const saveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    const next = {
+      name: nameError(name) ?? undefined,
+      phone: phoneError(phone) ?? undefined,
+    };
+    if (next.name || next.phone) {
+      setErrors(next);
+      return;
+    }
+    setErrors({});
     try {
       const updated = await updateProfile.mutateAsync({
         username: name.trim(),
@@ -75,12 +87,18 @@ export function ProfileView() {
               </label>
               <input
                 type="text"
+                aria-label="Full Name"
+                aria-invalid={!!errors.name}
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  setErrors((p) => ({ ...p, name: undefined }));
+                }}
                 placeholder="Your full name"
                 className="w-full px-4 py-3 text-sm rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0D6EFD]"
-                style={{ background: "#F0F9FF", border: "1.5px solid transparent" }}
+                style={{ background: "#F0F9FF", border: `1.5px solid ${errors.name ? "#EF4444" : "transparent"}` }}
               />
+              <FieldError message={errors.name} />
             </div>
             <div>
               <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
@@ -88,12 +106,18 @@ export function ProfileView() {
               </label>
               <input
                 type="tel"
+                aria-label="Phone Number"
+                aria-invalid={!!errors.phone}
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => {
+                  setPhone(e.target.value);
+                  setErrors((p) => ({ ...p, phone: undefined }));
+                }}
                 placeholder="+91 XXXXX XXXXX"
                 className="w-full px-4 py-3 text-sm rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0D6EFD]"
-                style={{ background: "#F0F9FF", border: "1.5px solid transparent" }}
+                style={{ background: "#F0F9FF", border: `1.5px solid ${errors.phone ? "#EF4444" : "transparent"}` }}
               />
+              <FieldError message={errors.phone} />
             </div>
             <div className="sm:col-span-2">
               <label className="flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">

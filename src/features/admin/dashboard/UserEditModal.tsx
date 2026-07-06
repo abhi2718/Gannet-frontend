@@ -4,9 +4,13 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { X, Loader2 } from "lucide-react";
 import { useUpdateUser } from "@/lib/query/hooks/useUserMutations";
+import { FieldError } from "@/components/shared/FieldError";
+import { nameError, emailError, phoneError } from "@/lib/validation";
 import type { User } from "@/types";
 
 const STATUS_OPTIONS = ["active", "inactive"];
+
+type Errors = { name?: string; email?: string; phone?: string; form?: string };
 
 /** Admin modal to edit a user's name, email, phone and account status. */
 export function UserEditModal({ user, onClose }: { user: User; onClose: () => void }) {
@@ -15,14 +19,18 @@ export function UserEditModal({ user, onClose }: { user: User; onClose: () => vo
   const [email, setEmail] = useState(user.email);
   const [phone, setPhone] = useState(user.phone);
   const [status, setStatus] = useState(user.status);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<Errors>({});
 
   const save = async () => {
-    setError("");
-    if (!name.trim() || !email.trim() || !phone.trim()) {
-      setError("Name, email and phone are required.");
+    const next: Errors = {};
+    if (nameError(name)) next.name = nameError(name)!;
+    if (emailError(email)) next.email = emailError(email)!;
+    if (phoneError(phone)) next.phone = phoneError(phone)!;
+    if (next.name || next.email || next.phone) {
+      setErrors(next);
       return;
     }
+    setErrors({});
     try {
       await updateUser.mutateAsync({
         id: user.id,
@@ -35,7 +43,7 @@ export function UserEditModal({ user, onClose }: { user: User; onClose: () => vo
       });
       onClose();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not update the user. Try again.");
+      setErrors({ form: e instanceof Error ? e.message : "Could not update the user. Try again." });
     }
   };
 
@@ -81,11 +89,16 @@ export function UserEditModal({ user, onClose }: { user: User; onClose: () => vo
             </label>
             <input
               id="edit-user-name"
+              aria-invalid={!!errors.name}
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+                setErrors((p) => ({ ...p, name: undefined, form: undefined }));
+              }}
               className="w-full px-3 py-2.5 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0D6EFD]"
-              style={{ background: "#F8FAFC", border: "1.5px solid rgba(13,110,253,0.12)" }}
+              style={{ background: "#F8FAFC", border: `1.5px solid ${errors.name ? "#EF4444" : "rgba(13,110,253,0.12)"}` }}
             />
+            <FieldError message={errors.name} />
           </div>
           <div>
             <label htmlFor="edit-user-email" className="block text-xs font-semibold text-gray-500 mb-1">
@@ -94,11 +107,16 @@ export function UserEditModal({ user, onClose }: { user: User; onClose: () => vo
             <input
               id="edit-user-email"
               type="email"
+              aria-invalid={!!errors.email}
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setErrors((p) => ({ ...p, email: undefined, form: undefined }));
+              }}
               className="w-full px-3 py-2.5 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0D6EFD]"
-              style={{ background: "#F8FAFC", border: "1.5px solid rgba(13,110,253,0.12)" }}
+              style={{ background: "#F8FAFC", border: `1.5px solid ${errors.email ? "#EF4444" : "rgba(13,110,253,0.12)"}` }}
             />
+            <FieldError message={errors.email} />
           </div>
           <div>
             <label htmlFor="edit-user-phone" className="block text-xs font-semibold text-gray-500 mb-1">
@@ -106,11 +124,16 @@ export function UserEditModal({ user, onClose }: { user: User; onClose: () => vo
             </label>
             <input
               id="edit-user-phone"
+              aria-invalid={!!errors.phone}
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => {
+                setPhone(e.target.value);
+                setErrors((p) => ({ ...p, phone: undefined, form: undefined }));
+              }}
               className="w-full px-3 py-2.5 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0D6EFD]"
-              style={{ background: "#F8FAFC", border: "1.5px solid rgba(13,110,253,0.12)" }}
+              style={{ background: "#F8FAFC", border: `1.5px solid ${errors.phone ? "#EF4444" : "rgba(13,110,253,0.12)"}` }}
             />
+            <FieldError message={errors.phone} />
           </div>
           <div>
             <label htmlFor="edit-user-status" className="block text-xs font-semibold text-gray-500 mb-1">
@@ -130,7 +153,7 @@ export function UserEditModal({ user, onClose }: { user: User; onClose: () => vo
               ))}
             </select>
           </div>
-          {error && <p className="text-xs text-red-500">{error}</p>}
+          {errors.form && <p className="text-xs text-red-500">{errors.form}</p>}
         </div>
 
         <div className="px-6 pb-6 flex gap-2">

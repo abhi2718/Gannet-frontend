@@ -10,7 +10,7 @@ const mockApiPatch = apiPatch as jest.MockedFunction<typeof apiPatch>;
 const ORDER: AdminOrder = {
   id: "ORD-9",
   customer: "Jane",
-  phone: "+12025550123",
+  phone: "9876543210",
   address: "1 Road",
   items: [{ size: "500 ml", qty: 2, amount: 18 }],
   size: "500 ml",
@@ -29,7 +29,7 @@ describe("OrderEditModal", () => {
   it("prefills the order's current details", () => {
     renderWithClient(<OrderEditModal order={ORDER} onClose={() => {}} />);
     expect(screen.getByLabelText("Customer Name")).toHaveValue("Jane");
-    expect(screen.getByLabelText("Phone")).toHaveValue("+12025550123");
+    expect(screen.getByLabelText("Phone")).toHaveValue("9876543210");
   });
 
   it("saves the update, converting the status to the API's spaced form", async () => {
@@ -41,18 +41,26 @@ describe("OrderEditModal", () => {
     await waitFor(() =>
       expect(mockApiPatch).toHaveBeenCalledWith("/orders/ORD-9", {
         customerName: "Janet",
-        customerPhone: "+12025550123",
+        customerPhone: "9876543210",
         status: "out for delivery",
       }),
     );
     await waitFor(() => expect(onClose).toHaveBeenCalled());
   });
 
-  it("blocks saving when a required field is cleared", async () => {
+  it("blocks saving and shows the error under the customer field when cleared", async () => {
     renderWithClient(<OrderEditModal order={ORDER} onClose={() => {}} />);
     fireEvent.change(screen.getByLabelText("Customer Name"), { target: { value: "" } });
     fireEvent.click(screen.getByText("Save Changes"));
-    expect(await screen.findByText("Customer name and phone are required.")).toBeInTheDocument();
+    expect(await screen.findByText(/Please enter your name/)).toBeInTheDocument();
+    expect(mockApiPatch).not.toHaveBeenCalled();
+  });
+
+  it("blocks saving when the phone is not a valid 10-digit number", async () => {
+    renderWithClient(<OrderEditModal order={ORDER} onClose={() => {}} />);
+    fireEvent.change(screen.getByLabelText("Phone"), { target: { value: "12345" } });
+    fireEvent.click(screen.getByText("Save Changes"));
+    expect(await screen.findByText("Please enter a valid 10-digit phone number.")).toBeInTheDocument();
     expect(mockApiPatch).not.toHaveBeenCalled();
   });
 });

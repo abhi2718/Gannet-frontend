@@ -31,7 +31,8 @@ describe("InquiryPopup", () => {
   it("blocks submission until the required fields are filled", () => {
     renderWithClient(<InquiryPopup onClose={jest.fn()} />);
     fireEvent.click(screen.getByText(/Submit Inquiry/));
-    expect(screen.getByText("Please fill in all fields.")).toBeInTheDocument();
+    expect(screen.getByText("Please enter a valid 10-digit phone number.")).toBeInTheDocument();
+    expect(screen.getByText("City is required.")).toBeInTheDocument();
     expect(mockApiPost).not.toHaveBeenCalled();
   });
 

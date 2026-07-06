@@ -12,7 +12,12 @@ import {
 import { formatAddress } from "@/features/user/commerce/checkoutApi";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import type { Address } from "@/types";
-import { AddressForm, type AddressFormValues } from "./AddressForm";
+import {
+  AddressForm,
+  validateAddress,
+  type AddressFormValues,
+  type AddressErrors,
+} from "./AddressForm";
 
 const EMPTY: AddressFormValues = {
   label: "",
@@ -32,22 +37,27 @@ export function ProfileAddresses() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState<AddressFormValues>(EMPTY);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<AddressErrors>({});
+  const [formError, setFormError] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<Address | null>(null);
 
   const showForm = adding || editingId !== null;
   const saving = createAddr.isPending || updateAddr.isPending;
 
+  const resetErrors = () => {
+    setErrors({});
+    setFormError("");
+  };
   const openAdd = () => {
     setEditingId(null);
     setForm(EMPTY);
-    setError("");
+    resetErrors();
     setAdding(true);
   };
   const openEdit = (a: Address) => {
     setAdding(false);
     setEditingId(a.id);
-    setError("");
+    resetErrors();
     setForm({
       label: a.label,
       street: a.street,
@@ -60,21 +70,23 @@ export function ProfileAddresses() {
   const closeForm = () => {
     setAdding(false);
     setEditingId(null);
-    setError("");
+    resetErrors();
   };
 
   const save = async () => {
-    setError("");
-    if (!form.label || !form.street || !form.pinCode || !form.city || !form.state) {
-      setError("Please fill in the label, street, pin code, city and state.");
+    setFormError("");
+    const next = validateAddress(form);
+    if (Object.keys(next).length > 0) {
+      setErrors(next);
       return;
     }
+    setErrors({});
     try {
       if (editingId) await updateAddr.mutateAsync({ id: editingId, input: form });
       else await createAddr.mutateAsync(form);
       closeForm();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not save the address. Try again.");
+      setFormError(e instanceof Error ? e.message : "Could not save the address. Try again.");
     }
   };
 
@@ -151,8 +163,13 @@ export function ProfileAddresses() {
           <AddressForm
             editing={editingId !== null}
             values={form}
-            onChange={(key, value) => setForm((a) => ({ ...a, [key]: value }))}
-            error={error}
+            errors={errors}
+            formError={formError}
+            onChange={(key, value) => {
+              setForm((a) => ({ ...a, [key]: value }));
+              setErrors((p) => ({ ...p, [key]: undefined }));
+              setFormError("");
+            }}
             saving={saving}
             onSave={save}
             onCancel={closeForm}

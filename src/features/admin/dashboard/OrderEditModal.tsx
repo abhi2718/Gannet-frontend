@@ -4,7 +4,11 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { X, Loader2 } from "lucide-react";
 import { useUpdateOrder } from "@/lib/query/hooks/useOrderMutations";
+import { FieldError } from "@/components/shared/FieldError";
+import { nameError, phoneError } from "@/lib/validation";
 import type { AdminOrder } from "@/types";
+
+type Errors = { customer?: string; phone?: string; form?: string };
 
 const STATUS_OPTIONS = ["pending", "confirmed", "out-for-delivery", "delivered", "cancelled"];
 
@@ -20,14 +24,17 @@ export function OrderEditModal({ order, onClose }: { order: AdminOrder; onClose:
   const [customer, setCustomer] = useState(order.customer);
   const [phone, setPhone] = useState(order.phone);
   const [status, setStatus] = useState(order.status);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<Errors>({});
 
   const save = async () => {
-    setError("");
-    if (!customer.trim() || !phone.trim()) {
-      setError("Customer name and phone are required.");
+    const next: Errors = {};
+    if (nameError(customer)) next.customer = nameError(customer)!;
+    if (phoneError(phone)) next.phone = phoneError(phone)!;
+    if (next.customer || next.phone) {
+      setErrors(next);
       return;
     }
+    setErrors({});
     try {
       await updateOrder.mutateAsync({
         id: order.id,
@@ -40,7 +47,7 @@ export function OrderEditModal({ order, onClose }: { order: AdminOrder; onClose:
       });
       onClose();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not update the order. Try again.");
+      setErrors({ form: e instanceof Error ? e.message : "Could not update the order. Try again." });
     }
   };
 
@@ -86,11 +93,16 @@ export function OrderEditModal({ order, onClose }: { order: AdminOrder; onClose:
             </label>
             <input
               id="edit-customer"
+              aria-invalid={!!errors.customer}
               value={customer}
-              onChange={(e) => setCustomer(e.target.value)}
+              onChange={(e) => {
+                setCustomer(e.target.value);
+                setErrors((p) => ({ ...p, customer: undefined, form: undefined }));
+              }}
               className="w-full px-3 py-2.5 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0D6EFD]"
-              style={{ background: "#F8FAFC", border: "1.5px solid rgba(13,110,253,0.12)" }}
+              style={{ background: "#F8FAFC", border: `1.5px solid ${errors.customer ? "#EF4444" : "rgba(13,110,253,0.12)"}` }}
             />
+            <FieldError message={errors.customer} />
           </div>
           <div>
             <label htmlFor="edit-phone" className="block text-xs font-semibold text-gray-500 mb-1">
@@ -98,11 +110,16 @@ export function OrderEditModal({ order, onClose }: { order: AdminOrder; onClose:
             </label>
             <input
               id="edit-phone"
+              aria-invalid={!!errors.phone}
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => {
+                setPhone(e.target.value);
+                setErrors((p) => ({ ...p, phone: undefined, form: undefined }));
+              }}
               className="w-full px-3 py-2.5 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0D6EFD]"
-              style={{ background: "#F8FAFC", border: "1.5px solid rgba(13,110,253,0.12)" }}
+              style={{ background: "#F8FAFC", border: `1.5px solid ${errors.phone ? "#EF4444" : "rgba(13,110,253,0.12)"}` }}
             />
+            <FieldError message={errors.phone} />
           </div>
           <div>
             <label htmlFor="edit-status" className="block text-xs font-semibold text-gray-500 mb-1">
@@ -122,7 +139,7 @@ export function OrderEditModal({ order, onClose }: { order: AdminOrder; onClose:
               ))}
             </select>
           </div>
-          {error && <p className="text-xs text-red-500">{error}</p>}
+          {errors.form && <p className="text-xs text-red-500">{errors.form}</p>}
         </div>
 
         <div className="px-6 pb-6 flex gap-2">

@@ -5,6 +5,8 @@ import { motion } from "motion/react";
 import { X, CheckCircle, Loader2 } from "lucide-react";
 import type { Address, CartItem } from "@/types";
 import { useCreateOrder } from "@/lib/query/hooks/useAddresses";
+import { FieldError } from "@/components/shared/FieldError";
+import { nameError } from "@/lib/validation";
 import { AddressStep } from "./AddressStep";
 import { CheckoutSuccess } from "./CheckoutSuccess";
 
@@ -32,6 +34,7 @@ export function CheckoutModal({
   const [address, setAddress] = useState<Address | null>(null);
   const [date, setDate] = useState("");
   const [confirmed, setConfirmed] = useState(false);
+  const [nameErr, setNameErr] = useState("");
   const [error, setError] = useState("");
   const createOrder = useCreateOrder();
 
@@ -40,6 +43,11 @@ export function CheckoutModal({
 
   const placeOrder = async () => {
     setError("");
+    const nErr = nameError(name);
+    if (nErr) {
+      setNameErr(nErr);
+      return;
+    }
     if (!address) {
       setError("Please select or add a delivery address.");
       return;
@@ -141,14 +149,19 @@ export function CheckoutModal({
                 <div>
                   <label className={labelClass}>Full Name</label>
                   <input
-                    required
                     type="text"
+                    aria-label="Full Name"
+                    aria-invalid={!!nameErr}
                     placeholder="Your full name"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      setNameErr("");
+                    }}
                     className={fieldClass}
-                    style={fieldStyle}
+                    style={{ ...fieldStyle, border: `1.5px solid ${nameErr ? "#EF4444" : "transparent"}` }}
                   />
+                  <FieldError message={nameErr} />
                 </div>
 
                 <AddressStep selectedId={address?.id ?? null} onSelect={setAddress} />
