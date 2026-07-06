@@ -93,6 +93,21 @@ describe("AuthContext", () => {
     expect(getToken()).toBe("jwt-reg");
   });
 
+  it("merges profile changes into the signed-in user via updateUser", async () => {
+    mockedAuthApi.login.mockResolvedValue({ user: demoCustomer, token: "jwt" });
+    const get = setup();
+    await act(async () => {
+      await get().login("a@b.com", "secret123");
+    });
+    act(() => {
+      get().updateUser({ username: "New Name", phone: "111" });
+    });
+    expect(get().user?.username).toBe("New Name");
+    expect(get().user?.phone).toBe("111");
+    // Unchanged fields (e.g. email) are preserved.
+    expect(get().user?.email).toBe(demoCustomer.email);
+  });
+
   it("logs out and clears the token", async () => {
     mockedAuthApi.login.mockResolvedValue({ user: demoCustomer, token: "jwt" });
     const get = setup();

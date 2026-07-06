@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { CartProvider, useCart } from "./CartContext";
 import type { CartItem } from "@/types";
@@ -81,6 +81,7 @@ function setup() {
 describe("CartContext", () => {
   beforeEach(() => {
     mockPush.mockClear();
+    window.localStorage.clear();
     guest();
   });
 
@@ -88,6 +89,15 @@ describe("CartContext", () => {
     const spy = jest.spyOn(console, "error").mockImplementation(() => {});
     expect(() => render(<Harness />)).toThrow(/useCart must be used within a CartProvider/);
     spy.mockRestore();
+  });
+
+  it("restores a persisted cart on mount so it survives a refresh", async () => {
+    window.localStorage.setItem(
+      "gannet.cart",
+      JSON.stringify([{ size: "500 ml", label: "Classic", price: 18, qty: 3 }]),
+    );
+    setup();
+    await waitFor(() => expect(screen.getByTestId("count").textContent).toBe("3"));
   });
 
   it("merges quantity when the same size is added twice", () => {

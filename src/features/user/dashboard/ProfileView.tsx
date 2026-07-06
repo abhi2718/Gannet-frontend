@@ -2,32 +2,36 @@
 
 import { useState } from "react";
 import { motion } from "motion/react";
-import { CheckCircle, Send } from "lucide-react";
+import { CheckCircle, Send, Loader2, Lock } from "lucide-react";
+import { useAuth } from "@/features/user/auth/AuthContext";
+import { useUpdateProfile } from "@/lib/query/hooks/useProfile";
+import { initials } from "@/lib/format/initials";
 import { ProfileAddresses } from "./ProfileAddresses";
 
-const PROFILE_FIELDS: {
-  label: string;
-  key: "name" | "phone" | "email";
-  type: string;
-  placeholder: string;
-}[] = [
-  { label: "Full Name", key: "name", type: "text", placeholder: "Your full name" },
-  { label: "Phone Number", key: "phone", type: "tel", placeholder: "+91 XXXXX XXXXX" },
-  { label: "Email Address", key: "email", type: "email", placeholder: "you@example.com" },
-];
-
 export function ProfileView() {
-  const [profile, setProfile] = useState({
-    name: "Arjun Mehta",
-    phone: "+91 99123 45678",
-    email: "arjun.m@gmail.com",
-  });
+  const { user, updateUser } = useAuth();
+  const updateProfile = useUpdateProfile(user?.id ?? "");
+  const [name, setName] = useState(user?.username ?? "");
+  const [phone, setPhone] = useState(user?.phone ?? "");
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState("");
 
-  const saveProfile = (e: React.FormEvent) => {
+  const email = user?.email ?? "";
+
+  const saveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+    setError("");
+    try {
+      const updated = await updateProfile.mutateAsync({
+        username: name.trim(),
+        phone: phone.trim(),
+      });
+      updateUser(updated);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not save your profile. Try again.");
+    }
   };
 
   return (
@@ -56,37 +60,72 @@ export function ProfileView() {
             className="w-16 h-16 rounded-2xl flex items-center justify-center text-white text-xl font-extrabold shrink-0"
             style={{ background: "linear-gradient(135deg,#0D6EFD,#00B4D8)" }}
           >
-            AM
+            {initials(name || "?")}
           </div>
           <div>
-            <h3 className="font-extrabold text-gray-900 text-lg">{profile.name}</h3>
-            <p className="text-gray-400 text-sm">{profile.email}</p>
+            <h3 className="font-extrabold text-gray-900 text-lg">{name}</h3>
+            <p className="text-gray-400 text-sm">{email}</p>
           </div>
         </div>
         <form onSubmit={saveProfile} className="space-y-4">
           <div className="grid sm:grid-cols-2 gap-4">
-            {PROFILE_FIELDS.map((f) => (
-              <div key={f.key} className={f.key === "email" ? "sm:col-span-2" : ""}>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
-                  {f.label}
-                </label>
-                <input
-                  type={f.type}
-                  value={profile[f.key]}
-                  onChange={(e) => setProfile((p) => ({ ...p, [f.key]: e.target.value }))}
-                  placeholder={f.placeholder}
-                  className="w-full px-4 py-3 text-sm rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0D6EFD]"
-                  style={{ background: "#F0F9FF", border: "1.5px solid transparent" }}
-                />
-              </div>
-            ))}
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                Full Name
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your full name"
+                className="w-full px-4 py-3 text-sm rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0D6EFD]"
+                style={{ background: "#F0F9FF", border: "1.5px solid transparent" }}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                Phone Number
+              </label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+91 XXXXX XXXXX"
+                className="w-full px-4 py-3 text-sm rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0D6EFD]"
+                style={{ background: "#F0F9FF", border: "1.5px solid transparent" }}
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                Email Address <Lock size={11} className="text-gray-400" />
+              </label>
+              <input
+                type="email"
+                value={email}
+                readOnly
+                disabled
+                aria-label="Email Address (read-only)"
+                title="Email cannot be changed"
+                className="w-full px-4 py-3 text-sm rounded-2xl text-gray-400 cursor-not-allowed focus:outline-none"
+                style={{ background: "#F1F5F9", border: "1.5px solid transparent" }}
+              />
+              <p className="text-xs text-gray-400 mt-1">
+                Your email address can&apos;t be changed.
+              </p>
+            </div>
           </div>
+          {error && <p className="text-sm text-red-500">{error}</p>}
           <button
             type="submit"
-            className="flex items-center gap-2 px-6 py-3 rounded-2xl text-sm font-bold text-white transition-all hover:scale-[1.02]"
+            disabled={updateProfile.isPending}
+            className="flex items-center gap-2 px-6 py-3 rounded-2xl text-sm font-bold text-white transition-all hover:scale-[1.02] disabled:opacity-60 disabled:hover:scale-100"
             style={{ background: saved ? "#16A34A" : "#0D6EFD" }}
           >
-            {saved ? (
+            {updateProfile.isPending ? (
+              <>
+                <Loader2 size={14} className="animate-spin" /> Saving…
+              </>
+            ) : saved ? (
               <>
                 <CheckCircle size={15} /> Saved!
               </>

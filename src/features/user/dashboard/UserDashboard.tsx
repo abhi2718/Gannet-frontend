@@ -8,6 +8,7 @@ import type { LucideIcon } from "lucide-react";
 import { GannetBirdIcon } from "@/components/shared/GannetBirdIcon";
 import { useCart } from "@/features/user/commerce/CartContext";
 import { useAuth } from "@/features/user/auth/AuthContext";
+import { initials } from "@/lib/format/initials";
 import type { UserDashView } from "@/types";
 import { UserDashboardHome } from "./UserDashboardHome";
 import { ProfileView } from "./ProfileView";
@@ -23,13 +24,6 @@ const MENU_ITEMS: { icon: LucideIcon; label: string; key: UserDashView; desc: st
   { icon: ShoppingCart, label: "Order History", key: "order-history", desc: "All your bookings" },
 ];
 
-/** Up-to-two-letter avatar initials derived from the user's name. */
-function initials(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-  return name.trim().slice(0, 2).toUpperCase();
-}
-
 /** Customer dashboard shell: top nav, avatar menu, and view switching. */
 export function UserDashboard() {
   const router = useRouter();
@@ -42,6 +36,13 @@ export function UserDashboard() {
   const displayName = user?.username ?? "Account";
   const displayEmail = user?.email ?? "";
   const avatar = user ? initials(user.username) : "";
+
+  // Open a specific view when deep-linked from the landing navbar
+  // (e.g. `/dashboard?view=profile` or `?view=order-history`).
+  useEffect(() => {
+    const view = new URLSearchParams(window.location.search).get("view");
+    if (view === "profile" || view === "order-history") setDashView(view);
+  }, []);
 
   useEffect(() => {
     const h = (e: MouseEvent) => {

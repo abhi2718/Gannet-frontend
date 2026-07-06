@@ -3,7 +3,7 @@
  * placing an order. Wraps the shared fetch client and the central endpoint
  * paths so the checkout UI stays declarative.
  */
-import { apiGetPaged, apiPost } from "@/lib/api/client";
+import { apiDelete, apiGetPaged, apiPatch, apiPost } from "@/lib/api/client";
 import { endpoints } from "@/lib/api/endpoints";
 import type { Address, CartItem } from "@/types";
 
@@ -56,6 +56,17 @@ export async function fetchAddresses(): Promise<Address[]> {
 export async function createAddress(input: NewAddressInput): Promise<Address> {
   const data = await apiPost<ApiAddress>(endpoints.addresses, input);
   return toAddress(data);
+}
+
+/** Update an existing address the current user owns and return the saved row. */
+export async function updateAddress(id: string, input: NewAddressInput): Promise<Address> {
+  const data = await apiPatch<ApiAddress>(endpoints.address(id), input);
+  return toAddress(data);
+}
+
+/** Delete one of the current user's addresses. */
+export async function deleteAddress(id: string): Promise<void> {
+  await apiDelete<null>(endpoints.address(id));
 }
 
 export type CreateOrderInput = {

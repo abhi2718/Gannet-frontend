@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { useRouter } from "next/navigation";
 import { ShoppingCart, Droplets, X, Menu } from "lucide-react";
 import { GannetBirdIcon } from "@/components/shared/GannetBirdIcon";
-import { NAV, FEATURES } from "@/data/content";
+import { NAV } from "@/data/content";
+import { useAuth } from "@/features/user/auth/AuthContext";
+import { NavUserMenu } from "./NavUserMenu";
+import { NavbarMobileMenu } from "./NavbarMobileMenu";
 
 type NavbarProps = {
   scrolled: boolean;
@@ -18,10 +21,21 @@ const sectionId = (n: string) =>
   n === "Why GANNET" ? "why-gannet" : n.toLowerCase().replace(/\s+/g, "-");
 
 export function Navbar({ scrolled, onBook, onLogin, cartCount, onCartOpen }: NavbarProps) {
+  const router = useRouter();
+  const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
   const go = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     setOpen(false);
+  };
+  const goToView = (view: string) => {
+    setOpen(false);
+    router.push(`/dashboard?view=${view}`);
+  };
+  const mobileLogout = () => {
+    setOpen(false);
+    logout();
+    router.push("/");
   };
   const navColor = scrolled ? "#374151" : "rgba(255,255,255,0.88)";
 
@@ -72,17 +86,23 @@ export function Navbar({ scrolled, onBook, onLogin, cartCount, onCartOpen }: Nav
         </nav>
 
         <div className="flex items-center gap-3">
-          <button
-            onClick={onLogin}
-            className="hidden md:flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all"
-            style={{
-              color: scrolled ? "#0D6EFD" : "#fff",
-              border: "1.5px solid",
-              borderColor: scrolled ? "#0D6EFD" : "rgba(255,255,255,0.4)",
-            }}
-          >
-            Login
-          </button>
+          {user ? (
+            <div className="hidden md:block">
+              <NavUserMenu scrolled={scrolled} />
+            </div>
+          ) : (
+            <button
+              onClick={onLogin}
+              className="hidden md:flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all"
+              style={{
+                color: scrolled ? "#0D6EFD" : "#fff",
+                border: "1.5px solid",
+                borderColor: scrolled ? "#0D6EFD" : "rgba(255,255,255,0.4)",
+              }}
+            >
+              Login
+            </button>
+          )}
           <button
             onClick={onCartOpen}
             aria-label="Open cart"
@@ -117,54 +137,15 @@ export function Navbar({ scrolled, onBook, onLogin, cartCount, onCartOpen }: Nav
         </div>
       </div>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-white border-t border-blue-50 overflow-hidden"
-          >
-            <div className="px-6 py-4 flex flex-col gap-1">
-              {NAV.map((n) => (
-                <button
-                  key={n}
-                  onClick={() => go(sectionId(n))}
-                  className="py-3 text-left text-sm font-semibold text-gray-700 border-b border-gray-50 last:border-0"
-                >
-                  {n}
-                </button>
-              ))}
-              <div className="grid grid-cols-2 gap-2 py-3">
-                {FEATURES.map((f) => (
-                  <button
-                    key={f.title}
-                    onClick={() => go("why-gannet")}
-                    className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-blue-50 text-left"
-                  >
-                    <f.icon size={14} className="text-[#0D6EFD] shrink-0" />
-                    <span className="text-xs font-semibold text-gray-700 truncate">{f.title}</span>
-                  </button>
-                ))}
-              </div>
-              <div className="flex gap-2 mt-2">
-                <button
-                  onClick={onLogin}
-                  className="flex-1 py-3 rounded-2xl border-2 border-[#0D6EFD] text-[#0D6EFD] font-bold text-sm"
-                >
-                  Login
-                </button>
-                <button
-                  onClick={onBook}
-                  className="flex-1 py-3 rounded-2xl bg-[#0D6EFD] text-white font-bold text-sm"
-                >
-                  Book Water
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <NavbarMobileMenu
+        open={open}
+        signedIn={!!user}
+        go={go}
+        onLogin={onLogin}
+        onBook={onBook}
+        goToView={goToView}
+        mobileLogout={mobileLogout}
+      />
     </header>
   );
 }

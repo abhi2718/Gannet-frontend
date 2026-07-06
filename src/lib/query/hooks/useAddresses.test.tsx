@@ -1,6 +1,12 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useAddresses, useCreateAddress, useCreateOrder } from "./useAddresses";
+import {
+  useAddresses,
+  useCreateAddress,
+  useCreateOrder,
+  useUpdateAddress,
+  useDeleteAddress,
+} from "./useAddresses";
 import * as checkoutApi from "@/features/user/commerce/checkoutApi";
 import type { Address } from "@/types";
 
@@ -8,6 +14,8 @@ jest.mock("@/features/user/commerce/checkoutApi", () => ({
   __esModule: true,
   fetchAddresses: jest.fn(),
   createAddress: jest.fn(),
+  updateAddress: jest.fn(),
+  deleteAddress: jest.fn(),
   createOrder: jest.fn(),
 }));
 
@@ -59,5 +67,26 @@ describe("useAddresses hooks", () => {
     expect(checkoutApi.createOrder).toHaveBeenCalledWith(
       expect.objectContaining({ addressId: "a1" }),
     );
+  });
+
+  it("updates an address via the update mutation", async () => {
+    (checkoutApi.updateAddress as jest.Mock).mockResolvedValue(addr);
+    const { result } = renderHook(() => useUpdateAddress(), { wrapper });
+    const input = {
+      label: "Home",
+      street: "2 Road",
+      pinCode: "400002",
+      city: "Mumbai",
+      state: "MH",
+    };
+    await result.current.mutateAsync({ id: "a1", input });
+    expect(checkoutApi.updateAddress).toHaveBeenCalledWith("a1", input);
+  });
+
+  it("deletes an address via the delete mutation", async () => {
+    (checkoutApi.deleteAddress as jest.Mock).mockResolvedValue(undefined);
+    const { result } = renderHook(() => useDeleteAddress(), { wrapper });
+    await result.current.mutateAsync("a1");
+    expect(checkoutApi.deleteAddress).toHaveBeenCalledWith("a1");
   });
 });

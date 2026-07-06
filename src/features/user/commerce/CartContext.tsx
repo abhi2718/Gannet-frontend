@@ -1,11 +1,12 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence } from "motion/react";
 import { CartDrawer } from "./CartDrawer";
 import { CheckoutModal } from "./CheckoutModal";
 import { useAuth } from "@/features/user/auth/AuthContext";
+import { loadCart, saveCart } from "./cartStorage";
 import type { CartItem } from "@/types";
 
 type CartContextValue = {
@@ -36,11 +37,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { user } = useAuth();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [hydrated, setHydrated] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
   const [checkoutItems, setCheckoutItems] = useState<CartItem[]>([]);
 
   const cartCount = cartItems.reduce((s, i) => s + i.qty, 0);
+
+  // Restore any saved cart on first mount (after hydration to avoid a mismatch).
+  useEffect(() => {
+    setCartItems(loadCart());
+    setHydrated(true);
+  }, []);
+
+  // Persist the cart on every change so it survives a page refresh.
+  useEffect(() => {
+    if (hydrated) saveCart(cartItems);
+  }, [cartItems, hydrated]);
 
   const addToCart = (item: CartItem) => {
     setCartItems((prev) => {
@@ -89,6 +102,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (fromCart) setCartItems([]);
     setCheckoutItems([]);
     setShowCheckout(false);
+    // Send the customer to their dashboard, where the new order is shown.
+    router.push("/dashboard");
   };
 
   const value: CartContextValue = {

@@ -1,4 +1,4 @@
-import { apiGet, apiPost } from "@/lib/api/client";
+import { apiGet, apiPatch, apiPost } from "@/lib/api/client";
 import { endpoints } from "@/lib/api/endpoints";
 import type { AuthUser, RegisterInput, Role } from "./AuthContext";
 
@@ -47,4 +47,19 @@ export async function register(input: RegisterInput): Promise<{ user: AuthUser; 
 export async function me(): Promise<AuthUser> {
   const data = await apiGet<{ user: ApiUser }>(endpoints.auth.me);
   return toAuthUser(data.user);
+}
+
+/** Editable profile fields. Email is deliberately excluded — it is read-only. */
+export type UpdateProfileInput = { username: string; phone: string };
+
+/**
+ * Update the signed-in user's own profile (`PATCH /api/users/:id`). Sends only
+ * the editable fields — the email address cannot be changed.
+ */
+export async function updateProfile(id: string, input: UpdateProfileInput): Promise<AuthUser> {
+  const data = await apiPatch<ApiUser>(endpoints.user(id), {
+    username: input.username,
+    phoneNumber: input.phone,
+  });
+  return toAuthUser(data);
 }

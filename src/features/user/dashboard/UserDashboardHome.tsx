@@ -3,6 +3,9 @@
 import { motion } from "motion/react";
 import { Droplets, MapPin, Phone, ShoppingCart, Users } from "lucide-react";
 import { useUserOrders } from "@/lib/query/hooks/useUserOrders";
+import { useAddresses } from "@/lib/query/hooks/useAddresses";
+import { useAuth } from "@/features/user/auth/AuthContext";
+import { formatAddress } from "@/features/user/commerce/checkoutApi";
 import type { UserDashView } from "@/types";
 import { UserDashboardTracking } from "./UserDashboardTracking";
 import { UserDashboardRecent } from "./UserDashboardRecent";
@@ -13,7 +16,10 @@ type UserDashboardHomeProps = {
 };
 
 export function UserDashboardHome({ onBook, onNavigate }: UserDashboardHomeProps) {
+  const { user } = useAuth();
   const { data: orders = [] } = useUserOrders();
+  const { data: addresses = [] } = useAddresses();
+  const defaultAddress = addresses[0];
   const activeOrder = orders.find(
     (o) => o.status === "out-for-delivery" || o.status === "confirmed",
   );
@@ -78,7 +84,7 @@ export function UserDashboardHome({ onBook, onNavigate }: UserDashboardHomeProps
         <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div>
             <p className="text-blue-200 text-sm mb-1">Welcome back,</p>
-            <h1 className="text-3xl font-extrabold mb-3">Arjun Mehta</h1>
+            <h1 className="text-3xl font-extrabold mb-3">{user?.username ?? "there"}</h1>
             <button
               onClick={onBook}
               className="flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold transition-all hover:scale-105"
@@ -151,20 +157,39 @@ export function UserDashboardHome({ onBook, onNavigate }: UserDashboardHomeProps
               Edit →
             </button>
           </div>
-          <div className="p-4 rounded-2xl mb-3" style={{ background: "#F0F9FF" }}>
-            <div className="flex items-start gap-3">
-              <MapPin size={15} className="text-[#0D6EFD] mt-0.5 shrink-0" />
-              <div>
-                <div className="font-semibold text-gray-900 text-sm mb-0.5">Home</div>
-                <div className="text-gray-500 text-xs leading-relaxed">
-                  7 Juhu Beach Road, Mumbai, Maharashtra 400049
+          {defaultAddress ? (
+            <>
+              <div className="p-4 rounded-2xl mb-3" style={{ background: "#F0F9FF" }}>
+                <div className="flex items-start gap-3">
+                  <MapPin size={15} className="text-[#0D6EFD] mt-0.5 shrink-0" />
+                  <div>
+                    <div className="font-semibold text-gray-900 text-sm mb-0.5">
+                      {defaultAddress.label}
+                    </div>
+                    <div className="text-gray-500 text-xs leading-relaxed">
+                      {formatAddress(defaultAddress)}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 text-xs text-gray-400">
-            <Phone size={11} className="text-[#0D6EFD]" /> +91 99123 45678
-          </div>
+              {user?.phone && (
+                <div className="flex items-center gap-2 text-xs text-gray-400">
+                  <Phone size={11} className="text-[#0D6EFD]" /> {user.phone}
+                </div>
+              )}
+            </>
+          ) : (
+            <button
+              onClick={() => onNavigate("profile")}
+              className="w-full p-4 rounded-2xl text-left flex items-start gap-3"
+              style={{ background: "#F0F9FF" }}
+            >
+              <MapPin size={15} className="text-[#0D6EFD] mt-0.5 shrink-0" />
+              <div className="text-gray-500 text-xs leading-relaxed">
+                No saved address yet. <span className="font-bold text-[#0D6EFD]">Add one →</span>
+              </div>
+            </button>
+          )}
         </div>
       </div>
     </motion.div>

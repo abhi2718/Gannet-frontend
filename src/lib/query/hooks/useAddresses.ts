@@ -1,6 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query/keys";
-import { createAddress, createOrder, fetchAddresses } from "@/features/user/commerce/checkoutApi";
+import {
+  createAddress,
+  createOrder,
+  deleteAddress,
+  fetchAddresses,
+  updateAddress,
+  type NewAddressInput,
+} from "@/features/user/commerce/checkoutApi";
 import type { Address } from "@/types";
 
 /** The signed-in customer's saved delivery addresses (`GET /api/addresses`). */
@@ -16,6 +23,28 @@ export function useCreateAddress() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: createAddress,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.addresses });
+    },
+  });
+}
+
+/** Update an existing address; refreshes the address list on success. */
+export function useUpdateAddress() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, input }: { id: string; input: NewAddressInput }) => updateAddress(id, input),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.addresses });
+    },
+  });
+}
+
+/** Delete an address; refreshes the address list on success. */
+export function useDeleteAddress() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteAddress(id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.addresses });
     },
