@@ -28,10 +28,11 @@ function fillForm() {
 describe("ContactSection", () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it("renders the contact details", () => {
+  it("renders the contact details and the dealership inquiry heading", () => {
     renderWithClient(<ContactSection />);
     expect(screen.getByText("We Are Here to Help")).toBeInTheDocument();
     expect(screen.getByText("hello@gannetwater.com")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Inquiry for Dealership" })).toBeInTheDocument();
   });
 
   it("requires the mandatory fields before submitting", () => {

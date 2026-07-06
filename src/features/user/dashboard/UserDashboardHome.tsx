@@ -111,7 +111,11 @@ export function UserDashboardHome({ onBook, onNavigate }: UserDashboardHomeProps
       {activeOrder && <UserDashboardTracking order={activeOrder} />}
 
       <div className="grid sm:grid-cols-2 gap-5">
-        <UserDashboardRecent orders={orders} onViewAll={() => onNavigate("order-history")} />
+        <UserDashboardRecent
+          orders={orders}
+          onViewAll={() => onNavigate("order-history")}
+          onBook={onBook}
+        />
 
         <div
           className="bg-white rounded-3xl p-6 border"

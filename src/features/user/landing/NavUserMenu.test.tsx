@@ -26,6 +26,13 @@ describe("NavUserMenu", () => {
     expect(container).toBeEmptyDOMElement();
   });
 
+  it("navigates to the dashboard from the Dashboard item", () => {
+    render(<NavUserMenu scrolled />);
+    fireEvent.click(screen.getByLabelText("Account menu"));
+    fireEvent.click(screen.getByText("Dashboard"));
+    expect(mockPush).toHaveBeenCalledWith("/dashboard");
+  });
+
   it("opens the menu and deep-links to Profile and Orders", () => {
     render(<NavUserMenu scrolled />);
     fireEvent.click(screen.getByLabelText("Account menu"));

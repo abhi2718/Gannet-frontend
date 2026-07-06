@@ -77,13 +77,16 @@ export function UserDashboardRecent({ orders, onViewAll, onBook }: UserDashboard
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <StatusBadge status={o.status} />
-              <span className="font-bold text-gray-900 text-sm hidden sm:inline">₹{o.total}</span>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+              <div className="flex items-center gap-3">
+                <StatusBadge status={o.status} />
+                <span className="font-bold text-gray-900 text-sm hidden sm:inline">
+                  ₹{o.total}
+                </span>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

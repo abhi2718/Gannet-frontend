@@ -50,6 +50,12 @@ describe("UserDashboard", () => {
     expect(screen.getByText("Order History")).toBeInTheDocument();
   });
 
+  it("navigates to the landing home page from the Home nav button", () => {
+    renderDashboard();
+    fireEvent.click(screen.getByRole("button", { name: "Home" }));
+    expect(mockPush).toHaveBeenCalledWith("/");
+  });
+
   it("sends the customer to the storefront bottle picker from the header Book Water button", () => {
     renderDashboard();
     fireEvent.click(screen.getByRole("button", { name: "Book Water" }));

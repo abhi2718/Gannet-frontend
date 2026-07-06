@@ -76,6 +76,21 @@ export function ContactSection() {
                 border: "1px solid rgba(13,110,253,0.08)",
               }}
             >
+              <div
+                className="text-center mb-6 pb-6 border-b"
+                style={{ borderColor: "rgba(13,110,253,0.08)" }}
+              >
+                <span className="text-xs font-bold tracking-widest text-[#00B4D8] uppercase">
+                  Partner With Us
+                </span>
+                <h3 className="text-2xl md:text-3xl font-extrabold text-gray-900 mt-2">
+                  Inquiry for Dealership
+                </h3>
+                <p className="text-sm text-gray-500 mt-2 max-w-sm mx-auto leading-relaxed">
+                  Interested in a GANNET™ dealership or bulk supply? Fill in your details and our
+                  team will get back to you.
+                </p>
+              </div>
               <div className="grid sm:grid-cols-2 gap-5 mb-5">
                 <div>
                   <label className={labelClass}>Full Name</label>
