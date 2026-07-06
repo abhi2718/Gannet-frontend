@@ -8,6 +8,25 @@ export type CartItem = {
   qty: number;
 };
 
+/** One product line within a placed order (mirrors the API `items[]`). */
+export type OrderItem = {
+  size: string;
+  qty: number;
+  /** Per-unit price (optional on legacy/mock rows). */
+  amount?: number;
+};
+
+/** A saved delivery address (`GET /api/addresses`). */
+export type Address = {
+  id: string;
+  label: string;
+  street: string;
+  pinCode: string;
+  city: string;
+  state: string;
+  landmark?: string;
+};
+
 /** Hero carousel slide. */
 export type Slide = {
   tag: string;
@@ -86,8 +105,13 @@ export type AdminOrder = {
   customer: string;
   phone: string;
   address: string;
+  /** All product lines in the order (an order may hold several bottle sizes). */
+  items: OrderItem[];
+  /** Summary of `items`: first size (+ "N more") and total quantity. */
   size: string;
   qty: number;
+  /** Order total (Σ item qty × amount). */
+  total: number;
   date: string;
   status: string;
 };
@@ -128,6 +152,9 @@ export type OrderStatusCounts = Record<string, number>;
 /** An order shown in the customer's own dashboard. */
 export type UserOrder = {
   id: string;
+  /** All product lines in the order. */
+  items: OrderItem[];
+  /** Summary of `items`: first size (+ "N more") and total quantity. */
   size: string;
   qty: number;
   date: string;

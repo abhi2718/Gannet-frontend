@@ -1,6 +1,7 @@
 /** Stable React Query key factory shared across hooks. */
 export const queryKeys = {
   products: ["products"] as const,
+  addresses: ["addresses"] as const,
   userOrders: ["user", "orders"] as const,
   adminQueries: ["admin", "queries"] as const,
   adminOrders: ["admin", "orders"] as const,

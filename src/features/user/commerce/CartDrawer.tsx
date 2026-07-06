@@ -173,7 +173,7 @@ export function CartDrawer({ items, onClose, onQtyChange, onRemove, onCheckout }
               <ShoppingCart size={17} /> Proceed to Checkout
             </button>
             <p className="text-center text-xs text-gray-400 mt-3 flex items-center justify-center gap-1.5">
-              <CheckCircle size={11} /> Verify with OTP to place your order
+              <CheckCircle size={11} /> Sign in &amp; pick a delivery address to place your order
             </p>
           </div>
         )}

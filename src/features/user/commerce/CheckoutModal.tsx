@@ -2,12 +2,15 @@
 
 import { useState } from "react";
 import { motion } from "motion/react";
-import { X, CheckCircle } from "lucide-react";
-import type { CartItem } from "@/types";
+import { X, CheckCircle, Loader2 } from "lucide-react";
+import type { Address, CartItem } from "@/types";
+import { useCreateOrder } from "@/lib/query/hooks/useAddresses";
+import { AddressStep } from "./AddressStep";
 import { CheckoutSuccess } from "./CheckoutSuccess";
 
 type CheckoutModalProps = {
   cartItems: CartItem[];
+  userName: string;
   userPhone: string;
   onClose: () => void;
   onDone: () => void;
@@ -18,11 +21,42 @@ const fieldClass =
   "w-full px-4 py-3.5 text-sm rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0D6EFD]";
 const labelClass = "block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider";
 
-export function CheckoutModal({ cartItems, userPhone, onClose, onDone }: CheckoutModalProps) {
-  const [form, setForm] = useState({ name: "", address: "", city: "", pin: "", date: "" });
+export function CheckoutModal({
+  cartItems,
+  userName,
+  userPhone,
+  onClose,
+  onDone,
+}: CheckoutModalProps) {
+  const [name, setName] = useState(userName);
+  const [address, setAddress] = useState<Address | null>(null);
+  const [date, setDate] = useState("");
   const [confirmed, setConfirmed] = useState(false);
+  const [error, setError] = useState("");
+  const createOrder = useCreateOrder();
+
   const total = cartItems.reduce((s, i) => s + i.price * i.qty, 0);
   const count = cartItems.reduce((s, i) => s + i.qty, 0);
+
+  const placeOrder = async () => {
+    setError("");
+    if (!address) {
+      setError("Please select or add a delivery address.");
+      return;
+    }
+    try {
+      await createOrder.mutateAsync({
+        customerName: name,
+        customerPhone: userPhone,
+        cartItems,
+        addressId: address.id,
+        estimatedDelivery: date || undefined,
+      });
+      setConfirmed(true);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not place your order. Try again.");
+    }
+  };
 
   return (
     <motion.div
@@ -50,7 +84,7 @@ export function CheckoutModal({ cartItems, userPhone, onClose, onDone }: Checkou
               {confirmed ? "Order Confirmed!" : "Delivery Details"}
             </h2>
             <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1.5">
-              <CheckCircle size={11} className="text-green-400" /> Verified: +91 {userPhone}
+              <CheckCircle size={11} className="text-green-400" /> Signed in as +91 {userPhone}
             </p>
           </div>
           <button
@@ -66,9 +100,9 @@ export function CheckoutModal({ cartItems, userPhone, onClose, onDone }: Checkou
           {confirmed ? (
             <CheckoutSuccess
               cartItems={cartItems}
-              name={form.name}
-              city={form.city}
-              date={form.date}
+              name={name}
+              city={address?.city ?? ""}
+              date={date}
               count={count}
               total={total}
               onDone={onDone}
@@ -77,7 +111,7 @@ export function CheckoutModal({ cartItems, userPhone, onClose, onDone }: Checkou
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                setConfirmed(true);
+                placeOrder();
               }}
             >
               <div className="rounded-2xl p-4 mb-6" style={{ background: "#F0F9FF" }}>
@@ -110,65 +144,48 @@ export function CheckoutModal({ cartItems, userPhone, onClose, onDone }: Checkou
                     required
                     type="text"
                     placeholder="Your full name"
-                    value={form.name}
-                    onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     className={fieldClass}
                     style={fieldStyle}
                   />
                 </div>
-                <div>
-                  <label className={labelClass}>Delivery Address</label>
-                  <input
-                    required
-                    type="text"
-                    placeholder="House no., street, area"
-                    value={form.address}
-                    onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))}
-                    className={`${fieldClass} mb-2`}
-                    style={fieldStyle}
-                  />
-                  <div className="grid grid-cols-2 gap-3">
-                    <input
-                      required
-                      type="text"
-                      placeholder="City"
-                      value={form.city}
-                      onChange={(e) => setForm((p) => ({ ...p, city: e.target.value }))}
-                      className={fieldClass}
-                      style={fieldStyle}
-                    />
-                    <input
-                      type="text"
-                      placeholder="PIN Code"
-                      value={form.pin}
-                      onChange={(e) => setForm((p) => ({ ...p, pin: e.target.value }))}
-                      className={fieldClass}
-                      style={fieldStyle}
-                    />
-                  </div>
-                </div>
+
+                <AddressStep selectedId={address?.id ?? null} onSelect={setAddress} />
+
                 <div>
                   <label className={labelClass}>Preferred Delivery Date</label>
                   <input
                     type="date"
                     min={new Date().toISOString().split("T")[0]}
-                    value={form.date}
-                    onChange={(e) => setForm((p) => ({ ...p, date: e.target.value }))}
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
                     className={fieldClass}
                     style={fieldStyle}
                   />
                 </div>
               </div>
 
+              {error && <p className="text-sm text-red-500 mt-4">{error}</p>}
+
               <button
                 type="submit"
-                className="w-full py-4 rounded-2xl font-bold text-white text-sm flex items-center justify-center gap-2 transition-all hover:scale-[1.02] mt-6"
+                disabled={createOrder.isPending || !address}
+                className="w-full py-4 rounded-2xl font-bold text-white text-sm flex items-center justify-center gap-2 transition-all hover:scale-[1.02] mt-6 disabled:opacity-60 disabled:hover:scale-100"
                 style={{
                   background: "linear-gradient(135deg, #0D6EFD, #00B4D8)",
                   boxShadow: "0 8px 32px rgba(13,110,253,0.3)",
                 }}
               >
-                <CheckCircle size={16} /> Place Order
+                {createOrder.isPending ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" /> Placing Order…
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle size={16} /> Place Order
+                  </>
+                )}
               </button>
             </form>
           )}

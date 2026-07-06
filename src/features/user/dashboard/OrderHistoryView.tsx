@@ -74,9 +74,15 @@ export function OrderHistoryView() {
                   >
                     <td className="px-5 py-4 font-mono text-xs text-gray-400">{o.id}</td>
                     <td className="px-5 py-4 font-semibold text-gray-900 whitespace-nowrap">
-                      GANNET {o.size}
+                      {o.items.map((it, i) => (
+                        <div key={i}>GANNET {it.size}</div>
+                      ))}
                     </td>
-                    <td className="px-5 py-4 text-gray-700 font-semibold">{o.qty}</td>
+                    <td className="px-5 py-4 text-gray-700 font-semibold">
+                      {o.items.map((it, i) => (
+                        <div key={i}>{it.qty}</div>
+                      ))}
+                    </td>
                     <td className="px-5 py-4 text-gray-400 whitespace-nowrap">{o.date}</td>
                     <td className="px-5 py-4 text-gray-400 whitespace-nowrap">{o.delivery}</td>
                     <td className="px-5 py-4 font-extrabold text-[#0D6EFD] whitespace-nowrap">

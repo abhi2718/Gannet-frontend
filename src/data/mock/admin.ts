@@ -93,7 +93,9 @@ export const MOCK_QUERIES: Query[] = [
   },
 ];
 
-export const MOCK_ORDERS: AdminOrder[] = [
+// Compact rows; `items`/`total` are derived below so the fallback mock matches
+// the multi-item `AdminOrder` shape without repeating boilerplate per row.
+const RAW_ORDERS = [
   {
     id: "ORD-2401",
     customer: "Priya Sharma",
@@ -103,6 +105,8 @@ export const MOCK_ORDERS: AdminOrder[] = [
     qty: 24,
     date: "2024-01-18",
     status: "delivered",
+    // An example multi-bottle order (extra line beyond the summary size).
+    extra: [{ size: "1 Litre", qty: 6 }],
   },
   {
     id: "ORD-2402",
@@ -195,6 +199,26 @@ export const MOCK_ORDERS: AdminOrder[] = [
     status: "pending",
   },
 ];
+
+type RawOrder = (typeof RAW_ORDERS)[number] & { extra?: { size: string; qty: number }[] };
+
+export const MOCK_ORDERS: AdminOrder[] = RAW_ORDERS.map((raw) => {
+  const o = raw as RawOrder;
+  const items = [{ size: o.size, qty: o.qty }, ...(o.extra ?? [])];
+  const qty = items.reduce((s, i) => s + i.qty, 0);
+  return {
+    id: o.id,
+    customer: o.customer,
+    phone: o.phone,
+    address: o.address,
+    items,
+    size: items.length > 1 ? `${o.size} +${items.length - 1} more` : o.size,
+    qty,
+    total: qty * 18,
+    date: o.date,
+    status: o.status,
+  };
+});
 
 export const MOCK_USERS: User[] = [
   {

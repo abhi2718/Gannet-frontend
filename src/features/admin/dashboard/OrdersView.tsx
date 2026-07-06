@@ -108,8 +108,18 @@ export function OrdersView() {
                     {o.customer}
                   </td>
                   <td className="px-5 py-4 text-gray-500 whitespace-nowrap">{o.phone}</td>
-                  <td className="px-5 py-4 text-gray-500">{o.size}</td>
-                  <td className="px-5 py-4 text-gray-900 font-semibold">{o.qty}</td>
+                  <td className="px-5 py-4 text-gray-500">
+                    {o.items.map((it, i) => (
+                      <div key={i} className="whitespace-nowrap">
+                        {it.size}
+                      </div>
+                    ))}
+                  </td>
+                  <td className="px-5 py-4 text-gray-900 font-semibold">
+                    {o.items.map((it, i) => (
+                      <div key={i}>{it.qty}</div>
+                    ))}
+                  </td>
                   <td className="px-5 py-4 text-gray-400 whitespace-nowrap">{o.date}</td>
                   <td className="px-5 py-4">
                     <StatusBadge status={o.status} />

@@ -5,6 +5,7 @@ import type { UserOrder } from "@/types";
 
 const order: UserOrder = {
   id: "ORD-9",
+  items: [{ size: "1 Litre", qty: 6 }],
   size: "1 Litre",
   qty: 6,
   date: "2024-01-17",

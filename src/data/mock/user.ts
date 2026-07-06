@@ -1,6 +1,7 @@
 import type { UserOrder } from "@/types";
 
-export const USER_ORDERS: UserOrder[] = [
+// Compact rows; each single-line order's `items[]` is derived below.
+const RAW_USER_ORDERS = [
   {
     id: "ORD-2419",
     size: "500 ml",
@@ -102,6 +103,11 @@ export const USER_ORDERS: UserOrder[] = [
     total: 216,
   },
 ];
+
+export const USER_ORDERS: UserOrder[] = RAW_USER_ORDERS.map((o) => ({
+  ...o,
+  items: [{ size: o.size, qty: o.qty, amount: o.total / o.qty }],
+}));
 
 export const TRACK_STEPS = ["Order Placed", "Confirmed", "Out for Delivery", "Delivered"];
 

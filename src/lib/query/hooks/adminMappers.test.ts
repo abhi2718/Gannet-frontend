@@ -60,15 +60,14 @@ describe("formatAddress", () => {
 });
 
 describe("toAdminOrder", () => {
-  it("maps an API order and hyphenates its status", () => {
+  it("maps a single-item API order and hyphenates its status", () => {
     const api: ApiOrder = {
       _id: "o1",
       orderId: "ORD-9001",
       customerName: "Priya Sharma",
       customerPhone: "+919784532100",
-      bottleSize: "500 ml",
-      quantity: 24,
-      amount: 1200,
+      items: [{ bottleSize: "500 ml", quantity: 24, amount: 50 }],
+      totalAmount: 1200,
       status: "out for delivery",
       createdAt: "2026-02-01T10:00:00.000Z",
       address: { street: "45 MG Road", city: "Delhi", state: "Delhi", pinCode: "110001" },
@@ -78,11 +77,33 @@ describe("toAdminOrder", () => {
       customer: "Priya Sharma",
       phone: "+919784532100",
       address: "45 MG Road, Delhi, Delhi, 110001",
+      items: [{ size: "500 ml", qty: 24, amount: 50 }],
       size: "500 ml",
       qty: 24,
+      total: 1200,
       date: "2026-02-01",
       status: "out-for-delivery",
     });
+  });
+
+  it("summarises a multi-item order and falls back to computing the total", () => {
+    const api: ApiOrder = {
+      orderId: "ORD-9002",
+      customerName: "Rohan",
+      customerPhone: "+911234567890",
+      items: [
+        { bottleSize: "500 ml", quantity: 12, amount: 18 },
+        { bottleSize: "1 Litre", quantity: 6, amount: 32 },
+      ],
+      status: "pending",
+      address: "45 MG Road",
+    };
+    const mapped = toAdminOrder(api);
+    expect(mapped.items).toHaveLength(2);
+    expect(mapped.size).toBe("500 ml +1 more");
+    expect(mapped.qty).toBe(18);
+    // No totalAmount from the API → computed from the items (12*18 + 6*32).
+    expect(mapped.total).toBe(408);
   });
 });
 

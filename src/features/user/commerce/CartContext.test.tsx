@@ -1,6 +1,17 @@
 import { render, screen, fireEvent } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { CartProvider, useCart } from "./CartContext";
 import type { CartItem } from "@/types";
+
+// Checkout opens the CheckoutModal, which loads addresses via React Query; the
+// fetch fails in jsdom (no API), which the address step handles gracefully.
+jest.mock("./checkoutApi", () => ({
+  __esModule: true,
+  fetchAddresses: jest.fn().mockRejectedValue(new Error("no api")),
+  createAddress: jest.fn(),
+  createOrder: jest.fn(),
+  formatAddress: () => "",
+}));
 
 const mockPush = jest.fn();
 jest.mock("next/navigation", () => ({
@@ -57,10 +68,13 @@ function Harness() {
 }
 
 function setup() {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
-    <CartProvider>
-      <Harness />
-    </CartProvider>,
+    <QueryClientProvider client={client}>
+      <CartProvider>
+        <Harness />
+      </CartProvider>
+    </QueryClientProvider>,
   );
 }
 

@@ -119,6 +119,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         {showCheckout && checkoutItems.length > 0 && (
           <CheckoutModal
             cartItems={checkoutItems}
+            userName={user?.username ?? ""}
             userPhone={user?.phone ?? ""}
             onClose={() => setShowCheckout(false)}
             onDone={handleOrderDone}
