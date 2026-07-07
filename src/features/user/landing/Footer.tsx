@@ -1,8 +1,9 @@
 "use client";
 
-import { Droplets, Instagram, Facebook, Twitter, Phone, Mail, MapPin } from "lucide-react";
+import { Instagram, Facebook, Twitter, Phone, Mail, MapPin } from "lucide-react";
 import { NAV } from "@/data/content";
 import { PRODUCTS } from "@/data/products";
+import { GannetBirdIcon } from "@/components/shared/GannetBirdIcon";
 
 const CONTACTS = [
   { icon: Phone, text: "+91 98765 43210" },
@@ -25,7 +26,7 @@ export function Footer({ onLogin }: { onLogin: () => void }) {
           <div>
             <div className="flex items-center gap-2.5 mb-5">
               <div className="w-10 h-10 rounded-xl bg-[#0D6EFD] flex items-center justify-center">
-                <Droplets size={20} className="text-white" />
+                <GannetBirdIcon />
               </div>
               <div className="flex items-start gap-0.5">
                 <span className="text-xl font-extrabold text-white tracking-widest">GANNET</span>

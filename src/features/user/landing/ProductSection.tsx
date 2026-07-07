@@ -13,7 +13,7 @@ type ProductSectionProps = {
   onBookNow: (item: CartItem) => void;
 };
 
-const BOTTLE_HEIGHTS = [68, 80, 90, 100];
+const BOTTLE_HEIGHTS = [100, 110, 120, 135];
 
 const toCartItem = (p: CatalogProduct): CartItem => ({
   size: p.name,
@@ -98,7 +98,8 @@ export function ProductSection({ onAddToCart, onBookNow }: ProductSectionProps) 
                         className="flex items-end justify-center h-full"
                       >
                         <img
-                          src={p.image}
+                        // src={p.image}
+                        src="small_bottle_1x.png"
                           alt={`GANNET ${p.name} Premium Natural Water Bottle`}
                           onError={(e) => {
                             (e.currentTarget as HTMLImageElement).src = "/bottle.png";

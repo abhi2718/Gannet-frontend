@@ -60,6 +60,7 @@ export function Navbar({ scrolled, onBook, onLogin, cartCount, onCartOpen }: Nav
           <div className="w-10 h-10 rounded-xl bg-[#0D6EFD] flex items-center justify-center shadow-lg shadow-blue-200 group-hover:scale-105 transition-transform">
             <GannetBirdIcon />
           </div>
+         
           <div className="flex items-start gap-0.5">
             <span
               className="text-xl font-extrabold tracking-wider transition-colors duration-300"

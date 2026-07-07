@@ -8,7 +8,6 @@ import {
   AlertCircle,
   ShoppingCart,
   Users,
-  Droplets,
   LogOut,
   Menu,
   Bell,
@@ -20,6 +19,7 @@ import { DashboardOverview } from "./DashboardOverview";
 import { QueriesView } from "./QueriesView";
 import { OrdersView } from "./OrdersView";
 import { UsersView } from "./UsersView";
+import { GannetBirdIcon } from "@/components/shared/GannetBirdIcon";
 
 const SIDE_ITEMS: { key: DashTab; icon: LucideIcon; label: string }[] = [
   { key: "overview", icon: LayoutDashboard, label: "Dashboard" },
@@ -69,7 +69,8 @@ export function Dashboard() {
         >
           <div className="flex items-center gap-3 overflow-hidden">
             <div className="w-10 h-10 shrink-0 rounded-xl bg-[#0D6EFD] flex items-center justify-center">
-              <Droplets size={20} className="text-white" />
+              {/* <Droplets size={20} className="text-white" /> */}
+              <GannetBirdIcon />
             </div>
             {sidebarOpen && (
               <div className="flex items-start gap-0.5 overflow-hidden">

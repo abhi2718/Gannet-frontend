@@ -39,6 +39,6 @@ describe("presentational shared components", () => {
     const { container: drops } = render(<FloatingDroplets />);
     const { container: bird } = render(<GannetBirdIcon />);
     expect(drops.querySelectorAll("div").length).toBeGreaterThan(0);
-    expect(bird.querySelector("svg")).toBeTruthy();
+    expect(bird.querySelector("img")).toBeTruthy();
   });
 });
