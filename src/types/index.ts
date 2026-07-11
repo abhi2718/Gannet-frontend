@@ -101,7 +101,10 @@ export type Query = {
 
 /** Order record shown in the admin dashboard. */
 export type AdminOrder = {
+  /** Human-readable order number shown in the UI (e.g. "ORD-2401"). */
   id: string;
+  /** MongoDB `_id` — the key used for update/delete API calls. */
+  mongoId: string;
   customer: string;
   phone: string;
   address: string;

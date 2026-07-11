@@ -52,6 +52,9 @@ export function toAdminOrder(o: ApiOrder): AdminOrder {
   const items = toOrderItems(o.items);
   return {
     id: o.orderId ?? o._id ?? o.id ?? "",
+    // The Mongo _id is what PATCH/DELETE /api/orders/:id expects — keep it
+    // separate from the human-readable orderId shown in the table.
+    mongoId: o._id ?? o.id ?? "",
     customer: o.customerName,
     phone: o.customerPhone,
     address: formatAddress(o.address),

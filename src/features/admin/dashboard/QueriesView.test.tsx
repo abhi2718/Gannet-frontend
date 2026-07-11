@@ -14,10 +14,15 @@ describe("QueriesView", () => {
     mockApiDelete.mockResolvedValue({});
   });
 
+  it("shows a loader before the queries resolve", () => {
+    renderWithClient(<QueriesView />);
+    expect(screen.getByText("Loading queries...")).toBeInTheDocument();
+  });
+
   it("renders fetched queries (falls back to mock data without the API)", async () => {
     renderWithClient(<QueriesView />);
-    expect(screen.getByText("All Queries")).toBeInTheDocument();
     expect(await screen.findByText("Rahul Verma")).toBeInTheDocument();
+    expect(screen.getByText("All Queries")).toBeInTheDocument();
   });
 
   it("filters rows by the search term", async () => {

@@ -14,11 +14,16 @@ describe("UsersView", () => {
     mockApiPatch.mockResolvedValue({});
   });
 
+  it("shows a loader before the users resolve", () => {
+    renderWithClient(<UsersView />);
+    expect(screen.getByText("Loading users...")).toBeInTheDocument();
+  });
+
   it("renders fetched users", async () => {
     renderWithClient(<UsersView />);
+    expect(await screen.findByText("arjun.m@gmail.com")).toBeInTheDocument();
     // "All Users" is both the heading and a select option, so target the heading.
     expect(screen.getByRole("heading", { name: "All Users" })).toBeInTheDocument();
-    expect(await screen.findByText("arjun.m@gmail.com")).toBeInTheDocument();
   });
 
   it("filters to inactive users", async () => {

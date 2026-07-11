@@ -7,6 +7,7 @@ import { useAdminQueries } from "@/lib/query/hooks/useAdminQueries";
 import { useAdminChart } from "@/lib/query/hooks/useAdminChart";
 import { useAdminSummary, useAdminOrderStatus } from "@/lib/query/hooks/useAdminAnalytics";
 import { ADMIN_SUMMARY } from "@/data/mock/admin";
+import { Loader } from "@/components/shared/Loader";
 import type { AdminSummary } from "@/types";
 import { OverviewCharts } from "./OverviewCharts";
 import { OverviewRecentQueries } from "./OverviewRecentQueries";
@@ -58,11 +59,22 @@ export function DashboardOverview() {
   const uid = useId().replace(/:/g, "");
   const ordId = `ordGrad-${uid}`;
   const qryId = `qryGrad-${uid}`;
-  const { data: queries = [] } = useAdminQueries();
-  const { data: chartData = [] } = useAdminChart();
-  const { data: summary = ADMIN_SUMMARY } = useAdminSummary();
-  const { data: statusCounts = {} } = useAdminOrderStatus();
+  const queriesQuery = useAdminQueries();
+  const chartQuery = useAdminChart();
+  const summaryQuery = useAdminSummary();
+  const statusQuery = useAdminOrderStatus();
+  const { data: queries = [] } = queriesQuery;
+  const { data: chartData = [] } = chartQuery;
+  const { data: summary = ADMIN_SUMMARY } = summaryQuery;
+  const { data: statusCounts = {} } = statusQuery;
   const newCount = queries.filter((q) => q.status === "new").length;
+  const isLoading =
+    queriesQuery.isLoading ||
+    chartQuery.isLoading ||
+    summaryQuery.isLoading ||
+    statusQuery.isLoading;
+
+  if (isLoading) return <Loader label="Loading dashboard..." />;
 
   return (
     <div className="p-8 space-y-8">

@@ -208,6 +208,7 @@ export const MOCK_ORDERS: AdminOrder[] = RAW_ORDERS.map((raw) => {
   const qty = items.reduce((s, i) => s + i.qty, 0);
   return {
     id: o.id,
+    mongoId: o.id,
     customer: o.customer,
     phone: o.phone,
     address: o.address,

@@ -9,6 +9,7 @@ const mockApiPatch = apiPatch as jest.MockedFunction<typeof apiPatch>;
 
 const ORDER: AdminOrder = {
   id: "ORD-9",
+  mongoId: "665f0a1b2c3d4e5f60718293",
   customer: "Jane",
   phone: "9876543210",
   address: "1 Road",
@@ -39,7 +40,7 @@ describe("OrderEditModal", () => {
     fireEvent.change(screen.getByLabelText("Status"), { target: { value: "out-for-delivery" } });
     fireEvent.click(screen.getByText("Save Changes"));
     await waitFor(() =>
-      expect(mockApiPatch).toHaveBeenCalledWith("/orders/ORD-9", {
+      expect(mockApiPatch).toHaveBeenCalledWith("/orders/665f0a1b2c3d4e5f60718293", {
         customerName: "Janet",
         customerPhone: "9876543210",
         status: "out for delivery",
@@ -54,6 +55,13 @@ describe("OrderEditModal", () => {
     fireEvent.click(screen.getByText("Save Changes"));
     expect(await screen.findByText(/Please enter your name/)).toBeInTheDocument();
     expect(mockApiPatch).not.toHaveBeenCalled();
+  });
+
+  it("keeps letters out of the phone field", () => {
+    renderWithClient(<OrderEditModal order={ORDER} onClose={() => {}} />);
+    const phone = screen.getByLabelText("Phone");
+    fireEvent.change(phone, { target: { value: "98abc76543" } });
+    expect(phone).toHaveValue("9876543");
   });
 
   it("blocks saving when the phone is not a valid 10-digit number", async () => {

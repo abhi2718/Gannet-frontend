@@ -7,6 +7,7 @@ import { useAdminQueries } from "@/lib/query/hooks/useAdminQueries";
 import { useUpdateQueryStatus, useDeleteQuery } from "@/lib/query/hooks/useQueryMutations";
 import { TablePagination } from "@/components/shared/TablePagination";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { Loader } from "@/components/shared/Loader";
 import { usePagination } from "@/lib/hooks/usePagination";
 import type { Query } from "@/types";
 
@@ -15,7 +16,7 @@ const STATUS_OPTIONS = ["all", "new", "contacted", "converted"];
 const ROW_STATUSES = ["new", "contacted", "converted"];
 
 export function QueriesView() {
-  const { data: queries = [] } = useAdminQueries();
+  const { data: queries = [], isLoading } = useAdminQueries();
   const updateStatus = useUpdateQueryStatus();
   const deleteQuery = useDeleteQuery();
   const [search, setSearch] = useState("");
@@ -35,6 +36,8 @@ export function QueriesView() {
         q.city.toLowerCase().includes(search.toLowerCase())),
   );
   const { page, setPage, totalPages, pageItems } = usePagination(filtered);
+
+  if (isLoading) return <Loader label="Loading queries..." />;
 
   return (
     <div className="p-8 space-y-6">

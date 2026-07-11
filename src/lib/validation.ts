@@ -21,6 +21,13 @@ export function isValidPhone(phone: string): boolean {
   return /^[6-9]\d{9}$/.test(local);
 }
 
+/**
+ * Strips anything that can't appear in a phone number so the field accepts
+ * digits only (plus the usual `+`, spaces and hyphens used for formatting).
+ * Letters and other symbols are dropped as the user types.
+ */
+export const sanitizePhone = (v: string): string => v.replace(/[^\d+\s-]/g, "");
+
 export const emailError = (v: string): string | null =>
   EMAIL_RE.test(v.trim()) ? null : "Please enter a valid email address.";
 

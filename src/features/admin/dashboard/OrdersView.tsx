@@ -6,6 +6,7 @@ import { Search, Edit2, Trash2 } from "lucide-react";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { TablePagination } from "@/components/shared/TablePagination";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { Loader } from "@/components/shared/Loader";
 import { useAdminOrders } from "@/lib/query/hooks/useAdminOrders";
 import { useDeleteOrder } from "@/lib/query/hooks/useOrderMutations";
 import { usePagination } from "@/lib/hooks/usePagination";
@@ -40,7 +41,7 @@ const optionLabel = (opt: string) =>
         .join(" ");
 
 export function OrdersView() {
-  const { data: orders = [] } = useAdminOrders();
+  const { data: orders = [], isLoading } = useAdminOrders();
   const deleteOrder = useDeleteOrder();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
@@ -55,9 +56,11 @@ export function OrdersView() {
   );
   const { page, setPage, totalPages, pageItems } = usePagination(filtered);
 
+  if (isLoading) return <Loader label="Loading orders..." />;
+
   const confirmDelete = async () => {
     if (!deleteTarget) return;
-    await deleteOrder.mutateAsync(deleteTarget.id);
+    await deleteOrder.mutateAsync(deleteTarget.mongoId);
     setDeleteTarget(null);
   };
 

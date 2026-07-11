@@ -74,6 +74,7 @@ describe("toAdminOrder", () => {
     };
     expect(toAdminOrder(api)).toEqual({
       id: "ORD-9001",
+      mongoId: "o1",
       customer: "Priya Sharma",
       phone: "+919784532100",
       address: "45 MG Road, Delhi, Delhi, 110001",

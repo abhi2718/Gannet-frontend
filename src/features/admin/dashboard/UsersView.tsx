@@ -6,6 +6,7 @@ import { Search, Edit2, Trash2 } from "lucide-react";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { TablePagination } from "@/components/shared/TablePagination";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { Loader } from "@/components/shared/Loader";
 import { useAdminUsers } from "@/lib/query/hooks/useAdminUsers";
 import { useDeleteUser } from "@/lib/query/hooks/useUserMutations";
 import { usePagination } from "@/lib/hooks/usePagination";
@@ -26,7 +27,7 @@ const initials = (name: string) =>
     .join("");
 
 export function UsersView() {
-  const { data: users = [] } = useAdminUsers();
+  const { data: users = [], isLoading } = useAdminUsers();
   const deleteUser = useDeleteUser();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
@@ -42,6 +43,8 @@ export function UsersView() {
   );
   const activeCount = users.filter((u) => u.status === "active").length;
   const { page, setPage, totalPages, pageItems } = usePagination(filtered);
+
+  if (isLoading) return <Loader label="Loading users..." />;
 
   const confirmDelete = async () => {
     if (!deleteTarget) return;

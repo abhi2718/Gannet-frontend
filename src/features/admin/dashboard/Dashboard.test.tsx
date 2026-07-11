@@ -24,9 +24,9 @@ jest.mock("@/features/user/auth/AuthContext", () => ({
 }));
 
 describe("Dashboard", () => {
-  it("shows the overview tab by default", () => {
+  it("shows the overview tab by default", async () => {
     renderWithClient(<Dashboard />);
-    expect(screen.getByText("Dashboard Overview")).toBeInTheDocument();
+    expect(await screen.findByText("Dashboard Overview")).toBeInTheDocument();
   });
 
   it("renders every sidebar section", () => {

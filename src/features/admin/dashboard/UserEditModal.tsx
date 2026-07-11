@@ -5,7 +5,7 @@ import { motion } from "motion/react";
 import { X, Loader2 } from "lucide-react";
 import { useUpdateUser } from "@/lib/query/hooks/useUserMutations";
 import { FieldError } from "@/components/shared/FieldError";
-import { nameError, emailError, phoneError } from "@/lib/validation";
+import { nameError, emailError, phoneError, sanitizePhone } from "@/lib/validation";
 import type { User } from "@/types";
 
 const STATUS_OPTIONS = ["active", "inactive"];
@@ -124,10 +124,12 @@ export function UserEditModal({ user, onClose }: { user: User; onClose: () => vo
             </label>
             <input
               id="edit-user-phone"
+              type="tel"
+              inputMode="numeric"
               aria-invalid={!!errors.phone}
               value={phone}
               onChange={(e) => {
-                setPhone(e.target.value);
+                setPhone(sanitizePhone(e.target.value));
                 setErrors((p) => ({ ...p, phone: undefined, form: undefined }));
               }}
               className="w-full px-3 py-2.5 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0D6EFD]"

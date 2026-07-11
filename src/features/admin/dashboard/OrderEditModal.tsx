@@ -5,7 +5,7 @@ import { motion } from "motion/react";
 import { X, Loader2 } from "lucide-react";
 import { useUpdateOrder } from "@/lib/query/hooks/useOrderMutations";
 import { FieldError } from "@/components/shared/FieldError";
-import { nameError, phoneError } from "@/lib/validation";
+import { nameError, phoneError, sanitizePhone } from "@/lib/validation";
 import type { AdminOrder } from "@/types";
 
 type Errors = { customer?: string; phone?: string; form?: string };
@@ -37,7 +37,7 @@ export function OrderEditModal({ order, onClose }: { order: AdminOrder; onClose:
     setErrors({});
     try {
       await updateOrder.mutateAsync({
-        id: order.id,
+        id: order.mongoId,
         // The API stores statuses with spaces; the UI keys them with hyphens.
         input: {
           customerName: customer.trim(),
@@ -110,10 +110,12 @@ export function OrderEditModal({ order, onClose }: { order: AdminOrder; onClose:
             </label>
             <input
               id="edit-phone"
+              type="tel"
+              inputMode="numeric"
               aria-invalid={!!errors.phone}
               value={phone}
               onChange={(e) => {
-                setPhone(e.target.value);
+                setPhone(sanitizePhone(e.target.value));
                 setErrors((p) => ({ ...p, phone: undefined, form: undefined }));
               }}
               className="w-full px-3 py-2.5 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0D6EFD]"

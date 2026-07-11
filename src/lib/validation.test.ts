@@ -2,6 +2,7 @@ import {
   emailError,
   passwordError,
   phoneError,
+  sanitizePhone,
   nameError,
   pinCodeError,
   requiredError,
@@ -31,6 +32,12 @@ describe("validation", () => {
     expect(phoneError("12345")).toMatch(/valid 10-digit phone/); // too short
     expect(phoneError("1234567890")).toMatch(/valid 10-digit phone/); // starts with 1
     expect(phoneError("98765432101")).toMatch(/valid 10-digit phone/); // too long
+  });
+
+  it("strips letters and stray symbols from a phone value but keeps digits/+/space/-", () => {
+    expect(sanitizePhone("98765abc43210")).toBe("9876543210");
+    expect(sanitizePhone("+91 98765-43210")).toBe("+91 98765-43210");
+    expect(sanitizePhone("phone: 9876543210!")).toBe(" 9876543210");
   });
 
   it("validates PIN codes, names and required fields", () => {

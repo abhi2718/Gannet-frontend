@@ -14,10 +14,15 @@ describe("OrdersView", () => {
     mockApiPatch.mockResolvedValue({});
   });
 
+  it("shows a loader before the orders resolve", () => {
+    renderWithClient(<OrdersView />);
+    expect(screen.getByText("Loading orders...")).toBeInTheDocument();
+  });
+
   it("renders fetched orders", async () => {
     renderWithClient(<OrdersView />);
-    expect(screen.getByText("All Orders")).toBeInTheDocument();
     expect(await screen.findByText("ORD-2401")).toBeInTheDocument();
+    expect(screen.getByText("All Orders")).toBeInTheDocument();
   });
 
   it("shows an empty state when the search matches nothing", async () => {
