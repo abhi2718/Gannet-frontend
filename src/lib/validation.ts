@@ -28,6 +28,18 @@ export function isValidPhone(phone: string): boolean {
  */
 export const sanitizePhone = (v: string): string => v.replace(/[^\d+\s-]/g, "");
 
+/** Letters, spaces and basic name punctuation (- . ') — used by city/state. */
+export const LETTER_TEXT_RE = /^[A-Za-z][A-Za-z\s.'-]*$/;
+
+/** Keeps digits only, capped at six — used for the PIN code field as you type. */
+export const sanitizePinCode = (v: string): string => v.replace(/\D/g, "").slice(0, 6);
+
+/**
+ * Drops digits and stray symbols so a text field (city/state) accepts letters,
+ * spaces and basic name punctuation only — the counterpart of `sanitizePhone`.
+ */
+export const sanitizeText = (v: string): string => v.replace(/[^A-Za-z\s.'-]/g, "");
+
 export const emailError = (v: string): string | null =>
   EMAIL_RE.test(v.trim()) ? null : "Please enter a valid email address.";
 
@@ -42,8 +54,54 @@ export const passwordError = (v: string): string | null =>
 export const nameError = (v: string): string | null =>
   v.trim().length >= 3 ? null : "Please enter your name (at least 3 characters).";
 
+/**
+ * Full name: at least three characters and letters only (no digits) — used by
+ * the enquiry/dealership forms where the name must be a plain string.
+ */
+export const fullNameError = (v: string): string | null => {
+  const t = v.trim();
+  if (t.length < 3) return "Please enter your full name (at least 3 characters).";
+  return LETTER_TEXT_RE.test(t) ? null : "Full name can only contain letters.";
+};
+
+/** Enquiry message: at least ten characters long. */
+export const messageError = (v: string): string | null =>
+  v.trim().length >= 10 ? null : "Message length must be at least 10 characters long";
+
+/** Enquiry requirement: at least ten characters. */
+export const requirementError = (v: string): string | null =>
+  v.trim().length >= 10 ? null : "Requirement length must be at least 10 characters";
+
 export const pinCodeError = (v: string): string | null =>
   PIN_RE.test(v.trim()) ? null : "Please enter a valid 6-digit PIN code.";
+
+/**
+ * Text that contains letters only (no digits) — for label/city/state/landmark.
+ * `label` is woven into the message. Pass `min`/`max` to bound the length, or
+ * `optional: true` to allow an empty value (e.g. an optional landmark).
+ */
+export const letterTextError = (
+  v: string,
+  label: string,
+  opts: { min?: number; max?: number; optional?: boolean } = {},
+): string | null => {
+  const t = v.trim();
+  if (!t) return opts.optional ? null : `${label} is required.`;
+  if (!LETTER_TEXT_RE.test(t)) return `${label} can only contain letters.`;
+  if (opts.min && t.length < opts.min) return `${label} must be at least ${opts.min} characters.`;
+  if (opts.max && t.length > opts.max) return `${label} must be at most ${opts.max} characters.`;
+  return null;
+};
+
+/**
+ * Non-empty free text (any characters) with a minimum length — for fields like
+ * street/label that may contain digits but must still be at least `min` long.
+ */
+export const minLenError = (v: string, label: string, min: number): string | null => {
+  const t = v.trim();
+  if (!t) return `${label} is required.`;
+  return t.length >= min ? null : `${label} must be at least ${min} characters.`;
+};
 
 /** Generic non-empty check. `label` is woven into the message, e.g. "City is required." */
 export const requiredError = (v: string, label: string): string | null =>

@@ -36,7 +36,7 @@ export const FALLBACK_CATALOG: CatalogProduct[] = PRODUCTS.map((p) => ({
   tag: p.label,
   price: BOTTLE_PRICES[p.size],
   description: p.desc,
-  image: "/bottle.png",
+  image: "/bottle_old.png",
 }));
 
 /**

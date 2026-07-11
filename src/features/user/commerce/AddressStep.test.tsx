@@ -71,8 +71,9 @@ describe("AddressStep", () => {
       target: { value: "9 College Rd" },
     });
     fireEvent.change(screen.getByLabelText("City"), { target: { value: "Bangalore" } });
-    fireEvent.change(screen.getByLabelText("State"), { target: { value: "KA" } });
+    fireEvent.change(screen.getByLabelText("State"), { target: { value: "Karnataka" } });
     fireEvent.change(screen.getByLabelText("PIN Code"), { target: { value: "560001" } });
+    fireEvent.change(screen.getByLabelText("Landmark"), { target: { value: "Near Park" } });
     fireEvent.click(screen.getByText("Save Address"));
 
     await waitFor(() => expect(checkoutApi.createAddress).toHaveBeenCalled());

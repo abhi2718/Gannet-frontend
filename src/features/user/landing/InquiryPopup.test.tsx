@@ -18,6 +18,9 @@ function fillRequiredFields() {
   fireEvent.change(screen.getByPlaceholderText("e.g. 50 bottles/month"), {
     target: { value: "50 bottles/month" },
   });
+  fireEvent.change(screen.getByPlaceholderText("Anything else?"), {
+    target: { value: "Need bottles delivered weekly." },
+  });
 }
 
 describe("InquiryPopup", () => {

@@ -4,7 +4,15 @@ import { useState } from "react";
 import { Send, CheckCircle } from "lucide-react";
 import { useSubmitQuery } from "@/lib/query/hooks/useQueryMutations";
 import { FieldError } from "@/components/shared/FieldError";
-import { emailError, phoneError, nameError, requiredError } from "@/lib/validation";
+import {
+  emailError,
+  phoneError,
+  fullNameError,
+  messageError,
+  requirementError,
+  letterTextError,
+  sanitizeText,
+} from "@/lib/validation";
 
 const inputClass =
   "w-full px-4 py-3.5 text-sm rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0D6EFD]";
@@ -23,13 +31,15 @@ const FIELDS: {
   placeholder: string;
   full: boolean;
   validate: (v: string) => string | null;
+  /** Optional input filter applied as the user types (e.g. letters only). */
+  sanitize?: (v: string) => string;
 }[] = [
-  { key: "name", label: "Full Name", type: "text", placeholder: "Your full name", full: false, validate: nameError }, // prettier-ignore
+  { key: "name", label: "Full Name", type: "text", placeholder: "Your full name", full: false, validate: fullNameError, sanitize: sanitizeText }, // prettier-ignore
   { key: "phone", label: "Phone Number", type: "tel", placeholder: "+91 XXXXX XXXXX", full: false, validate: phoneError }, // prettier-ignore
   { key: "email", label: "Email Address", type: "email", placeholder: "you@example.com", full: false, validate: emailError }, // prettier-ignore
-  { key: "city", label: "City", type: "text", placeholder: "Your city", full: false, validate: (v) => requiredError(v, "City") }, // prettier-ignore
-  { key: "requirement", label: "Requirement", type: "text", placeholder: "e.g. 50 bottles/month, dealership, bulk order", full: true, validate: (v) => requiredError(v, "Requirement") }, // prettier-ignore
-  { key: "message", label: "Message", type: "textarea", placeholder: "Tell us about your water requirements...", full: true, validate: (v) => requiredError(v, "Message") }, // prettier-ignore
+  { key: "city", label: "City", type: "text", placeholder: "Your city", full: false, validate: (v) => letterTextError(v, "City"), sanitize: sanitizeText }, // prettier-ignore
+  { key: "requirement", label: "Requirement", type: "text", placeholder: "e.g. 50 bottles/month, dealership, bulk order", full: true, validate: requirementError }, // prettier-ignore
+  { key: "message", label: "Message", type: "textarea", placeholder: "Tell us about your water requirements...", full: true, validate: messageError }, // prettier-ignore
 ];
 
 const EMPTY: Record<FieldKey, string> = {
@@ -140,7 +150,7 @@ export function ContactForm() {
                 aria-invalid={!!errors[f.key]}
                 placeholder={f.placeholder}
                 value={form[f.key]}
-                onChange={(e) => change(f.key, e.target.value)}
+                onChange={(e) => change(f.key, f.sanitize ? f.sanitize(e.target.value) : e.target.value)}
                 className={inputClass}
                 style={fieldStyle(errors[f.key])}
               />

@@ -5,7 +5,15 @@ import { motion } from "motion/react";
 import { X, CheckCircle, Droplets, Send } from "lucide-react";
 import { useSubmitQuery } from "@/lib/query/hooks/useQueryMutations";
 import { FieldError } from "@/components/shared/FieldError";
-import { emailError, phoneError, nameError, requiredError } from "@/lib/validation";
+import {
+  emailError,
+  phoneError,
+  fullNameError,
+  messageError,
+  requirementError,
+  letterTextError,
+  sanitizeText,
+} from "@/lib/validation";
 
 type FieldKey = "name" | "mobile" | "email" | "city" | "req";
 
@@ -16,15 +24,17 @@ const FIELDS: {
   placeholder: string;
   col: number;
   validate: (v: string) => string | null;
+  /** Optional input filter applied as the user types (e.g. letters only). */
+  sanitize?: (v: string) => string;
 }[] = [
-  { label: "Full Name", key: "name", type: "text", placeholder: "Your name", col: 2, validate: nameError }, // prettier-ignore
+  { label: "Full Name", key: "name", type: "text", placeholder: "Your name", col: 2, validate: fullNameError, sanitize: sanitizeText }, // prettier-ignore
   { label: "Mobile Number", key: "mobile", type: "tel", placeholder: "+91 XXXXX XXXXX", col: 1, validate: phoneError }, // prettier-ignore
   { label: "Email", key: "email", type: "email", placeholder: "you@example.com", col: 1, validate: emailError }, // prettier-ignore
-  { label: "City", key: "city", type: "text", placeholder: "Your city", col: 1, validate: (v) => requiredError(v, "City") }, // prettier-ignore
-  { label: "Requirement", key: "req", type: "text", placeholder: "e.g. 50 bottles/month", col: 1, validate: (v) => requiredError(v, "Requirement") }, // prettier-ignore
+  { label: "City", key: "city", type: "text", placeholder: "Your city", col: 1, validate: (v) => letterTextError(v, "City"), sanitize: sanitizeText }, // prettier-ignore
+  { label: "Requirement", key: "req", type: "text", placeholder: "e.g. 50 bottles/month", col: 1, validate: requirementError }, // prettier-ignore
 ];
 
-type Errors = Partial<Record<FieldKey, string>> & { form?: string };
+type Errors = Partial<Record<FieldKey, string>> & { form?: string; msg?: string };
 
 export function InquiryPopup({ onClose }: { onClose: () => void }) {
   const [form, setForm] = useState({ name: "", mobile: "", email: "", city: "", req: "", msg: "" });
@@ -39,6 +49,8 @@ export function InquiryPopup({ onClose }: { onClose: () => void }) {
       const msg = f.validate(form[f.key]);
       if (msg) next[f.key] = msg;
     }
+    const msgErr = messageError(form.msg);
+    if (msgErr) next.msg = msgErr;
     if (Object.keys(next).length > 0) {
       setErrors(next);
       return;
@@ -51,7 +63,7 @@ export function InquiryPopup({ onClose }: { onClose: () => void }) {
         email: form.email,
         city: form.city,
         requirement: form.req,
-        message: form.msg.trim() || form.req,
+        message: form.msg.trim(),
       },
       {
         onSuccess: () => setSent(true),
@@ -133,7 +145,7 @@ export function InquiryPopup({ onClose }: { onClose: () => void }) {
                       aria-invalid={!!errors[f.key]}
                       placeholder={f.placeholder}
                       value={(form as Record<string, string>)[f.key]}
-                      onChange={(e) => change(f.key, e.target.value)}
+                      onChange={(e) => change(f.key, f.sanitize ? f.sanitize(e.target.value) : e.target.value)}
                       className="w-full px-3 py-2.5 text-sm rounded-xl bg-blue-50 border focus:border-[#0D6EFD] focus:outline-none transition-colors"
                       style={{ borderColor: errors[f.key] ? "#EF4444" : "transparent" }}
                     />
@@ -145,10 +157,14 @@ export function InquiryPopup({ onClose }: { onClose: () => void }) {
                   <textarea
                     placeholder="Anything else?"
                     rows={2}
+                    aria-label="Message"
+                    aria-invalid={!!errors.msg}
                     value={form.msg}
                     onChange={(e) => change("msg", e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm rounded-xl bg-blue-50 border border-transparent focus:border-[#0D6EFD] focus:outline-none transition-colors resize-none"
+                    className="w-full px-3 py-2.5 text-sm rounded-xl bg-blue-50 border focus:border-[#0D6EFD] focus:outline-none transition-colors resize-none"
+                    style={{ borderColor: errors.msg ? "#EF4444" : "transparent" }}
                   />
+                  <FieldError message={errors.msg} />
                 </div>
               </div>
               {errors.form && <p className="text-xs text-red-500 mb-2">{errors.form}</p>}

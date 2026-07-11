@@ -4,7 +4,7 @@ import Image from "next/image";
 export function HeroBottle() {
   return (
     <Image
-      src="/bottle.png"
+      src="/bottle_old.png"
       alt="GANNET Premium Natural Water Bottle"
       width={629}
       height={1477}

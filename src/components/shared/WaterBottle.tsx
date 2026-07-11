@@ -5,7 +5,7 @@ export function WaterBottle({ size, height = 220 }: { size: string; height?: num
   return (
     <div className="relative mx-auto flex flex-col items-center" style={{ height }}>
       <Image
-        src="/bottle.png"
+        src="/bottle_old.png"
         alt={`GANNET ${size} Premium Natural Water Bottle`}
         width={629}
         height={1477}

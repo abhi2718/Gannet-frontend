@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronDown, LayoutDashboard, User, ShoppingBag, LogOut } from "lucide-react";
+import { ChevronDown, Home, LayoutDashboard, User, ShoppingBag, LogOut } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useAuth } from "@/features/user/auth/AuthContext";
 import { initials } from "@/lib/format/initials";
@@ -37,6 +37,10 @@ export function NavUserMenu({ scrolled }: NavUserMenuProps) {
     closeTimer.current = setTimeout(() => setOpen(false), 140);
   };
 
+  const goHome = () => {
+    setOpen(false);
+    router.push("/");
+  };
   const goToDashboard = () => {
     setOpen(false);
     router.push("/dashboard");
@@ -99,6 +103,13 @@ export function NavUserMenu({ scrolled }: NavUserMenuProps) {
               <div className="font-bold text-gray-900 text-sm truncate">{user.username}</div>
               <div className="text-xs text-gray-400 truncate">{user.email}</div>
             </div>
+            <button
+              onClick={goHome}
+              className="w-full md:hidden flex items-center gap-3 px-4 py-3 hover:bg-blue-50 transition-colors text-left"
+            >
+              <Home size={15} className="text-[#0D6EFD]" />
+              <span className="text-sm font-semibold text-gray-800">Home</span>
+            </button>
             <button
               onClick={goToDashboard}
               className="w-full flex items-center gap-3 px-4 py-3 hover:bg-blue-50 transition-colors text-left"

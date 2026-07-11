@@ -3,6 +3,13 @@ import {
   passwordError,
   phoneError,
   sanitizePhone,
+  sanitizePinCode,
+  sanitizeText,
+  letterTextError,
+  minLenError,
+  fullNameError,
+  messageError,
+  requirementError,
   nameError,
   pinCodeError,
   requiredError,
@@ -47,6 +54,69 @@ describe("validation", () => {
     expect(nameError("Al")).toMatch(/at least 3/);
     expect(requiredError("", "City")).toBe("City is required.");
     expect(requiredError("Mumbai", "City")).toBeNull();
+  });
+
+  it("keeps digits only for a PIN code, capped at six", () => {
+    expect(sanitizePinCode("400001")).toBe("400001");
+    expect(sanitizePinCode("40a0b01")).toBe("40001");
+    expect(sanitizePinCode("4000019999")).toBe("400001"); // capped at 6
+    expect(sanitizePinCode("abc")).toBe("");
+  });
+
+  it("strips digits and symbols from city/state text but keeps letters and spaces", () => {
+    expect(sanitizeText("New Delhi")).toBe("New Delhi");
+    expect(sanitizeText("Delhi123")).toBe("Delhi");
+    expect(sanitizeText("Mah@rashtra9")).toBe("Mahrashtra");
+  });
+
+  it("requires city/state to be non-empty and letters only", () => {
+    expect(letterTextError("Mumbai", "City")).toBeNull();
+    expect(letterTextError("New Delhi", "City")).toBeNull();
+    expect(letterTextError("", "City")).toBe("City is required.");
+    expect(letterTextError("   ", "State")).toBe("State is required.");
+    expect(letterTextError("Delhi1", "City")).toBe("City can only contain letters.");
+    expect(letterTextError("123", "State")).toBe("State can only contain letters.");
+  });
+
+  it("enforces a minimum length on letter text and free text", () => {
+    expect(letterTextError("Goa", "City", { min: 4 })).toBe("City must be at least 4 characters.");
+    expect(letterTextError("Pune", "City", { min: 4 })).toBeNull();
+    expect(minLenError("5 Hill Rd", "Street address", 4)).toBeNull();
+    expect(minLenError("5 H", "Street address", 4)).toBe(
+      "Street address must be at least 4 characters.",
+    );
+    expect(minLenError("", "Label", 4)).toBe("Label is required.");
+  });
+
+  it("caps letter text at a max length and can be optional", () => {
+    expect(letterTextError("Mumbai", "City", { max: 20 })).toBeNull();
+    expect(letterTextError("a".repeat(21), "City", { max: 20 })).toBe(
+      "City must be at most 20 characters.",
+    );
+    // Optional field: empty passes, but a filled value is still validated.
+    expect(letterTextError("", "Landmark", { max: 20, optional: true })).toBeNull();
+    expect(letterTextError("Near1", "Landmark", { optional: true })).toBe(
+      "Landmark can only contain letters.",
+    );
+  });
+
+  it("requires a full name of at least 3 letters with no digits", () => {
+    expect(fullNameError("John Doe")).toBeNull();
+    expect(fullNameError("Al")).toMatch(/at least 3/);
+    expect(fullNameError("John3")).toBe("Full name can only contain letters.");
+    expect(fullNameError("John 007")).toBe("Full name can only contain letters.");
+  });
+
+  it("requires an enquiry message of at least 10 characters", () => {
+    expect(messageError("Need bottles delivered weekly.")).toBeNull();
+    expect(messageError("too short")).toBe("Message length must be at least 10 characters long");
+    expect(messageError("   ")).toBe("Message length must be at least 10 characters long");
+  });
+
+  it("requires an enquiry requirement of at least 10 characters", () => {
+    expect(requirementError("50 bottles a month")).toBeNull();
+    expect(requirementError("bulk")).toBe("Requirement length must be at least 10 characters");
+    expect(requirementError("   ")).toBe("Requirement length must be at least 10 characters");
   });
 
   it("collectErrors returns only the failing fields", () => {

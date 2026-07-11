@@ -60,7 +60,7 @@ export function HeroSection({ onBook }: { onBook: () => void }) {
             style={{ animation: "bottleFloat 4s ease-in-out infinite" }}
           >
             <img
-              src="/bottle.png"
+              src="/bottle_old.png"
               alt="GANNET Premium Natural Water Bottle"
               style={{
                 height: "100%",

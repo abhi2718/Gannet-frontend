@@ -3,7 +3,18 @@
 import { motion } from "motion/react";
 import { Loader2 } from "lucide-react";
 import { FieldError } from "@/components/shared/FieldError";
-import { pinCodeError, requiredError } from "@/lib/validation";
+import {
+  pinCodeError,
+  minLenError,
+  letterTextError,
+  sanitizePinCode,
+  sanitizeText,
+} from "@/lib/validation";
+
+/** Every text field must be at least this many characters. */
+const TEXT_MIN = 4;
+/** City/state/landmark are capped at this many characters on the profile form. */
+const TEXT_MAX = 20;
 
 export type AddressFormValues = {
   label: string;
@@ -22,13 +33,18 @@ const FIELDS: {
   placeholder: string;
   col: number;
   validate?: (v: string) => string | null;
+  /** Optional input filter applied as the user types (e.g. digits/letters only). */
+  sanitize?: (v: string) => string;
+  inputMode?: "numeric";
+  /** Optional hard cap on the number of characters the input accepts. */
+  maxLength?: number;
 }[] = [
-  { key: "label", label: "Label", placeholder: "Home / Office", col: 1, validate: (v) => requiredError(v, "Label") }, // prettier-ignore
-  { key: "pinCode", label: "Pin Code", placeholder: "400001", col: 1, validate: pinCodeError },
-  { key: "street", label: "Street Address", placeholder: "Building, street, area", col: 2, validate: (v) => requiredError(v, "Street address") }, // prettier-ignore
-  { key: "city", label: "City", placeholder: "City", col: 1, validate: (v) => requiredError(v, "City") }, // prettier-ignore
-  { key: "state", label: "State", placeholder: "State", col: 1, validate: (v) => requiredError(v, "State") }, // prettier-ignore
-  { key: "landmark", label: "Landmark (optional)", placeholder: "Near…", col: 2 },
+  { key: "label", label: "Label", placeholder: "Home / Office", col: 1, validate: (v) => letterTextError(v, "Label", { min: TEXT_MIN }), sanitize: sanitizeText }, // prettier-ignore
+  { key: "pinCode", label: "Pin Code", placeholder: "400001", col: 1, validate: pinCodeError, sanitize: sanitizePinCode, inputMode: "numeric" }, // prettier-ignore
+  { key: "street", label: "Street Address", placeholder: "Building, street, area", col: 2, validate: (v) => minLenError(v, "Street address", TEXT_MIN) }, // prettier-ignore
+  { key: "city", label: "City", placeholder: "City", col: 1, validate: (v) => letterTextError(v, "City", { min: TEXT_MIN, max: TEXT_MAX }), sanitize: sanitizeText, maxLength: TEXT_MAX }, // prettier-ignore
+  { key: "state", label: "State", placeholder: "State", col: 1, validate: (v) => letterTextError(v, "State", { min: TEXT_MIN, max: TEXT_MAX }), sanitize: sanitizeText, maxLength: TEXT_MAX }, // prettier-ignore
+  { key: "landmark", label: "Landmark", placeholder: "Near…", col: 2, validate: (v) => letterTextError(v, "Landmark", { min: TEXT_MIN, max: TEXT_MAX }), sanitize: sanitizeText, maxLength: TEXT_MAX }, // prettier-ignore
 ];
 
 /** Validates the address form, returning only the fields that failed. */
@@ -81,11 +97,13 @@ export function AddressForm({
               <label className="block text-xs font-semibold text-gray-500 mb-1">{f.label}</label>
               <input
                 type="text"
+                inputMode={f.inputMode}
+                maxLength={f.maxLength}
                 aria-label={f.label}
                 aria-invalid={!!errors[f.key]}
                 placeholder={f.placeholder}
                 value={values[f.key]}
-                onChange={(e) => onChange(f.key, e.target.value)}
+                onChange={(e) => onChange(f.key, f.sanitize ? f.sanitize(e.target.value) : e.target.value)}
                 className="w-full px-3 py-2.5 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0D6EFD]"
                 style={{ background: "white", border: `1.5px solid ${errors[f.key] ? "#EF4444" : "rgba(13,110,253,0.12)"}` }}
               />

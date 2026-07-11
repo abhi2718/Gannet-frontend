@@ -26,6 +26,13 @@ describe("NavUserMenu", () => {
     expect(container).toBeEmptyDOMElement();
   });
 
+  it("navigates to the storefront home from the Home item", () => {
+    render(<NavUserMenu scrolled />);
+    fireEvent.click(screen.getByLabelText("Account menu"));
+    fireEvent.click(screen.getByText("Home"));
+    expect(mockPush).toHaveBeenCalledWith("/");
+  });
+
   it("navigates to the dashboard from the Dashboard item", () => {
     render(<NavUserMenu scrolled />);
     fireEvent.click(screen.getByLabelText("Account menu"));

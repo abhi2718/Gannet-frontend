@@ -96,7 +96,7 @@ export function CartDrawer({ items, onClose, onQtyChange, onRemove, onCheckout }
                       style={{ background: "#EFF6FF" }}
                     >
                       <img
-                        src="/bottle.png"
+                        src="/bottle_old.png"
                         alt={item.size}
                         style={{
                           height: "100%",

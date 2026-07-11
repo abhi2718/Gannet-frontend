@@ -102,7 +102,7 @@ export function ProductSection({ onAddToCart, onBookNow }: ProductSectionProps) 
                         src="small_bottle_1x.png"
                           alt={`GANNET ${p.name} Premium Natural Water Bottle`}
                           onError={(e) => {
-                            (e.currentTarget as HTMLImageElement).src = "/bottle.png";
+                            (e.currentTarget as HTMLImageElement).src = "/bottle_old.png";
                           }}
                           style={{
                             height: `${BOTTLE_HEIGHTS[i % BOTTLE_HEIGHTS.length]}%`,

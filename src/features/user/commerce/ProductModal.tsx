@@ -69,7 +69,7 @@ export function ProductModal({ product, onClose, onAddToCart, onBookNow }: Produ
               src={product.image}
               alt={`GANNET ${product.name}`}
               onError={(e) => {
-                (e.currentTarget as HTMLImageElement).src = "/bottle.png";
+                (e.currentTarget as HTMLImageElement).src = "/bottle_old.png";
               }}
               style={{
                 height: "100%",

@@ -84,7 +84,8 @@ describe("ProfileAddresses", () => {
     });
     fireEvent.change(screen.getByPlaceholderText("400001"), { target: { value: "560001" } });
     fireEvent.change(screen.getByPlaceholderText("City"), { target: { value: "Pune" } });
-    fireEvent.change(screen.getByPlaceholderText("State"), { target: { value: "MH" } });
+    fireEvent.change(screen.getByPlaceholderText("State"), { target: { value: "Maharashtra" } });
+    fireEvent.change(screen.getByPlaceholderText("Near…"), { target: { value: "Near Park" } });
     fireEvent.click(screen.getByText("Save Address"));
     await waitFor(() =>
       expect(checkoutApi.createAddress).toHaveBeenCalledWith(

@@ -4,7 +4,17 @@ import { useEffect, useState } from "react";
 import { MapPin, Plus, Check, Loader2 } from "lucide-react";
 import { useAddresses, useCreateAddress } from "@/lib/query/hooks/useAddresses";
 import { FieldError } from "@/components/shared/FieldError";
-import { collectErrors, pinCodeError, requiredError } from "@/lib/validation";
+import {
+  collectErrors,
+  pinCodeError,
+  minLenError,
+  letterTextError,
+  sanitizePinCode,
+  sanitizeText,
+} from "@/lib/validation";
+
+/** Every text field must be at least this many characters. */
+const TEXT_MIN = 4;
 import { formatAddress } from "./checkoutApi";
 import type { Address } from "@/types";
 
@@ -27,7 +37,7 @@ const FIELDS = [
   },
   { key: "city", label: "City", placeholder: "City", col: 1, required: true },
   { key: "state", label: "State", placeholder: "State", col: 1, required: true },
-  { key: "landmark", label: "Landmark (optional)", placeholder: "Near…", col: 2, required: false },
+  { key: "landmark", label: "Landmark", placeholder: "Near…", col: 2, required: true },
 ] as const;
 
 const EMPTY = { label: "", street: "", pinCode: "", city: "", state: "", landmark: "" };
@@ -49,11 +59,12 @@ export function AddressStep({ selectedId, onSelect }: AddressStepProps) {
   const saveNew = async () => {
     setFormError("");
     const next = collectErrors(form as Record<string, string>, {
-      label: (v) => requiredError(v, "Label"),
+      label: (v) => minLenError(v, "Label", TEXT_MIN),
       pinCode: pinCodeError,
-      street: (v) => requiredError(v, "Street address"),
-      city: (v) => requiredError(v, "City"),
-      state: (v) => requiredError(v, "State"),
+      street: (v) => minLenError(v, "Street address", TEXT_MIN),
+      city: (v) => letterTextError(v, "City", { min: TEXT_MIN }),
+      state: (v) => letterTextError(v, "State", { min: TEXT_MIN }),
+      landmark: (v) => minLenError(v, "Landmark", TEXT_MIN),
     });
     if (Object.keys(next).length > 0) {
       setErrors(next);
@@ -141,12 +152,20 @@ export function AddressStep({ selectedId, onSelect }: AddressStepProps) {
               <div key={f.key} className={f.col === 2 ? "col-span-2" : ""}>
                 <input
                   type="text"
+                  inputMode={f.key === "pinCode" ? "numeric" : undefined}
                   aria-label={f.label}
                   aria-invalid={!!errors[f.key]}
                   placeholder={f.placeholder}
                   value={(form as Record<string, string>)[f.key]}
                   onChange={(e) => {
-                    setForm((p) => ({ ...p, [f.key]: e.target.value }));
+                    const raw = e.target.value;
+                    const value =
+                      f.key === "pinCode"
+                        ? sanitizePinCode(raw)
+                        : f.key === "city" || f.key === "state"
+                          ? sanitizeText(raw)
+                          : raw;
+                    setForm((p) => ({ ...p, [f.key]: value }));
                     setErrors((p) => ({ ...p, [f.key]: undefined }));
                     setFormError("");
                   }}

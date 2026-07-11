@@ -92,9 +92,7 @@ export function Navbar({ scrolled, onBook, onLogin, cartCount, onCartOpen }: Nav
 
         <div className="flex items-center gap-3">
           {user ? (
-            <div className="hidden md:block">
-              <NavUserMenu scrolled={scrolled} />
-            </div>
+            <NavUserMenu scrolled={scrolled} />
           ) : (
             <button
               onClick={onLogin}
