@@ -20,6 +20,7 @@ export const metadata: Metadata = {
   description:
     "Premium natural drinking water sourced from pristine mountain springs, purified to deliver freshness in every sip.",
   robots: { index: false, follow: false },
+  icons: { icon: "/logo.svg", shortcut: "/logo.svg", apple: "/logo.svg" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

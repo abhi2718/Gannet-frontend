@@ -36,6 +36,10 @@ export function Navbar({ scrolled, onBook, onLogin, cartCount, onCartOpen }: Nav
     setOpen(false);
     router.push(`/dashboard?view=${view}`);
   };
+  const goToDashboard = () => {
+    setOpen(false);
+    router.push("/dashboard");
+  };
   const mobileLogout = () => {
     setOpen(false);
     logout();
@@ -146,6 +150,7 @@ export function Navbar({ scrolled, onBook, onLogin, cartCount, onCartOpen }: Nav
         go={go}
         onLogin={onLogin}
         onBook={book}
+        goToDashboard={goToDashboard}
         goToView={goToView}
         mobileLogout={mobileLogout}
       />

@@ -68,6 +68,14 @@ describe("Navbar", () => {
     expect(screen.getByLabelText("Account menu")).toBeInTheDocument();
   });
 
+  it("shows Dashboard in the mobile menu and navigates to it", () => {
+    signedIn();
+    render(<Navbar {...baseProps} />);
+    fireEvent.click(screen.getByLabelText("Toggle menu"));
+    fireEvent.click(screen.getByText("Dashboard"));
+    expect(mockPush).toHaveBeenCalledWith("/dashboard");
+  });
+
   it("navigates to the profile view from the account menu", () => {
     signedIn();
     render(<Navbar {...baseProps} />);

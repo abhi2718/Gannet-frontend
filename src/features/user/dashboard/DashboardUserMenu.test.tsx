@@ -15,6 +15,14 @@ describe("DashboardUserMenu", () => {
     expect(onNavigate).toHaveBeenCalledWith("profile");
   });
 
+  it("navigates to the dashboard home view from the Dashboard item", () => {
+    const onNavigate = jest.fn();
+    render(<DashboardUserMenu onHome={jest.fn()} onNavigate={onNavigate} onLogout={jest.fn()} />);
+    fireEvent.click(screen.getByLabelText("Account menu"));
+    fireEvent.click(screen.getByText("Dashboard"));
+    expect(onNavigate).toHaveBeenCalledWith("home");
+  });
+
   it("goes home from the Home item", () => {
     const onHome = jest.fn();
     render(<DashboardUserMenu onHome={onHome} onNavigate={jest.fn()} onLogout={jest.fn()} />);

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "motion/react";
-import { User, ShoppingBag, LogOut } from "lucide-react";
+import { LayoutDashboard, User, ShoppingBag, LogOut } from "lucide-react";
 import { NAV, FEATURES } from "@/data/content";
 
 const sectionId = (n: string) =>
@@ -13,6 +13,7 @@ type NavbarMobileMenuProps = {
   go: (id: string) => void;
   onLogin: () => void;
   onBook: () => void;
+  goToDashboard: () => void;
   goToView: (view: string) => void;
   mobileLogout: () => void;
 };
@@ -24,6 +25,7 @@ export function NavbarMobileMenu({
   go,
   onLogin,
   onBook,
+  goToDashboard,
   goToView,
   mobileLogout,
 }: NavbarMobileMenuProps) {
@@ -60,6 +62,12 @@ export function NavbarMobileMenu({
             </div>
             {signedIn && (
               <div className="flex flex-col gap-1 pt-2 mt-1 border-t border-gray-50">
+                <button
+                  onClick={goToDashboard}
+                  className="flex items-center gap-2.5 py-3 text-left text-sm font-semibold text-gray-700"
+                >
+                  <LayoutDashboard size={15} className="text-[#0D6EFD]" /> Dashboard
+                </button>
                 <button
                   onClick={() => goToView("profile")}
                   className="flex items-center gap-2.5 py-3 text-left text-sm font-semibold text-gray-700"

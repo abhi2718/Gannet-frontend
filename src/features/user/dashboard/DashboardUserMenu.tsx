@@ -2,13 +2,14 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronDown, Home, Users, ShoppingCart, LogOut } from "lucide-react";
+import { ChevronDown, Home, LayoutDashboard, Users, ShoppingCart, LogOut } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useAuth } from "@/features/user/auth/AuthContext";
 import { initials } from "@/lib/format/initials";
 import type { UserDashView } from "@/types";
 
 const MENU_ITEMS: { icon: LucideIcon; label: string; key: UserDashView; desc: string }[] = [
+  { icon: LayoutDashboard, label: "Dashboard", key: "home", desc: "Your dashboard overview" },
   { icon: Users, label: "Profile", key: "profile", desc: "View & edit your info" },
   { icon: ShoppingCart, label: "Order History", key: "order-history", desc: "All your bookings" },
 ];
