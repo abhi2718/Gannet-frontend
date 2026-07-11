@@ -13,6 +13,7 @@ import {
   requirementError,
   letterTextError,
   sanitizeText,
+  sanitizePhone,
 } from "@/lib/validation";
 
 type FieldKey = "name" | "mobile" | "email" | "city" | "req";
@@ -28,7 +29,7 @@ const FIELDS: {
   sanitize?: (v: string) => string;
 }[] = [
   { label: "Full Name", key: "name", type: "text", placeholder: "Your name", col: 2, validate: fullNameError, sanitize: sanitizeText }, // prettier-ignore
-  { label: "Mobile Number", key: "mobile", type: "tel", placeholder: "+91 XXXXX XXXXX", col: 1, validate: phoneError }, // prettier-ignore
+  { label: "Mobile Number", key: "mobile", type: "tel", placeholder: "+91 XXXXX XXXXX", col: 1, validate: phoneError, sanitize: sanitizePhone }, // prettier-ignore
   { label: "Email", key: "email", type: "email", placeholder: "you@example.com", col: 1, validate: emailError }, // prettier-ignore
   { label: "City", key: "city", type: "text", placeholder: "Your city", col: 1, validate: (v) => letterTextError(v, "City"), sanitize: sanitizeText }, // prettier-ignore
   { label: "Requirement", key: "req", type: "text", placeholder: "e.g. 50 bottles/month", col: 1, validate: requirementError }, // prettier-ignore

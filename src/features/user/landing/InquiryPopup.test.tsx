@@ -57,6 +57,13 @@ describe("InquiryPopup", () => {
     );
   });
 
+  it("keeps letters out of the mobile number field", () => {
+    renderWithClient(<InquiryPopup onClose={jest.fn()} />);
+    const phone = screen.getByPlaceholderText("+91 XXXXX XXXXX");
+    fireEvent.change(phone, { target: { value: "98abc76543" } });
+    expect(phone).toHaveValue("9876543");
+  });
+
   it("closes from the Maybe Later button", () => {
     const onClose = jest.fn();
     renderWithClient(<InquiryPopup onClose={onClose} />);

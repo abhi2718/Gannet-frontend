@@ -47,6 +47,13 @@ describe("ContactSection", () => {
     expect(mockApiPost).not.toHaveBeenCalled();
   });
 
+  it("keeps letters out of the phone number field", () => {
+    renderWithClient(<ContactSection />);
+    const phone = screen.getByPlaceholderText("+91 XXXXX XXXXX");
+    fireEvent.change(phone, { target: { value: "98abc76543" } });
+    expect(phone).toHaveValue("9876543");
+  });
+
   it("submits the enquiry and shows a confirmation", async () => {
     mockApiPost.mockResolvedValue({});
     renderWithClient(<ContactSection />);

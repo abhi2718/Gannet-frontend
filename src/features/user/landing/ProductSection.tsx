@@ -13,7 +13,9 @@ type ProductSectionProps = {
   onBookNow: (item: CartItem) => void;
 };
 
-const BOTTLE_HEIGHTS = [100, 110, 120, 135];
+// Kept at or below 100% so the larger bottles never spill out of the card's
+// image area — a subtle size step preserves the "bigger bottle" feel.
+const BOTTLE_HEIGHTS = [82, 90, 95, 100];
 
 const toCartItem = (p: CatalogProduct): CartItem => ({
   size: p.name,
