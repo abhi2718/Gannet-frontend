@@ -4,9 +4,9 @@ import { MapPin, Phone, Mail, Clock, Instagram, Facebook, Twitter } from "lucide
 import { FadeIn } from "@/components/shared/FadeIn";
 
 const CONTACT_INFO = [
-  { icon: MapPin, label: "Address", value: "24 Spring Lane, Shimla, Himachal Pradesh 171001" },
-  { icon: Phone, label: "Phone", value: "+91 98765 43210" },
-  { icon: Mail, label: "Email", value: "hello@gannetwater.com" },
+  { icon: MapPin, label: "Address", value: "Tengra Mod , RamNagar , Varanasi , Uttar Pradesh , 221110" },
+  { icon: Phone, label: "Phone", value: "+91 9110066913" },
+  { icon: Mail, label: "Email", value: "atulvitrified091zi@gmail.com" },
   { icon: Clock, label: "Office Hours", value: "10:00 AM – 6:00 PM · 7 Days a Week" },
 ];
 
@@ -44,7 +44,7 @@ export function ContactInfoPanel() {
       >
         <div className="absolute inset-0 flex flex-col items-center justify-center text-[#0D6EFD]">
           <MapPin size={28} className="mb-2 opacity-60" />
-          <span className="text-xs font-semibold opacity-60">Shimla, Himachal Pradesh</span>
+          <span className="text-xs font-semibold opacity-60">Tengra Mod , RamNagar , Varanasi , Uttar Pradesh</span>
         </div>
       </div>
 

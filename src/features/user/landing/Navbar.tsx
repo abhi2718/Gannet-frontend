@@ -70,7 +70,7 @@ export function Navbar({ scrolled, onBook, onLogin, cartCount, onCartOpen }: Nav
               className="text-[9px] font-bold uppercase tracking-[0.25em] transition-colors duration-300"
               style={{ color: scrolled ? "#60A5FA" : "rgba(255,255,255,0.65)" }}
             >
-              Atul Vitrified
+              Atul Vitrified Company
             </span>
             <div className="flex items-start gap-0.5">
               <span

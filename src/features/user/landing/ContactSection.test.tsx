@@ -11,7 +11,7 @@ function fillForm() {
     target: { value: "Test User" },
   });
   fireEvent.change(screen.getByPlaceholderText("+91 XXXXX XXXXX"), {
-    target: { value: "+91 98765 43210" },
+    target: { value: "+91 9110066913" },
   });
   fireEvent.change(screen.getByPlaceholderText("you@example.com"), {
     target: { value: "test@user.com" },
@@ -31,7 +31,7 @@ describe("ContactSection", () => {
   it("renders the contact details and the dealership inquiry heading", () => {
     renderWithClient(<ContactSection />);
     expect(screen.getByText("We Are Here to Help")).toBeInTheDocument();
-    expect(screen.getByText("hello@gannetwater.com")).toBeInTheDocument();
+    expect(screen.getByText("atulvitrified091zi@gmail.com")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Inquiry for Dealership" })).toBeInTheDocument();
   });
 

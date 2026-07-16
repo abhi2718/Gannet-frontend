@@ -9,7 +9,7 @@ const mockApiPost = apiPost as jest.MockedFunction<typeof apiPost>;
 function fillRequiredFields() {
   fireEvent.change(screen.getByPlaceholderText("Your name"), { target: { value: "Test User" } });
   fireEvent.change(screen.getByPlaceholderText("+91 XXXXX XXXXX"), {
-    target: { value: "+91 98765 43210" },
+    target: { value: "+91 9110066913" },
   });
   fireEvent.change(screen.getByPlaceholderText("you@example.com"), {
     target: { value: "test@user.com" },
@@ -49,7 +49,7 @@ describe("InquiryPopup", () => {
       "/queries",
       expect.objectContaining({
         fullName: "Test User",
-        mobileNumber: "+91 98765 43210",
+        mobileNumber: "+91 9110066913",
         email: "test@user.com",
         city: "Mumbai",
         requirement: "50 bottles/month",

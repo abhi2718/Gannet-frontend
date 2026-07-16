@@ -4,7 +4,7 @@ export const MOCK_QUERIES: Query[] = [
   {
     id: "QRY-001",
     name: "Rahul Verma",
-    mobile: "+91 98765 43210",
+    mobile: "+91 9110066913",
     email: "rahul.v@gmail.com",
     city: "Mumbai",
     requirement: "50 bottles/month",

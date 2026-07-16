@@ -34,7 +34,7 @@ describe("validation", () => {
 
   it("accepts a 10-digit Indian mobile, with or without +91, and rejects others", () => {
     expect(phoneError("9876543210")).toBeNull();
-    expect(phoneError("+91 98765 43210")).toBeNull();
+    expect(phoneError("+91 9110066913")).toBeNull();
     expect(phoneError("8318064327")).toBeNull();
     expect(phoneError("12345")).toMatch(/valid 10-digit phone/); // too short
     expect(phoneError("1234567890")).toMatch(/valid 10-digit phone/); // starts with 1

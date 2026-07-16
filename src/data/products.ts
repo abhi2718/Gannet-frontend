@@ -24,8 +24,8 @@ export const PRODUCTS: Product[] = [
 ];
 
 export const BOTTLE_PRICES: Record<string, number> = {
-  "250 ml": 10,
-  "500 ml": 18,
-  "1 Litre": 32,
-  "2 Litre": 55,
+  "250 ml": 8,
+  "500 ml": 10,
+  "1 Litre": 20,
+  "2 Litre": 30,
 };

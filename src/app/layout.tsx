@@ -18,7 +18,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "GANNET — Pure Refreshment, Naturally",
   description:
-    "Premium natural drinking water sourced from pristine mountain springs, purified to deliver freshness in every sip.",
+    "Pure natural drinking water sourced from pristine mountain springs, purified to deliver freshness in every sip.",
   robots: { index: false, follow: false },
   icons: { icon: "/logo.svg", shortcut: "/logo.svg", apple: "/logo.svg" },
 };

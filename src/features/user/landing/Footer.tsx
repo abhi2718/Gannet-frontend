@@ -6,9 +6,9 @@ import { PRODUCTS } from "@/data/products";
 import { GannetBirdIcon } from "@/components/shared/GannetBirdIcon";
 
 const CONTACTS = [
-  { icon: Phone, text: "+91 98765 43210" },
-  { icon: Mail, text: "hello@gannetwater.com" },
-  { icon: MapPin, text: "Shimla, Himachal Pradesh" },
+  { icon: Phone, text: "+91 9110066913" },
+  { icon: Mail, text: "atulvitrified091zi@gmail.com" },
+  { icon: MapPin, text: "Tengra Mod , RamNagar , Varanasi , Uttar Pradesh" },
 ];
 
 const sectionId = (n: string) => n.toLowerCase().replace(/\s+/g, "-");
@@ -30,7 +30,7 @@ export function Footer({ onLogin }: { onLogin: () => void }) {
               </div>
               <div className="flex flex-col items-start leading-none">
                 <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-blue-200/60">
-                  Atul Vitrified
+                  Atul Vitrified Company
                 </span>
                 <div className="flex items-start gap-0.5">
                   <span className="text-xl font-extrabold text-white tracking-widest">GANNET</span>
@@ -39,7 +39,7 @@ export function Footer({ onLogin }: { onLogin: () => void }) {
               </div>
             </div>
             <p className="text-blue-200/70 text-sm leading-relaxed mb-6">
-              Premium natural drinking water sourced from pristine mountain springs, delivered fresh
+              Pure natural drinking water sourced from pristine mountain springs, delivered fresh
               to your door.
             </p>
             <div className="flex gap-2.5">

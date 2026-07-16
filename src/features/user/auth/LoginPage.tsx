@@ -71,7 +71,7 @@ export function LoginPage() {
             </div>
             <div>
               <h1 className="text-2xl font-extrabold text-[#0D6EFD]">GANNET™</h1>
-              <p className="text-gray-400 text-sm">Pure Refreshment. Naturally Delivered.</p>
+              <p className="text-gray-400 text-sm">Pure Natural Drinking Water</p>
             </div>
           </div>
 

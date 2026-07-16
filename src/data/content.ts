@@ -20,7 +20,7 @@ export const SLIDES: Slide[] = [
     tag: "Mountain Spring Water",
     h1: "Pure Refreshment.",
     h2: "Naturally.",
-    sub: "Premium natural drinking water sourced from pristine mountain springs, purified to deliver freshness in every sip.",
+    sub: "Pure natural drinking water sourced from pristine mountain springs, purified to deliver freshness in every sip.",
     theme: "deep",
     bg: "https://images.unsplash.com/photo-1777362994269-ccee365fe653?w=1600&h=900&fit=crop&auto=format",
     overlay:

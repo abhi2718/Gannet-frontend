@@ -29,14 +29,14 @@ export function LoginBrandingPanel({ onBack }: { onBack: () => void }) {
             <GannetBirdIcon />
           </div>
           <span className="text-xs font-bold uppercase tracking-[0.35em] text-blue-100/70 mb-1">
-            Atul Vitrified
+            Atul Vitrified Company 
           </span>
           <div className="flex items-start gap-1 mb-3">
             <span className="text-5xl font-black text-white tracking-widest">GANNET</span>
             <span className="text-xl font-bold text-blue-200 mt-1">™</span>
           </div>
           <p className="text-blue-100/80 text-lg max-w-xs leading-relaxed mb-10">
-            Pure Refreshment. Naturally Delivered.
+            Pure Natural Drinking Water
           </p>
           <div className="flex items-end gap-4 justify-center">
             {PRODUCTS.map((p, i) => (

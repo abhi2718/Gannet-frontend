@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import { CheckCircle, ShoppingCart } from "lucide-react";
 import { FadeIn } from "@/components/shared/FadeIn";
@@ -15,15 +16,25 @@ type ProductSectionProps = {
 
 // Kept at or below 100% so the larger bottles never spill out of the card's
 // image area — a subtle size step preserves the "bigger bottle" feel.
-const BOTTLE_HEIGHTS = [82, 90, 95, 100];
+// const BOTTLE_HEIGHTS = [80, 86, 100, 110];
+const BOTTLE_HEIGHTS_FIX = [210, 220, 240, 260];
 
+// The source PNGs are 1972x4136. next/image needs the intrinsic ratio to emit a
+// srcset near the rendered size instead of downscaling the full 4136px asset.
+const BOTTLE_ASPECT = 1972 / 4136;
+const bottleWidth = (height: number) => Math.round(height * BOTTLE_ASPECT);
 const toCartItem = (p: CatalogProduct): CartItem => ({
   size: p.name,
   label: p.tag ?? p.name,
   price: p.price,
   qty: 1,
 });
-
+const images = [
+  "/250_ml_bottle.png",
+  "/500_ml_bottle.png",
+  "/1000_ml_bottle.png",
+  "/2000_ml_bottle.png",
+];
 export function ProductSection({ onAddToCart, onBookNow }: ProductSectionProps) {
   const { data: products, isPending } = useProducts();
   const [added, setAdded] = useState<string | null>(null);
@@ -99,15 +110,14 @@ export function ProductSection({ onAddToCart, onBookNow }: ProductSectionProps) 
                         transition={{ type: "spring", stiffness: 260, damping: 20 }}
                         className="flex items-end justify-center h-full"
                       >
-                        <img
-                        // src={p.image}
-                        src="small_bottle_1x.png"
+                        <Image
+                          src={images[i]}
                           alt={`GANNET ${p.name} Premium Natural Water Bottle`}
-                          onError={(e) => {
-                            (e.currentTarget as HTMLImageElement).src = "/bottle_old.png";
-                          }}
+                          width={bottleWidth(BOTTLE_HEIGHTS_FIX[i])}
+                          height={BOTTLE_HEIGHTS_FIX[i]}
+                          quality={90}
                           style={{
-                            height: `${BOTTLE_HEIGHTS[i % BOTTLE_HEIGHTS.length]}%`,
+                            height: BOTTLE_HEIGHTS_FIX[i],
                             width: "auto",
                             objectFit: "contain",
                             filter:
