@@ -28,6 +28,9 @@ export function LoginBrandingPanel({ onBack }: { onBack: () => void }) {
           <div className="w-20 h-20 rounded-3xl bg-white/15 backdrop-blur-sm flex items-center justify-center mb-6 border border-white/20">
             <GannetBirdIcon />
           </div>
+          <span className="text-xs font-bold uppercase tracking-[0.35em] text-blue-100/70 mb-1">
+            Atul Vitrified
+          </span>
           <div className="flex items-start gap-1 mb-3">
             <span className="text-5xl font-black text-white tracking-widest">GANNET</span>
             <span className="text-xl font-bold text-blue-200 mt-1">™</span>

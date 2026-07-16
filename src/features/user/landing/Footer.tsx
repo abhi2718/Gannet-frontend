@@ -28,9 +28,14 @@ export function Footer({ onLogin }: { onLogin: () => void }) {
               <div className="w-10 h-10 rounded-xl bg-[#0D6EFD] flex items-center justify-center">
                 <GannetBirdIcon />
               </div>
-              <div className="flex items-start gap-0.5">
-                <span className="text-xl font-extrabold text-white tracking-widest">GANNET</span>
-                <span className="text-xs font-bold text-blue-300 mt-0.5">™</span>
+              <div className="flex flex-col items-start leading-none">
+                <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-blue-200/60">
+                  Atul Vitrified
+                </span>
+                <div className="flex items-start gap-0.5">
+                  <span className="text-xl font-extrabold text-white tracking-widest">GANNET</span>
+                  <span className="text-xs font-bold text-blue-300 mt-0.5">™</span>
+                </div>
               </div>
             </div>
             <p className="text-blue-200/70 text-sm leading-relaxed mb-6">

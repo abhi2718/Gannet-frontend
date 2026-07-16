@@ -65,19 +65,27 @@ export function Navbar({ scrolled, onBook, onLogin, cartCount, onCartOpen }: Nav
             <GannetBirdIcon />
           </div>
          
-          <div className="flex items-start gap-0.5">
+          <div className="flex flex-col items-start leading-none">
             <span
-              className="text-xl font-extrabold tracking-wider transition-colors duration-300"
-              style={{ color: scrolled ? "#0D6EFD" : "#fff", letterSpacing: "0.12em" }}
+              className="text-[9px] font-bold uppercase tracking-[0.25em] transition-colors duration-300"
+              style={{ color: scrolled ? "#60A5FA" : "rgba(255,255,255,0.65)" }}
             >
-              GANNET
+              Atul Vitrified
             </span>
-            <span
-              className="text-xs font-bold mt-0.5 transition-colors duration-300"
-              style={{ color: scrolled ? "#0D6EFD" : "rgba(255,255,255,0.7)" }}
-            >
-              ™
-            </span>
+            <div className="flex items-start gap-0.5">
+              <span
+                className="text-xl font-extrabold tracking-wider transition-colors duration-300"
+                style={{ color: scrolled ? "#0D6EFD" : "#fff", letterSpacing: "0.12em" }}
+              >
+                GANNET
+              </span>
+              <span
+                className="text-xs font-bold mt-0.5 transition-colors duration-300"
+                style={{ color: scrolled ? "#0D6EFD" : "rgba(255,255,255,0.7)" }}
+              >
+                ™
+              </span>
+            </div>
           </div>
         </button>
 

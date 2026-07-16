@@ -11,7 +11,24 @@ import { Loader } from "@/components/shared/Loader";
 import { usePagination } from "@/lib/hooks/usePagination";
 import type { Query } from "@/types";
 
-const COLUMNS = ["ID", "Name", "Mobile", "Email", "City", "Queries", "Date", "Status", "Actions"];
+const COLUMNS = ["ID", "Name", "Mobile", "Email", "City", "Type", "Queries", "Date", "Status", "Actions"]; // prettier-ignore
+
+/** Small pill showing where the enquiry came from (dealership form vs. popup). */
+function TypeBadge({ type }: { type: string }) {
+  const isDealership = type === "dealership";
+  return (
+    <span
+      className="px-2.5 py-1 text-[11px] font-bold rounded-full capitalize whitespace-nowrap"
+      style={
+        isDealership
+          ? { background: "#FEF3C7", color: "#B45309" }
+          : { background: "#E0F2FE", color: "#0369A1" }
+      }
+    >
+      {isDealership ? "Dealership" : "Query"}
+    </span>
+  );
+}
 const STATUS_OPTIONS = ["all", "new", "contacted", "converted"];
 const ROW_STATUSES = ["new", "contacted", "converted"];
 
@@ -105,6 +122,9 @@ export function QueriesView() {
                   <td className="px-5 py-4 text-gray-500 whitespace-nowrap">{q.mobile}</td>
                   <td className="px-5 py-4 text-gray-500">{q.email}</td>
                   <td className="px-5 py-4 text-gray-500">{q.city}</td>
+                  <td className="px-5 py-4">
+                    <TypeBadge type={q.type} />
+                  </td>
                   <td className="px-5 py-4 text-gray-500">{q.requirement}</td>
                   <td className="px-5 py-4 text-gray-400 whitespace-nowrap">{q.date}</td>
                   <td className="px-5 py-4">

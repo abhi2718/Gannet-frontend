@@ -62,7 +62,12 @@ describe("ContactSection", () => {
     expect(await screen.findByText(/Message Sent!/)).toBeInTheDocument();
     expect(mockApiPost).toHaveBeenCalledWith(
       "/queries",
-      expect.objectContaining({ fullName: "Test User", city: "Mumbai", requirement: "Bulk order" }),
+      expect.objectContaining({
+        fullName: "Test User",
+        city: "Mumbai",
+        requirement: "Bulk order",
+        type: "dealership",
+      }),
     );
   });
 });

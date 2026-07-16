@@ -65,6 +65,7 @@ export function InquiryPopup({ onClose }: { onClose: () => void }) {
         city: form.city,
         requirement: form.req,
         message: form.msg.trim(),
+        type: "query",
       },
       {
         onSuccess: () => setSent(true),

@@ -11,6 +11,8 @@ export type QuerySubmission = {
   city: string;
   requirement: string;
   message: string;
+  /** Which form the enquiry came from. Defaults to "query" server-side. */
+  type?: "query" | "dealership";
 };
 
 /** Public: submit an enquiry. No auth required (rate-limited server-side). */

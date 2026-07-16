@@ -93,6 +93,8 @@ export type Query = {
   email: string;
   city: string;
   requirement: string;
+  /** Origin of the enquiry: "dealership" (dealership form) or "query" (popup). */
+  type: string;
   status: string;
   date: string;
   /** Full enquiry message (from the API; not shown in the summary table). */

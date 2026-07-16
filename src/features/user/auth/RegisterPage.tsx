@@ -4,9 +4,10 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { ChevronLeft, Droplets, ArrowRight } from "lucide-react";
+import { ChevronLeft, ArrowRight } from "lucide-react";
 import { useAuth } from "./AuthContext";
 import { LoginBrandingPanel } from "./LoginBrandingPanel";
+import { GannetBirdIcon } from "@/components/shared/GannetBirdIcon";
 import { RegisterFields, type RegisterValues } from "./RegisterFields";
 import { nameError, phoneError, emailError, passwordError } from "@/lib/validation";
 
@@ -97,11 +98,11 @@ export function RegisterPage() {
 
           <div className="flex items-center gap-3 mb-8 lg:hidden">
             <div className="w-12 h-12 rounded-2xl bg-[#0D6EFD] flex items-center justify-center">
-              <Droplets size={22} className="text-white" />
+              <GannetBirdIcon />
             </div>
             <div>
               <h1 className="text-2xl font-extrabold text-[#0D6EFD]">GANNET™</h1>
-              <p className="text-gray-400 text-sm">Premium Natural Water</p>
+              <p className="text-gray-400 text-sm">Pure Refreshment. Naturally Delivered.</p>
             </div>
           </div>
 

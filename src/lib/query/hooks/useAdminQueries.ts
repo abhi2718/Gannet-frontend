@@ -15,6 +15,7 @@ export type ApiQuery = {
   city: string;
   requirement: string;
   message?: string;
+  type?: string;
   status: string;
   createdAt?: string;
 };
@@ -28,6 +29,7 @@ export function toQuery(q: ApiQuery): Query {
     city: q.city,
     requirement: q.requirement,
     message: q.message,
+    type: q.type ?? "query",
     status: q.status,
     date: q.createdAt ? q.createdAt.slice(0, 10) : "",
   };

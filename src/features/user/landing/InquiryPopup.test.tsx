@@ -53,6 +53,7 @@ describe("InquiryPopup", () => {
         email: "test@user.com",
         city: "Mumbai",
         requirement: "50 bottles/month",
+        type: "query",
       }),
     );
   });

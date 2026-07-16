@@ -81,6 +81,7 @@ export function ContactForm() {
         city: form.city,
         requirement: form.requirement,
         message: form.message,
+        type: "dealership",
       },
       {
         onSuccess: () => {

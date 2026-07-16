@@ -25,6 +25,14 @@ describe("QueriesView", () => {
     expect(screen.getByText("All Queries")).toBeInTheDocument();
   });
 
+  it("shows the enquiry origin in a Type column (dealership vs query)", async () => {
+    renderWithClient(<QueriesView />);
+    await screen.findByText("Rahul Verma");
+    expect(screen.getByRole("columnheader", { name: "Type" })).toBeInTheDocument();
+    expect(screen.getAllByText("Dealership").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Query").length).toBeGreaterThan(0);
+  });
+
   it("filters rows by the search term", async () => {
     renderWithClient(<QueriesView />);
     await screen.findByText("Rahul Verma");
