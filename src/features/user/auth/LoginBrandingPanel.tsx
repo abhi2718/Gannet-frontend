@@ -25,9 +25,7 @@ export function LoginBrandingPanel({ onBack }: { onBack: () => void }) {
           <ChevronLeft size={18} /> Back to site
         </button>
         <div className="flex-1 flex flex-col items-center justify-center text-center">
-          <div className="w-20 h-20 rounded-3xl bg-white/15 backdrop-blur-sm flex items-center justify-center mb-6 border border-white/20">
-            <GannetBirdIcon />
-          </div>
+        <GannetBirdIcon />
           <span className="text-xs font-bold uppercase tracking-[0.35em] text-blue-100/70 mb-1">
             Atul Vitrified Company 
           </span>

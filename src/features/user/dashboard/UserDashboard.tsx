@@ -58,9 +58,7 @@ export function UserDashboard() {
             aria-label="Go to home page"
             className="flex items-center gap-2.5"
           >
-            <div className="w-9 h-9 rounded-xl bg-[#0D6EFD] flex items-center justify-center">
               <GannetBirdIcon />
-            </div>
             <div className="flex items-start gap-0.5">
               <span className="text-lg font-extrabold text-[#0D6EFD] tracking-wider">GANNET</span>
               <span className="text-xs font-bold text-[#0D6EFD] mt-0.5">™</span>
