@@ -116,13 +116,13 @@ export const STEPS: Step[] = [
 
 export const TESTIMONIALS: Testimonial[] = [
   {
-    name: "Arjun Mehta",
-    location: "Mumbai",
+    name: "Sonu",
+    location: "Ramnagar Varansi",
     rating: 5,
     review:
-      "GANNET water has become essential in our daily routine. The taste is incredibly clean — nothing like anything we have tried before.",
+      "Every drop reflects our commitment to purity, quality, and trust. Stay refreshed. Stay naturally better.",
     photo:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop&auto=format",
+      "sonu-review.jpeg",
   },
   {
     name: "Priya Sharma",
