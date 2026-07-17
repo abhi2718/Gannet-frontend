@@ -25,9 +25,7 @@ export function Footer({ onLogin }: { onLogin: () => void }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
           <div>
             <div className="flex items-center gap-2.5 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-[#0D6EFD] flex items-center justify-center">
-                <GannetBirdIcon />
-              </div>
+              <GannetBirdIcon />
               <div className="flex flex-col items-start leading-none">
                 <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-blue-200/60">
                   Atul Vitrified Company

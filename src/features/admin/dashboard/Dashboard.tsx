@@ -68,10 +68,7 @@ export function Dashboard() {
           style={{ height: 72, borderColor: "rgba(13,110,253,0.08)" }}
         >
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="w-10 h-10 shrink-0 rounded-xl bg-[#0D6EFD] flex items-center justify-center">
-              {/* <Droplets size={20} className="text-white" /> */}
-              <GannetBirdIcon />
-            </div>
+          <GannetBirdIcon />
             {sidebarOpen && (
               <div className="flex items-start gap-0.5 overflow-hidden">
                 <span className="text-lg font-extrabold text-[#0D6EFD] tracking-wider whitespace-nowrap">

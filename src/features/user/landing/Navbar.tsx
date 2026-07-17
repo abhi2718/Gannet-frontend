@@ -60,10 +60,9 @@ export function Navbar({ scrolled, onBook, onLogin, cartCount, onCartOpen }: Nav
         className="max-w-7xl mx-auto px-6 flex items-center justify-between"
         style={{ height: 72 }}
       >
-        <button onClick={() => go("home")} className="flex items-center gap-2.5 group">
-          <div className="w-10 h-10 rounded-xl bg-[#0D6EFD] flex items-center justify-center shadow-lg shadow-blue-200 group-hover:scale-105 transition-transform">
-            <GannetBirdIcon />
-          </div>
+        <button onClick={() => go("home")} className="flex items-center group">
+         
+          <GannetBirdIcon />
          
           <div className="flex flex-col items-start leading-none">
             <span

@@ -6,9 +6,8 @@ export function GannetBirdIcon() {
     <Image
       src="/logo.svg"
       alt="GANNET logo"
-      width={80}
-      height={60}
-      className="w-4/5 h-4/5 object-contain"
+      width={100}
+      height={80}    
     />
   );
 }
