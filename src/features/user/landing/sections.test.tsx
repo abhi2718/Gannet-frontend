@@ -25,7 +25,7 @@ describe("TestimonialsSection", () => {
   it("renders the first testimonial", () => {
     render(<TestimonialsSection />);
     expect(screen.getByText("Loved by Thousands")).toBeInTheDocument();
-    expect(screen.getAllByText("Arjun Mehta").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Sonu").length).toBeGreaterThan(0);
   });
 });
 
