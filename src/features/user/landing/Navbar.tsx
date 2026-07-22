@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ShoppingCart, Droplets, X, Menu } from "lucide-react";
-import { GannetBirdIcon } from "@/components/shared/GannetBirdIcon";
+import { BrandLockup } from "@/components/shared/BrandLockup";
 import { NAV } from "@/data/content";
 import { useAuth } from "@/features/user/auth/AuthContext";
 import { NavUserMenu } from "./NavUserMenu";
@@ -61,31 +61,12 @@ export function Navbar({ scrolled, onBook, onLogin, cartCount, onCartOpen }: Nav
         style={{ height: 72 }}
       >
         <button onClick={() => go("home")} className="flex items-center group">
-         
-          <GannetBirdIcon />
-         
-          <div className="flex flex-col items-start leading-none">
-            <span
-              className="text-[9px] font-bold uppercase tracking-[0.25em] transition-colors duration-300"
-              style={{ color: scrolled ? "#60A5FA" : "rgba(255,255,255,0.65)" }}
-            >
-              Atul Vitrified Company
-            </span>
-            <div className="flex items-start gap-0.5">
-              <span
-                className="text-xl font-extrabold tracking-wider transition-colors duration-300"
-                style={{ color: scrolled ? "#0D6EFD" : "#fff", letterSpacing: "0.12em" }}
-              >
-                GANNET
-              </span>
-              <span
-                className="text-xs font-bold mt-0.5 transition-colors duration-300"
-                style={{ color: scrolled ? "#0D6EFD" : "rgba(255,255,255,0.7)" }}
-              >
-                ™
-              </span>
-            </div>
-          </div>
+          <BrandLockup
+            size="sm"
+            companyColor={scrolled ? "#60A5FA" : "rgba(255,255,255,0.65)"}
+            wordmarkColor={scrolled ? "#0D6EFD" : "#fff"}
+            taglineColor={scrolled ? "#0D6EFD" : "rgba(255,255,255,0.7)"}
+          />
         </button>
 
         <nav className="hidden md:flex items-center gap-7">

@@ -65,9 +65,10 @@ export function LoginPage() {
             <ChevronLeft size={18} /> Back
           </button>
 
-          <div className="flex items-center gap-3 mb-8 lg:hidden">
-           <GannetBirdIcon />
+          <div className="flex items-center lg:hidden">
             <div>
+               <GannetBirdIcon height={100} width={100} />
+
               <h1 className="text-2xl font-extrabold text-[#0D6EFD]">GANNET™</h1>
               <p className="text-gray-400 text-sm">Pure Natural Drinking Water</p>
             </div>
