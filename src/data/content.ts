@@ -12,8 +12,8 @@ import {
   Home,
   Instagram,
   Facebook,
-  Twitter,
 } from "lucide-react";
+import { XIcon } from "@/components/shared/XIcon";
 import type { Feature, Slide, Step, Testimonial } from "@/types";
 
 export const NAV = ["Home", "Products", "Why GANNET", "How It Works", "Testimonials", "Contact"];
@@ -21,7 +21,7 @@ export const NAV = ["Home", "Products", "Why GANNET", "How It Works", "Testimoni
 export const SOCIALS = [
   { icon: Instagram, label: "Instagram", href: "https://www.instagram.com/mygannet2301/" },
   { icon: Facebook, label: "Facebook", href: "#" },
-  { icon: Twitter, label: "Twitter", href: "#" },
+  { icon: XIcon, label: "X", href: "#" },
 ];
 
 export const SLIDES: Slide[] = [
