@@ -127,7 +127,14 @@ export function OrdersView() {
                   <td className="px-5 py-4 font-semibold text-gray-900 whitespace-nowrap">
                     {o.customer}
                   </td>
-                  <td className="px-5 py-4 text-gray-500 whitespace-nowrap">{o.phone}</td>
+                  <td className="px-5 py-4 whitespace-nowrap">
+                    <a
+                      href={`tel:${o.phone}`}
+                      className="text-gray-500 hover:text-[#0D6EFD] hover:underline"
+                    >
+                      {o.phone}
+                    </a>
+                  </td>
                   <td className="px-5 py-4 text-gray-500">
                     {o.items.map((it, i) => (
                       <div key={i} className="whitespace-nowrap">

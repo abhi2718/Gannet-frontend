@@ -119,8 +119,24 @@ export function QueriesView() {
                   <td className="px-5 py-4 font-semibold text-gray-900 whitespace-nowrap">
                     {q.name}
                   </td>
-                  <td className="px-5 py-4 text-gray-500 whitespace-nowrap">{q.mobile}</td>
-                  <td className="px-5 py-4 text-gray-500">{q.email}</td>
+                  <td className="px-5 py-4 whitespace-nowrap">
+                    <a
+                      href={`tel:${q.mobile}`}
+                      className="text-gray-500 hover:text-[#0D6EFD] hover:underline"
+                    >
+                      {q.mobile}
+                    </a>
+                  </td>
+                  <td className="px-5 py-4">
+                    <a
+                      href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(q.email)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-500 hover:text-[#0D6EFD] hover:underline"
+                    >
+                      {q.email}
+                    </a>
+                  </td>
                   <td className="px-5 py-4 text-gray-500">{q.city}</td>
                   <td className="px-5 py-4">
                     <TypeBadge type={q.type} />

@@ -125,8 +125,24 @@ export function UsersView() {
                       </span>
                     </div>
                   </td>
-                  <td className="px-5 py-4 text-gray-500">{u.email}</td>
-                  <td className="px-5 py-4 text-gray-500 whitespace-nowrap">{u.phone}</td>
+                  <td className="px-5 py-4">
+                    <a
+                      href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(u.email)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-500 hover:text-[#0D6EFD] hover:underline"
+                    >
+                      {u.email}
+                    </a>
+                  </td>
+                  <td className="px-5 py-4 whitespace-nowrap">
+                    <a
+                      href={`tel:${u.phone}`}
+                      className="text-gray-500 hover:text-[#0D6EFD] hover:underline"
+                    >
+                      {u.phone}
+                    </a>
+                  </td>
                   <td className="px-5 py-4 text-gray-500">{u.city}</td>
                   <td className="px-5 py-4 text-gray-400 whitespace-nowrap">{u.joined}</td>
                   <td className="px-5 py-4">
