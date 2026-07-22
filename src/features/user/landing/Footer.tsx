@@ -11,6 +11,12 @@ const CONTACTS = [
   { icon: MapPin, text: "Tengra Mod , RamNagar , Varanasi , Uttar Pradesh" },
 ];
 
+const SOCIALS = [
+  { icon: Instagram, href: "https://www.instagram.com/mygannet2301/" },
+  { icon: Facebook, href: "#" },
+  { icon: Twitter, href: "#" },
+];
+
 const sectionId = (n: string) => n.toLowerCase().replace(/\s+/g, "-");
 
 export function Footer({ onLogin }: { onLogin: () => void }) {
@@ -41,15 +47,18 @@ export function Footer({ onLogin }: { onLogin: () => void }) {
               to your door.
             </p>
             <div className="flex gap-2.5">
-              {[Instagram, Facebook, Twitter].map((Icon, i) => (
-                <button
+              {SOCIALS.map(({ icon: Icon, href }, i) => (
+                <a
                   key={i}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label="social link"
                   className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-[#0D6EFD] transition-all hover:scale-110"
                   style={{ background: "rgba(255,255,255,0.08)" }}
                 >
                   <Icon size={16} className="text-blue-200" />
-                </button>
+                </a>
               ))}
             </div>
           </div>
