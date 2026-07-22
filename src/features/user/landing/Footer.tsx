@@ -1,7 +1,7 @@
 "use client";
 
-import { Instagram, Facebook, Twitter, Phone, Mail, MapPin } from "lucide-react";
-import { NAV } from "@/data/content";
+import { Phone, Mail, MapPin } from "lucide-react";
+import { NAV, SOCIALS } from "@/data/content";
 import { PRODUCTS } from "@/data/products";
 import { GannetBirdIcon } from "@/components/shared/GannetBirdIcon";
 
@@ -9,12 +9,6 @@ const CONTACTS = [
   { icon: Phone, text: "+91 9110066913" },
   { icon: Mail, text: "atulvitrified091zi@gmail.com" },
   { icon: MapPin, text: "Tengra Mod , RamNagar , Varanasi , Uttar Pradesh" },
-];
-
-const SOCIALS = [
-  { icon: Instagram, href: "https://www.instagram.com/mygannet2301/" },
-  { icon: Facebook, href: "#" },
-  { icon: Twitter, href: "#" },
 ];
 
 const sectionId = (n: string) => n.toLowerCase().replace(/\s+/g, "-");
@@ -47,13 +41,13 @@ export function Footer({ onLogin }: { onLogin: () => void }) {
               to your door.
             </p>
             <div className="flex gap-2.5">
-              {SOCIALS.map(({ icon: Icon, href }, i) => (
+              {SOCIALS.map(({ icon: Icon, label, href }) => (
                 <a
-                  key={i}
+                  key={label}
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="social link"
+                  aria-label={label}
                   className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-[#0D6EFD] transition-all hover:scale-110"
                   style={{ background: "rgba(255,255,255,0.08)" }}
                 >

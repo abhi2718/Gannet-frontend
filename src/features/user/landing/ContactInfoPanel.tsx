@@ -1,19 +1,14 @@
 "use client";
 
-import { MapPin, Phone, Mail, Clock, Instagram, Facebook, Twitter } from "lucide-react";
+import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { FadeIn } from "@/components/shared/FadeIn";
+import { SOCIALS } from "@/data/content";
 
 const CONTACT_INFO = [
   { icon: MapPin, label: "Address", value: "Tengra Mod , RamNagar , Varanasi , Uttar Pradesh , 221110" },
   { icon: Phone, label: "Phone", value: "+91 9110066913" },
   { icon: Mail, label: "Email", value: "atulvitrified091zi@gmail.com" },
   { icon: Clock, label: "Office Hours", value: "10:00 AM – 6:00 PM · 7 Days a Week" },
-];
-
-const SOCIALS = [
-  { icon: Instagram, label: "Instagram", href: "https://www.instagram.com/mygannet2301/" },
-  { icon: Facebook, label: "Facebook", href: "#" },
-  { icon: Twitter, label: "Twitter", href: "#" },
 ];
 
 /** The static contact-details column of the contact section. */
