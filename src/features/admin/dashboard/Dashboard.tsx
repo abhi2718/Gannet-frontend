@@ -64,13 +64,13 @@ export function Dashboard() {
         }}
       >
         <div
-          className="flex items-center px-5 border-b"
+          className="flex items-center px-2 border-b"
           style={{ height: 72, borderColor: "rgba(13,110,253,0.08)" }}
         >
-          <div className="flex items-center gap-3 overflow-hidden">
+          <div className="flex items-center  overflow-hidden">
           <GannetBirdIcon />
             {sidebarOpen && (
-              <div className="flex items-start gap-0.5 overflow-hidden">
+              <div className="flex items-start  overflow-hidden">
                 <span className="text-lg font-extrabold text-[#0D6EFD] tracking-wider whitespace-nowrap">
                   GANNET
                 </span>
