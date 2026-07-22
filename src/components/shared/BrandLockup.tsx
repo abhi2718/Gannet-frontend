@@ -24,7 +24,7 @@ const SIZES: Record<
 > = {
   sm: {
     icon: 40,
-    gap: "gap-2.5",
+    gap: "gap-0",
     company: "text-[8px] tracking-[0.3em]",
     wordmark: "text-lg tracking-[0.05em]",
     tm: "text-[9px]",
@@ -32,9 +32,9 @@ const SIZES: Record<
   },
   lg: {
     icon: 80,
-    gap: "gap-3",
+    gap: "gap-0",
     company: "text-[10px] tracking-[0.22em]",
-    wordmark: "text-[26px] tracking-[0.22em]",
+    wordmark: "text-[26px] tracking-[0.10em]",
     tm: "text-[9px]",
     tagline: "text-[10px] tracking-[0.22em]",
   },
@@ -53,7 +53,7 @@ export function BrandLockup({
   const s = SIZES[size];
   return (
     <div className={`flex items-center ${s.gap} ${className}`}>
-      <GannetBirdIcon width={100} height={100} />
+      <GannetBirdIcon width={isLoginScreen?120:100} height={isLoginScreen?120:100} />
       <div className="flex flex-col items-start leading-none">
         <span
           className={`font-bold uppercase transition-colors duration-300 ${s.company}`}
@@ -70,7 +70,7 @@ export function BrandLockup({
           </span>
         </div>
         <span
-          className={`font-semibold uppercase transition-colors duration-300 mt-0.5 ${s.tagline}`}
+          className={`font-semibold uppercase transition-colors duration-300 mt-0.8 ${s.tagline}`}
           style={{ color: taglineColor, marginTop: isLoginScreen ? 10 : 0.5 }}
         >
           PURE · REFRESHING · NATURAL
