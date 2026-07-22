@@ -5,9 +5,19 @@ import { FadeIn } from "@/components/shared/FadeIn";
 import { SOCIALS } from "@/data/content";
 
 const CONTACT_INFO = [
-  { icon: MapPin, label: "Address", value: "Tengra Mod , RamNagar , Varanasi , Uttar Pradesh , 221110", href: "https://www.google.com/maps/search/?api=1&query=Tengra+Mod,+RamNagar,+Varanasi,+Uttar+Pradesh,+221110" },
+  {
+    icon: MapPin,
+    label: "Address",
+    value: "Tengra Mod , RamNagar , Varanasi , Uttar Pradesh , 221110",
+    href: "https://www.google.com/maps/search/?api=1&query=atul, + vitrified, + Tengra+Mod,+RamNagar,+Varanasi,+Uttar+Pradesh,+221110",
+  },
   { icon: Phone, label: "Phone", value: "+91 9110066913", href: "tel:+919110066913" },
-  { icon: Mail, label: "Email", value: "atulvitrified091zi@gmail.com", href: "https://mail.google.com/mail/?view=cm&fs=1&to=atulvitrified091zi@gmail.com" },
+  {
+    icon: Mail,
+    label: "Email",
+    value: "atulvitrified091zi@gmail.com",
+    href: "https://mail.google.com/mail/?view=cm&fs=1&to=atulvitrified091zi@gmail.com",
+  },
   { icon: Clock, label: "Office Hours", value: "10:00 AM – 6:00 PM · 7 Days a Week" },
 ];
 
@@ -53,7 +63,7 @@ export function ContactInfoPanel() {
         <iframe
           title="Gannet location — Tengra Mod, RamNagar, Varanasi"
           src={`https://maps.google.com/maps?q=${encodeURIComponent(
-            "Tengra Mod, RamNagar, Varanasi, Uttar Pradesh",
+            "atul vitrified Tengra Mod, RamNagar, Varanasi, Uttar Pradesh",
           )}&output=embed`}
           className="w-full h-full border-0"
           loading="lazy"
