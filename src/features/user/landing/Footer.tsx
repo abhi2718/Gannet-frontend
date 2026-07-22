@@ -1,7 +1,7 @@
 "use client";
 
-import { Instagram, Facebook, Twitter, Phone, Mail, MapPin } from "lucide-react";
-import { NAV } from "@/data/content";
+import { Phone, Mail, MapPin } from "lucide-react";
+import { NAV, SOCIALS } from "@/data/content";
 import { PRODUCTS } from "@/data/products";
 import { GannetBirdIcon } from "@/components/shared/GannetBirdIcon";
 
@@ -41,15 +41,18 @@ export function Footer({ onLogin }: { onLogin: () => void }) {
               to your door.
             </p>
             <div className="flex gap-2.5">
-              {[Instagram, Facebook, Twitter].map((Icon, i) => (
-                <button
-                  key={i}
-                  aria-label="social link"
+              {SOCIALS.map(({ icon: Icon, label, href }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
                   className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-[#0D6EFD] transition-all hover:scale-110"
                   style={{ background: "rgba(255,255,255,0.08)" }}
                 >
                   <Icon size={16} className="text-blue-200" />
-                </button>
+                </a>
               ))}
             </div>
           </div>

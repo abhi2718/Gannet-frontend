@@ -1,19 +1,14 @@
 "use client";
 
-import { MapPin, Phone, Mail, Clock, Instagram, Facebook, Twitter } from "lucide-react";
+import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { FadeIn } from "@/components/shared/FadeIn";
+import { SOCIALS } from "@/data/content";
 
 const CONTACT_INFO = [
   { icon: MapPin, label: "Address", value: "Tengra Mod , RamNagar , Varanasi , Uttar Pradesh , 221110" },
   { icon: Phone, label: "Phone", value: "+91 9110066913" },
   { icon: Mail, label: "Email", value: "atulvitrified091zi@gmail.com" },
   { icon: Clock, label: "Office Hours", value: "10:00 AM – 6:00 PM · 7 Days a Week" },
-];
-
-const SOCIALS = [
-  { icon: Instagram, label: "Instagram" },
-  { icon: Facebook, label: "Facebook" },
-  { icon: Twitter, label: "Twitter" },
 ];
 
 /** The static contact-details column of the contact section. */
@@ -49,14 +44,17 @@ export function ContactInfoPanel() {
       </div>
 
       <div className="flex gap-3">
-        {SOCIALS.map(({ icon: Icon, label }) => (
-          <button
+        {SOCIALS.map(({ icon: Icon, label, href }) => (
+          <a
             key={label}
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
             aria-label={label}
             className="w-11 h-11 rounded-xl bg-[#0D6EFD] flex items-center justify-center text-white hover:bg-blue-600 hover:scale-110 transition-all"
           >
             <Icon size={18} />
-          </button>
+          </a>
         ))}
       </div>
     </FadeIn>
