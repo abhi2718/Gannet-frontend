@@ -5,7 +5,7 @@ import { ChevronLeft } from "lucide-react";
 import { FloatingDroplets } from "@/components/shared/FloatingDroplets";
 import { WaterBottle } from "@/components/shared/WaterBottle";
 import { PRODUCTS } from "@/data/products";
-import { GannetBirdIcon } from "@/components/shared/GannetBirdIcon";
+import { BrandLockup } from "@/components/shared/BrandLockup";
 
 /** The decorative left-hand branding panel of the login screen. */
 export function LoginBrandingPanel({ onBack }: { onBack: () => void }) {
@@ -25,17 +25,13 @@ export function LoginBrandingPanel({ onBack }: { onBack: () => void }) {
           <ChevronLeft size={18} /> Back to site
         </button>
         <div className="flex-1 flex flex-col items-center justify-center text-center">
-        <GannetBirdIcon />
-          <span className="text-xs font-bold uppercase tracking-[0.35em] text-blue-100/70 mb-1">
-            Atul Vitrified Company 
-          </span>
-          <div className="flex items-start gap-1 mb-3">
-            <span className="text-5xl font-black text-white tracking-widest">GANNET</span>
-            <span className="text-xl font-bold text-blue-200 mt-1">™</span>
-          </div>
-          <p className="text-blue-100/80 text-lg max-w-xs leading-relaxed mb-10">
-            Pure Natural Drinking Water
-          </p>
+          <BrandLockup
+            size="lg"
+            companyColor="rgba(219,234,254,0.7)"
+            wordmarkColor="#ffffff"
+            taglineColor="#93C5FD"
+            className="mb-10"
+          />
           <div className="flex items-end gap-4 justify-center">
             {PRODUCTS.map((p, i) => (
               <motion.div

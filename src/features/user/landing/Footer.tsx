@@ -3,7 +3,7 @@
 import { Phone, Mail, MapPin } from "lucide-react";
 import { NAV, SOCIALS } from "@/data/content";
 import { PRODUCTS } from "@/data/products";
-import { GannetBirdIcon } from "@/components/shared/GannetBirdIcon";
+import { BrandLockup } from "@/components/shared/BrandLockup";
 
 const CONTACTS = [
   { icon: Phone, text: "+91 9110066913" },
@@ -24,18 +24,13 @@ export function Footer({ onLogin }: { onLogin: () => void }) {
       <div className="max-w-7xl mx-auto px-6 pt-16 pb-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
           <div>
-            <div className="flex items-center gap-2.5 mb-5">
-              <GannetBirdIcon />
-              <div className="flex flex-col items-start leading-none">
-                <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-blue-200/60">
-                  Atul Vitrified Company
-                </span>
-                <div className="flex items-start gap-0.5">
-                  <span className="text-xl font-extrabold text-white tracking-widest">GANNET</span>
-                  <span className="text-xs font-bold text-blue-300 mt-0.5">™</span>
-                </div>
-              </div>
-            </div>
+            <BrandLockup
+              size="sm"
+              companyColor="rgba(191,219,254,0.6)"
+              wordmarkColor="#ffffff"
+              taglineColor="#93C5FD"
+              className="mb-5"
+            />
             <p className="text-blue-200/70 text-sm leading-relaxed mb-6">
               Pure natural drinking water sourced from pristine mountain springs, delivered fresh
               to your door.
