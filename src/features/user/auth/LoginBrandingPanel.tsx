@@ -31,6 +31,7 @@ export function LoginBrandingPanel({ onBack }: { onBack: () => void }) {
             wordmarkColor="#ffffff"
             taglineColor="#93C5FD"
             className="mb-10"
+            isLoginScreen={true}
           />
           <div className="flex items-end gap-4 justify-center">
             {PRODUCTS.map((p, i) => (

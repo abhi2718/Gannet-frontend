@@ -69,7 +69,7 @@ export function LoginPage() {
             <div>
                <GannetBirdIcon height={100} width={100} />
 
-              <h1 className="text-2xl font-extrabold text-[#0D6EFD]">GANNET™</h1>
+              <h3 className="text-2xl font-extrabold text-[#0D6EFD]">GANNET™ 1232</h3>
               <p className="text-gray-400 text-sm">Pure Natural Drinking Water</p>
             </div>
           </div>

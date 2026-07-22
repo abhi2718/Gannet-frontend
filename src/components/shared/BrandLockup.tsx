@@ -8,6 +8,7 @@ type BrandLockupProps = {
   wordmarkColor?: string;
   taglineColor?: string;
   className?: string;
+  isLoginScreen?: boolean;
 };
 
 const SIZES: Record<
@@ -30,12 +31,12 @@ const SIZES: Record<
     tagline: "text-[7px] tracking-[0.22em]",
   },
   lg: {
-    icon: 92,
-    gap: "gap-5",
-    company: "text-sm tracking-[0.4em]",
-    wordmark: "text-6xl tracking-[0.05em]",
-    tm: "text-xl",
-    tagline: "text-base tracking-[0.35em]",
+    icon: 80,
+    gap: "gap-3",
+    company: "text-[10px] tracking-[0.22em]",
+    wordmark: "text-[26px] tracking-[0.22em]",
+    tm: "text-[9px]",
+    tagline: "text-[10px] tracking-[0.22em]",
   },
 };
 
@@ -47,6 +48,7 @@ export function BrandLockup({
   wordmarkColor = "#ffffff",
   taglineColor = "#60A5FA",
   className = "",
+  isLoginScreen,
 }: BrandLockupProps) {
   const s = SIZES[size];
   return (
@@ -59,23 +61,17 @@ export function BrandLockup({
         >
           Atul Vitrified Company
         </span>
-        <div className="flex items-start gap-1 mt-0.5">
+        <div className="flex items-start gap-0.5 mt-0.5">
           <span
             className={`font-wordmark transition-colors duration-300 ${s.wordmark}`}
-            style={{ color: wordmarkColor }}
+            style={{ color: wordmarkColor, marginTop: isLoginScreen ? 10 : 0.5 }}
           >
-            GANNET
-          </span>
-          <span
-            className={`font-bold mt-0.5 transition-colors duration-300 ${s.tm}`}
-            style={{ color: wordmarkColor }}
-          >
-            ™
+            GANNET<sup>™</sup>
           </span>
         </div>
         <span
           className={`font-semibold uppercase transition-colors duration-300 mt-0.5 ${s.tagline}`}
-          style={{ color: taglineColor }}
+          style={{ color: taglineColor, marginTop: isLoginScreen ? 10 : 0.5 }}
         >
           PURE · REFRESHING · NATURAL
         </span>
