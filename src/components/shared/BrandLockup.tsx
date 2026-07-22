@@ -51,7 +51,7 @@ export function BrandLockup({
   const s = SIZES[size];
   return (
     <div className={`flex items-center ${s.gap} ${className}`}>
-      <GannetBirdIcon width={s.icon} height={(s.icon * 4) / 5} />
+      <GannetBirdIcon width={100} height={100} />
       <div className="flex flex-col items-start leading-none">
         <span
           className={`font-bold uppercase transition-colors duration-300 ${s.company}`}
@@ -59,7 +59,7 @@ export function BrandLockup({
         >
           Atul Vitrified Company
         </span>
-        <div className="flex items-start gap-1 mt-1.5">
+        <div className="flex items-start gap-1 mt-0.5">
           <span
             className={`font-wordmark transition-colors duration-300 ${s.wordmark}`}
             style={{ color: wordmarkColor }}
@@ -74,7 +74,7 @@ export function BrandLockup({
           </span>
         </div>
         <span
-          className={`font-semibold uppercase transition-colors duration-300 mt-1.5 ${s.tagline}`}
+          className={`font-semibold uppercase transition-colors duration-300 mt-0.5 ${s.tagline}`}
           style={{ color: taglineColor }}
         >
           PURE · REFRESHING · NATURAL
