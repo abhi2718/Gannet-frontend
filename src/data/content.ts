@@ -134,13 +134,13 @@ export const TESTIMONIALS: Testimonial[] = [
       "sonu-review.jpeg",
   },
   {
-    name: "Priya Sharma",
-    location: "Delhi",
+    name: "Rohit Singh",
+    location: "Bokaro",
     rating: 5,
     review:
-      "We switched our entire office to GANNET and the team absolutely loves it. Quality is outstanding and packaging feels genuinely premium.",
+      "Pure, natural water that tastes clean and refreshing every single time.",
     photo:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop&auto=format",
+      "Rohit-review.jpeg",
   },
   {
     name: "Rohan Kapoor",
