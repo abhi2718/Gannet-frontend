@@ -6,14 +6,14 @@ import { PRODUCTS, BOTTLE_PRICES } from "@/data/products";
 import type { CatalogProduct } from "@/types";
 
 /** Product as returned by `GET /api/products`. */
-type ApiProduct = {
-  _id?: string;
-  id?: string;
-  productName: string;
-  url: string;
-  price: number;
-  description: string;
-};
+// type ApiProduct = {
+//   _id?: string;
+//   id?: string;
+//   productName: string;
+//   url: string;
+//   price: number;
+//   description: string;
+// };
 
 // function toCatalog(p: ApiProduct): CatalogProduct {
 //   return {
