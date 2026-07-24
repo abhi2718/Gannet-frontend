@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { Droplets } from "lucide-react";
 import { SLIDES } from "@/data/content";
 import { FloatingDroplets } from "@/components/shared/FloatingDroplets";
-
+import Image from "next/image";
 export function HeroSection({ onBook }: { onBook: () => void }) {
   const [idx, setIdx] = useState(0);
   useEffect(() => {
@@ -59,9 +59,12 @@ export function HeroSection({ onBook }: { onBook: () => void }) {
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             style={{ animation: "bottleFloat 4s ease-in-out infinite" }}
           >
-            <img
+            <Image
               src="/bottle_old.png"
               alt="GANNET Premium Natural Water Bottle"
+              width={1200}
+              height={800}
+              priority
               style={{
                 height: "100%",
                 width: "auto",
