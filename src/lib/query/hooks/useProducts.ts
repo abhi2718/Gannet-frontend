@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query/keys";
-import { apiGetPaged } from "@/lib/api/client";
-import { endpoints } from "@/lib/api/endpoints";
+// import { apiGetPaged } from "@/lib/api/client";
+// import { endpoints } from "@/lib/api/endpoints";
 import { PRODUCTS, BOTTLE_PRICES } from "@/data/products";
 import type { CatalogProduct } from "@/types";
 
@@ -15,15 +15,15 @@ type ApiProduct = {
   description: string;
 };
 
-function toCatalog(p: ApiProduct): CatalogProduct {
-  return {
-    id: p._id ?? p.id ?? p.productName,
-    name: p.productName,
-    price: p.price,
-    description: p.description,
-    image: p.url,
-  };
-}
+// function toCatalog(p: ApiProduct): CatalogProduct {
+//   return {
+//     id: p._id ?? p.id ?? p.productName,
+//     name: p.productName,
+//     price: p.price,
+//     description: p.description,
+//     image: p.url,
+//   };
+// }
 
 /**
  * The static bottle lineup, used when the API can't be reached — e.g. guests on
@@ -49,8 +49,9 @@ export function useProducts() {
     queryKey: queryKeys.products,
     queryFn: async (): Promise<CatalogProduct[]> => {
       try {
-        const { data } = await apiGetPaged<ApiProduct>(endpoints.products);
-        return data.length ? data.map(toCatalog) : FALLBACK_CATALOG;
+        // const { data } = await apiGetPaged<ApiProduct>(endpoints.products);
+        // return data.length ? data.map(toCatalog) : FALLBACK_CATALOG;
+        return FALLBACK_CATALOG
       } catch {
         return FALLBACK_CATALOG;
       }

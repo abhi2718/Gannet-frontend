@@ -123,6 +123,7 @@ export function ProductSection({ onAddToCart, onBookNow }: ProductSectionProps) 
                             filter:
                               "drop-shadow(0 16px 32px rgba(13,71,161,0.3)) drop-shadow(0 4px 10px rgba(0,0,0,0.15))",
                           }}
+                          priority
                         />
                       </motion.div>
                     </div>
