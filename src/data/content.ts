@@ -19,7 +19,7 @@ import type { Feature, Slide, Step, Testimonial } from "@/types";
 export const NAV = ["Home", "Products", "Why GANNET", "How It Works", "Testimonials", "Contact"];
 
 export const SOCIALS = [
-  { icon: Instagram, label: "Instagram", href: "https://www.instagram.com/mygannet2301/" },
+  { icon: Instagram, label: "Instagram", href: "https://www.instagram.com/gannet.pure.water" },
   { icon: Facebook, label: "Facebook", href: "https://www.facebook.com/profile.php?id=61592264940195" },
   { icon: XIcon, label: "X", href: "https://x.com/mygannet2301" },
 ];
