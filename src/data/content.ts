@@ -142,22 +142,22 @@ export const TESTIMONIALS: Testimonial[] = [
     photo:
       "Rohit-review.jpeg",
   },
-  {
-    name: "Rohan Kapoor",
-    location: "Bangalore",
-    rating: 5,
-    review:
-      "As a hotel manager I need the best for our guests. GANNET delivers exactly that — premium water, elegant packaging, and reliable service.",
-    photo:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&auto=format",
-  },
-  {
-    name: "Sneha Iyer",
-    location: "Chennai",
-    rating: 5,
-    review:
-      "My nutritionist recommended GANNET for its perfect mineral balance. I can genuinely feel the difference in my energy levels and skin.",
-    photo:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=120&h=120&fit=crop&auto=format",
-  },
+  // {
+  //   name: "Rohan Kapoor",
+  //   location: "Bangalore",
+  //   rating: 5,
+  //   review:
+  //     "As a hotel manager I need the best for our guests. GANNET delivers exactly that — premium water, elegant packaging, and reliable service.",
+  //   photo:
+  //     "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&auto=format",
+  // },
+  // {
+  //   name: "Sneha Iyer",
+  //   location: "Chennai",
+  //   rating: 5,
+  //   review:
+  //     "My nutritionist recommended GANNET for its perfect mineral balance. I can genuinely feel the difference in my energy levels and skin.",
+  //   photo:
+  //     "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=120&h=120&fit=crop&auto=format",
+  // },
 ];
